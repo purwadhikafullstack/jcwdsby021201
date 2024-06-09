@@ -1,14 +1,8 @@
-import express, {
-  json,
-  urlencoded,
-  Express,
-  Request,
-  Response,
-  NextFunction,
-  Router,
-} from 'express';
+import express, { json, urlencoded, Express, Request, Response } from 'express';
 import cors from 'cors';
 import { PORT } from './config';
+import { join } from 'path';
+import { ErrorMiddleware } from './middlewares/error.middleware';
 import { SampleRouter } from './routers/sample.router';
 
 export default class App {
@@ -28,26 +22,7 @@ export default class App {
   }
 
   private handleError(): void {
-    // not found
-    this.app.use((req: Request, res: Response, next: NextFunction) => {
-      if (req.path.includes('/api/')) {
-        res.status(404).send('Not found !');
-      } else {
-        next();
-      }
-    });
-
-    // error
-    this.app.use(
-      (err: Error, req: Request, res: Response, next: NextFunction) => {
-        if (req.path.includes('/api/')) {
-          console.error('Error : ', err.stack);
-          res.status(500).send('Error !');
-        } else {
-          next();
-        }
-      },
-    );
+    this.app.use(ErrorMiddleware);
   }
 
   private routes(): void {
@@ -57,6 +32,7 @@ export default class App {
       res.send(`Hello, Purwadhika Student !`);
     });
 
+    this.app.use('/', express.static(join(__dirname, '../public')));
     this.app.use('/samples', sampleRouter.getRouter());
   }
 
