@@ -1,34 +1,34 @@
-import { Request, Response } from 'express';
-import prisma from '@/prisma';
+import { NextFunction, Request, Response } from 'express';
+import { SampleService } from '@/services/sample.service';
+import { SampleBody } from '@/types/sample.type';
 
 export class SampleController {
-  async getSampleData(req: Request, res: Response) {
-    const sampleData = await prisma.sample.findMany();
-
-    return res.status(200).send(sampleData);
-  }
-
-  async getSampleDataById(req: Request, res: Response) {
-    const { id } = req.params;
-
-    const sample = await prisma.sample.findUnique({
-      where: { id: Number(id) },
-    });
-
-    if (!sample) {
-      return res.send(404);
+  async getSample(req: Request, res: Response, next: NextFunction) {
+    try {
+      const response = await SampleService.getSample();
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
     }
-
-    return res.status(200).send(sample);
   }
 
-  async createSampleData(req: Request, res: Response) {
-    const { name, code } = req.body;
+  async getSampleById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.params.id;
+      const response = await SampleService.getSampleById(id);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 
-    const newSampleData = await prisma.sample.create({
-      data: { name, code },
-    });
-
-    return res.status(201).send(newSampleData);
+  async createSample(req: Request, res: Response, next: NextFunction) {
+    try {
+      const body = req.body as SampleBody;
+      const response = await SampleService.createSample(body);
+      return res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
   }
 }
