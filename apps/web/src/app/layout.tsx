@@ -5,6 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './theme';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'react-hot-toast';
+import 'simplebar-react/dist/simplebar.min.css';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
