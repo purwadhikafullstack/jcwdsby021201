@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { sampleFormSchema, SampleFormSchema } from './schemas/sampleSchema';
 
 // Tanstack Query
-import { useCreateSample } from '@/features/admin/register/registerMutations';
+import { useCreateSample } from '@/features/user/samples/sampleMutations';
 
 // MUI Components
 import Box from '@mui/material/Box';
