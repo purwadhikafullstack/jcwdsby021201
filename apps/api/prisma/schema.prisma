@@ -19,3 +19,249 @@ model Sample {
 
   @@map("samples") // if you want to use snake_case format
 }
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  slug      String   @unique
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  name        String   @unique
+  description String   @db.Text
+  price       Float
+  categoryId  Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category          Category           @relation(fields: [categoryId], references: [id])
+  pictures          ProductPicture[]
+  productCarts      ProductCart[]
+  orderProducts     OrderProduct[]
+  productWarehouses ProductWarehouse[]
+  journalMutations  JournalMutation[]
+
+  @@map("products")
+}
+
+model ProductPicture {
+  id        Int      @id @default(autoincrement())
+  url       String
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("product_pictures")
+}
+
+model Warehouse {
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String
+  province   String
+  city       String
+  postalCode String
+  userId     Int?     @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user                        User?              @relation(fields: [userId], references: [id])
+  orders                      Order[]
+  productWarehouses           ProductWarehouse[]
+  sourceJournalMutations      JournalMutation[]  @relation("SourceWarehouse")
+  destinationJournalMutations JournalMutation[]  @relation("DestinationWarehouse")
+
+  @@map("warehouses")
+}
+
+model User {
+  id             Int      @id @default(autoincrement())
+  username       String?  @unique
+  email          String   @unique
+  password       String?
+  isVerified     Boolean  @default(false)
+  role           Role     @default(USER)
+  jwtToken       String?
+  profilePicture String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  warehouse Warehouse?
+  addresses Address[]
+  carts     Cart[]
+
+  @@map("users")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+model Address {
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String
+  province   String
+  city       String
+  postalCode String
+  isPrimary  Boolean  @default(false)
+  userId     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user   User    @relation(fields: [userId], references: [id])
+  orders Order[]
+
+  @@map("addresses")
+}
+
+model Cart {
+  id        Int      @id @default(autoincrement())
+  isActive  Boolean  @default(true)
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  productCarts ProductCart[]
+  order        Order?
+
+  @@map("carts")
+}
+
+model ProductCart {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  productId Int
+  cartId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  Product   Product  @relation(fields: [productId], references: [id])
+
+  @@map("product_carts")
+}
+
+model Order {
+  id            Int           @id @default(autoincrement())
+  name          String
+  paymentStatus PaymentStatus
+  shippingCost  Float
+  total         Float
+  paymentMethod String
+  paymentProof  String?
+  expirePayment DateTime
+  warehouseId   Int
+  cartId        Int           @unique
+  addressId     Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  address       Address        @relation(fields: [addressId], references: [id])
+  warehouse     Warehouse      @relation(fields: [warehouseId], references: [id])
+  cart          Cart           @relation(fields: [cartId], references: [id])
+  orderProducts OrderProduct[]
+
+  @@map("orders")
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELED
+}
+
+model OrderProduct {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  price     Float
+  total     Float
+  orderId   Int
+  productId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [productId], references: [id])
+  order   Order   @relation(fields: [orderId], references: [id])
+
+  @@map("order_products")
+}
+
+model ProductWarehouse {
+  id          Int      @id @default(autoincrement())
+  stock       Int
+  productId   Int
+  warehouseId Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  warehouse       Warehouse        @relation(fields: [warehouseId], references: [id])
+  product         Product          @relation(fields: [productId], references: [id])
+  journalProducts JournalProduct[]
+
+  @@map("product_warehouses")
+}
+
+model JournalProduct {
+  id                 Int                    @id @default(autoincrement())
+  quantity           Int
+  transactionType    ProductTransactionType
+  productWarehouseId Int
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  ProductWarehouse ProductWarehouse @relation(fields: [productWarehouseId], references: [id])
+
+  @@map("journal_products")
+}
+
+enum ProductTransactionType {
+  IN
+  OUT
+}
+
+model JournalMutation {
+  id                     Int                    @id @default(autoincrement())
+  quantity               Int
+  transactionType        MutaionTransactionType
+  status                 MutationStatus
+  productId              Int
+  sourceWarehouseId      Int
+  destinationWarehouseId Int
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  sourceWarehouse      Warehouse @relation("SourceWarehouse", fields: [sourceWarehouseId], references: [id])
+  destinationWarehouse Warehouse @relation("DestinationWarehouse", fields: [destinationWarehouseId], references: [id])
+  product              Product   @relation(fields: [productId], references: [id])
+
+  @@map("journal_mutations")
+}
+
+enum MutaionTransactionType {
+  IN
+  OUT
+  TRANSFER
+}
+
+enum MutationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
