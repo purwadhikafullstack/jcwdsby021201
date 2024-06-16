@@ -85,16 +85,17 @@ model Warehouse {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  username       String?  @unique
-  email          String   @unique
-  password       String?
-  isVerified     Boolean  @default(false)
-  role           Role     @default(USER)
-  jwtToken       String?
-  profilePicture String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  username   String?  @unique
+  email      String   @unique
+  password   String?
+  isVerified Boolean  @default(false)
+  role       Role     @default(USER)
+  jwtToken   String?
+  image      String?
+  provider   String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   warehouse Warehouse?
   addresses Address[]

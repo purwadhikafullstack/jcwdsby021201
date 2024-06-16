@@ -1,19 +1,25 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { getSession } from 'next-auth/react';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
 });
 
-// Request interceptors
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = Cookies.get('token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
-
 export default axiosInstance;
+
+export const createAxiosInstance = async () => {
+  const session = await getSession();
+  const user = session?.user as any;
+
+  const instance = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_BASE_API_URL,
+  });
+
+  instance.interceptors.request.use(
+    (config) => {
+      if (user) config.headers.Authorization = `Bearer ${user.token}`;
+      return config;
+    },
+    (error) => Promise.reject(error),
+  );
+};

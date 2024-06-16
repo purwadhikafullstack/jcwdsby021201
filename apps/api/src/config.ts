@@ -14,3 +14,7 @@ export const PORT = process.env.PORT || 8000;
 export const DATABASE_URL = process.env.DATABASE_URL || '';
 export const SALT = parseInt(process.env.SALT || '10');
 export const JWT_SECRET = process.env.JWT_SECRET || 'super-secret';
+export const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+export const MAIL_SENDER = process.env.MAIL_SENDER || 'example@gmail.com';
+export const MAIL_APP_PASSWORD =
+  process.env.MAIL_APP_PASSWORD || 'super-secret';

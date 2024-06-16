@@ -1,10 +1,21 @@
 import type { Metadata } from 'next';
+
+// Providers
 import TanstackQueryProvider from '@/providers/TanstackQueryProvider';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { ThemeProvider } from '@mui/material/styles';
+import ProgressBarProvider from '@/providers/ProgressBarProvider';
+import NextAuthProvider from '@/providers/NextAuthProvider';
+
+// Theme
 import theme from './theme';
 import CssBaseline from '@mui/material/CssBaseline';
+
+// Toast
 import { Toaster } from 'react-hot-toast';
+import 'simplebar-react/dist/simplebar.min.css';
+
+// Slider
 import 'simplebar-react/dist/simplebar.min.css';
 
 export const metadata: Metadata = {
@@ -20,15 +31,19 @@ export default function RootLayout({ children }: Props) {
   return (
     <html lang="en">
       <body>
-        <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <TanstackQueryProvider>
-              <CssBaseline />
-              <Toaster position="top-right" />
-              {children}
-            </TanstackQueryProvider>
-          </ThemeProvider>
-        </AppRouterCacheProvider>
+        <NextAuthProvider>
+          <TanstackQueryProvider>
+            <AppRouterCacheProvider>
+              <ThemeProvider theme={theme}>
+                <ProgressBarProvider>
+                  <CssBaseline />
+                  <Toaster position="top-center" />
+                  {children}
+                </ProgressBarProvider>
+              </ThemeProvider>
+            </AppRouterCacheProvider>
+          </TanstackQueryProvider>
+        </NextAuthProvider>
       </body>
     </html>
   );
