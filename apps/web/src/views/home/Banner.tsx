@@ -84,7 +84,7 @@ export default function BannerSection() {
           </Button>
         </Box>
         <Box>
-          <Image src="/jbl.png" alt="JBL Speaker" width={500} height={300} />
+          <Image src="/images/jbl.png" alt="JBL Speaker" width={500} height={300} />
         </Box>
       </BannerContent>
     </BannerContainer>

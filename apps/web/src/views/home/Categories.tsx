@@ -14,12 +14,12 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Image from 'next/image';
 
 const categories = [
-  { name: 'Phones', icon: '/Category-CellPhone.png' },
-  { name: 'Computers', icon: '/Category-Computer.png' },
-  { name: 'SmartWatch', icon: '/Category-SmartWatch.png' },
-  { name: 'Camera', icon: '/Category-Camera.png' },
-  { name: 'HeadPhones', icon: '/Category-Headphone.png' },
-  { name: 'Gaming', icon: '/Category-Gamepad.png' },
+  { name: 'Phones', icon: '/images/Category-CellPhone.png' },
+  { name: 'Computers', icon: '/images/Category-Computer.png' },
+  { name: 'SmartWatch', icon: '/images/Category-SmartWatch.png' },
+  { name: 'Camera', icon: '/images/Category-Camera.png' },
+  { name: 'HeadPhones', icon: '/images/Category-Headphone.png' },
+  { name: 'Gaming', icon: '/images/Category-Gamepad.png' },
 ];
 
 interface CategoryButtonProps {

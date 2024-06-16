@@ -10,22 +10,22 @@ const features = [
   {
     name: 'PlayStation 5',
     description: 'Incredible games & non-stop entertainment',
-    image: '/ps5.png',
+    image: '/images/ps5.png',
   },
   {
     name: 'Laptop',
     description: 'Laptop collections that suit your passion and lifestyle',
-    image: '/laptop.png',
+    image: '/images/laptop.png',
   },
   {
     name: 'Headset',
     description: 'Headset collections that give you another vibe',
-    image: '/headset.png',
+    image: '/images/headset.png',
   },
   {
     name: 'Speaker',
     description: 'Amazing wireless speakers',
-    image: '/speaker.webp',
+    image: '/images/speaker.webp',
   },
 ];
 

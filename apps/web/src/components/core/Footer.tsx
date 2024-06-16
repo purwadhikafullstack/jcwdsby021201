@@ -163,11 +163,11 @@ export default function Footer() {
               Download App
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Image src="/QrCode.png" alt="QR Code" width={90} height={90} />
+              <Image src="/images/QrCode.png" alt="QR Code" width={90} height={90} />
               <Box sx={{ ml: 2 }}>
                 <Link href="#">
                   <Image
-                    src="/GooglePlay.png"
+                    src="/images/GooglePlay.png"
                     alt="Google Play"
                     width={110}
                     height={35}
@@ -176,7 +176,7 @@ export default function Footer() {
                 </Link>
                 <Link href="#">
                   <Image
-                    src="/AppStore.png"
+                    src="/images/AppStore.png"
                     alt="App Store"
                     width={110}
                     height={35}

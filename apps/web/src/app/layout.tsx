@@ -6,8 +6,6 @@ import theme from './theme';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Toaster } from 'react-hot-toast';
 import 'simplebar-react/dist/simplebar.min.css';
-import Navbar from '@/components/core/Navbar';
-import Footer from '@/components/core/Footer';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -27,9 +25,7 @@ export default function RootLayout({ children }: Props) {
             <TanstackQueryProvider>
               <CssBaseline />
               <Toaster position="top-right" />
-              <Navbar/>
               {children}
-              <Footer />
             </TanstackQueryProvider>
           </ThemeProvider>
         </AppRouterCacheProvider>

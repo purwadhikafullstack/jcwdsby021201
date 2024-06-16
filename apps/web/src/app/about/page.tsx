@@ -24,7 +24,7 @@ const AboutPage = () => {
           </Typography>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Image src="/about.webp" alt="Our Story" width={600} height={400} />
+          <Image src="/images/about.webp" alt="Our Story" width={600} height={400} />
         </Grid>
       </Grid>
 
@@ -35,7 +35,7 @@ const AboutPage = () => {
       <Grid container spacing={4} justifyContent="center" sx={{ mb: 8 }}>
         <Grid item xs={12} sm={4}>
           <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Image src="/agent1.png" alt="Team Member" width={180} height={200} />
+            <Image src="/images/agent1.png" alt="Team Member" width={180} height={200} />
             <Typography variant="h6" sx={{ mt: 2 }}>Tom Cruise</Typography>
             <Typography variant="body2" color="text.secondary">Founder & Chairman</Typography>
             <Box sx={{ mt: 1 }}>
@@ -47,7 +47,7 @@ const AboutPage = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Image src="/agent2.png" alt="Team Member" width={180} height={200} />
+            <Image src="/images/agent2.png" alt="Team Member" width={160} height={200} />
             <Typography variant="h6" sx={{ mt: 2 }}>Emma Watson</Typography>
             <Typography variant="body2" color="text.secondary">Managing Director</Typography>
             <Box sx={{ mt: 1 }}>
@@ -59,7 +59,7 @@ const AboutPage = () => {
         </Grid>
         <Grid item xs={12} sm={4}>
           <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Image src="/agent3.png" alt="Team Member" width={170} height={200} />
+            <Image src="/images/agent3.png" alt="Team Member" width={150} height={200} />
             <Typography variant="h6" sx={{ mt: 2 }}>Will Smith</Typography>
             <Typography variant="body2" color="text.secondary">Product Designer</Typography>
             <Box sx={{ mt: 1 }}>

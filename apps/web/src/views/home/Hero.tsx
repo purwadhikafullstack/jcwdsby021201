@@ -31,10 +31,10 @@ const CategoryButton = styled(Button)(({ theme }) => ({
 }));
 
 const carouselImages = [
-  '/carousel.webp',
-  '/carousel1.jpg',
-  '/carousel2.jpg',
-  '/carousel3.jpg',
+  '/images/carousel.webp',
+  '/images/carousel1.jpg',
+  '/images/carousel2.jpg',
+  '/images/carousel3.jpg',
 ];
 
 export default function HeroSection() {

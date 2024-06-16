@@ -16,6 +16,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import Logo from '@/components/core/Logo';
+import Link from 'next/link';
 
 const LanguageSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -56,7 +57,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
-    width: '20ch', // Set width to a fixed value
+    width: '20ch',
     [theme.breakpoints.up('sm')]: {
       width: '20ch',
     },
@@ -85,9 +86,15 @@ export default function Navbar() {
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Logo />
           <div>
-            <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Home</Button>
-            <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Contact</Button>
-            <Button sx={{ textTransform: 'capitalize', color: 'black' }}>About</Button>
+            <Link href="/" passHref>
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Home</Button>
+            </Link>
+            <Link href="/contact" passHref>
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Contact</Button>
+            </Link>
+            <Link href="/about" passHref>
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>About</Button>
+            </Link>
             <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Sign Up</Button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
