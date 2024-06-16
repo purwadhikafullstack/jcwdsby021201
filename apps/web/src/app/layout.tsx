@@ -13,6 +13,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 // Toast
 import { Toaster } from 'react-hot-toast';
+import 'simplebar-react/dist/simplebar.min.css';
 
 // Slider
 import 'simplebar-react/dist/simplebar.min.css';
