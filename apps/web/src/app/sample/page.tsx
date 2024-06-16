@@ -9,10 +9,12 @@ import SampleGroupCard from '@/views/home/SampleGroupCard';
 // Custom Components
 import SampleForm from '@/components/form/SampleForm';
 import { Grid } from '@mui/material';
+import Navbar from '@/components/core/Navbar';
 
 export default function Home() {
   return (
     <Container component="main">
+     
       <Typography
         variant="h4"
         component="h1"
