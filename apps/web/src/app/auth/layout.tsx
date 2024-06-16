@@ -9,7 +9,7 @@ type Props = {
 
 export default function AuthLayout({ children }: Props) {
   return (
-    <Box sx={{ minHeight: '100vh', background: '#fafafa' }}>
+    <Box sx={{ minHeight: '100vh' }}>
       <Box sx={{ pl: 3, pt: 3 }} component="header">
         <Logo />
       </Box>
