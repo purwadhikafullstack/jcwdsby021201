@@ -1,3 +1,5 @@
+import type { User } from 'next-auth';
+
 export type ResponseWithData<T = any> = {
   rc: number;
   success: boolean;
@@ -25,3 +27,12 @@ export type Pagination = {
   sort_by?: string;
   order_by?: string;
 };
+
+export interface UserSession extends User {
+  username?: string;
+  email?: string;
+  isVerified?: boolean;
+  role?: 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+  image?: string | null;
+  token?: string;
+}
