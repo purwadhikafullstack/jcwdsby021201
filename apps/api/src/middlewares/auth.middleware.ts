@@ -17,7 +17,7 @@ export const verifyToken = (
 
 export const adminGuard = (req: Request, res: Response, next: NextFunction) => {
   if (res.locals.decoded?.role !== 'USER') {
-    next();
+    return next();
   }
   throw new ErrorResponse(401, 'Unauthorized');
 };
@@ -28,7 +28,7 @@ export const superAdminGuard = (
   next: NextFunction,
 ) => {
   if (res.locals.decoded?.role === 'SUPER_ADMIN') {
-    next();
+    return next();
   }
   throw new ErrorResponse(401, 'Unauthorized');
 };
@@ -39,14 +39,14 @@ export const adminWarehouseGuard = (
   next: NextFunction,
 ) => {
   if (res.locals.decoded?.role === 'ADMIN') {
-    next();
+    return next();
   }
   throw new ErrorResponse(401, 'Unauthorized');
 };
 
 export const userGuard = (req: Request, res: Response, next: NextFunction) => {
   if (res.locals.decoded?.role === 'USER') {
-    next();
+    return next();
   }
   throw new ErrorResponse(401, 'Unauthorized');
 };
