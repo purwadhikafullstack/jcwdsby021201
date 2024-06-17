@@ -1,46 +1,45 @@
-type Route = {
+import CategoryIcon from '@mui/icons-material/Category';
+
+export type Route = {
   path: string;
   label?: string;
+  Icon?: any;
 };
 
-export const mainPages = {
-  home: { path: '/', label: 'Home' } as Route,
+export const mainPages: Record<string, Route> = {
+  home: { path: '/', label: 'Home' },
 };
 
-export const authPages = {
-  register: { path: '/auth/register', label: 'Register' } as Route,
-  login: { path: '/auth/login', label: 'Login' } as Route,
-  forgotPassword: {
-    path: '/auth/forgot-password',
-    label: 'Forgot Password',
-  } as Route,
-  checkMail: {
-    path: '/auth/check-mail',
-    label: 'Check Mail',
-  } as Route,
-  resetPassword: {
-    path: '/auth/reset-password',
-    label: 'Reset Password',
-  } as Route,
-  verify: {
-    path: '/auth/verify',
-    label: 'Verify',
-  } as Route,
+export const authPages: Record<string, Route> = {
+  register: { path: '/auth/register', label: 'Register' },
+  login: { path: '/auth/login', label: 'Login' },
+  forgotPassword: { path: '/auth/forgot-password', label: 'Forgot Password' },
+  checkMail: { path: '/auth/check-mail', label: 'Check Mail' },
+  resetPassword: { path: '/auth/reset-password', label: 'Reset Password' },
+  verify: { path: '/auth/verify', label: 'Verify' },
 };
 
-export const dashboardPages = {
-  profile: { path: '/dashboard/user/profile', label: 'Profile' } as Route,
+export const dashboardUserPages: Record<string, Route> = {
+  profile: { path: '/dashboard/user/profile', label: 'Profile' },
 };
 
-export const apiRoutes = {
-  register: { path: '/auth/register' } as Route,
-  verify: { path: '/auth/verify' } as Route,
-  login: { path: '/auth/login' } as Route,
-  oauth: { path: '/auth/oauth' } as Route,
-  forgotPassword: { path: '/auth/forgot-password' } as Route,
-  resetPassword: { path: '/auth/reset-password' } as Route,
+export const dashboardAdminPages: Record<string, Route> = {
+  category: {
+    path: '/dashboard/admin/category',
+    label: 'Category',
+    Icon: CategoryIcon,
+  },
 };
 
-export const internalApiRoutes = {
-  login: { path: '/api/login' } as Route,
+export const apiRoutes: Record<string, Route> = {
+  register: { path: '/auth/register' },
+  verify: { path: '/auth/verify' },
+  login: { path: '/auth/login' },
+  oauth: { path: '/auth/oauth' },
+  forgotPassword: { path: '/auth/forgot-password' },
+  resetPassword: { path: '/auth/reset-password' },
+};
+
+export const internalApiRoutes: Record<string, Route> = {
+  login: { path: '/api/login' },
 };

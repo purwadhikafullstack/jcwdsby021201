@@ -7,7 +7,6 @@ import MuiDrawer from '@mui/material/Drawer';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -20,7 +19,13 @@ import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import SimpleBar from 'simplebar-react';
 import Logo from '@/components/core/Logo';
-import { Container } from '@mui/material';
+import Container from '@mui/material/Container';
+import Tooltip from '@mui/material/Tooltip';
+import Avatar from '@mui/material/Avatar';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
+import { dashboardAdminPages } from '@/utils/routes';
 
 const drawerWidth = 240;
 
@@ -93,12 +98,21 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
+const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const menus = Object.keys(dashboardAdminPages).map((key) => {
+  const { path, label, Icon } = dashboardAdminPages[key];
+  return { path, label, Icon };
+});
+
 type Props = {
   children: React.ReactNode;
 };
 
 export default function DashboardLayout({ children }: Props) {
   const [open, setOpen] = React.useState(false);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null,
+  );
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -106,6 +120,14 @@ export default function DashboardLayout({ children }: Props) {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElUser(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorElUser(null);
   };
 
   return (
@@ -132,9 +154,38 @@ export default function DashboardLayout({ children }: Props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
-          </Typography>
+          <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end' }}>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar
+                  alt="example@mail.com"
+                  src="/static/images/avatar/2.jpg"
+                />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              sx={{ mt: '45px' }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right',
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
+          </Box>
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open}>
@@ -153,25 +204,8 @@ export default function DashboardLayout({ children }: Props) {
             </IconButton>
           </DrawerHeader>
           <List>
-            {[
-              'Inbox',
-              'Starred',
-              'Send email',
-              'Drafts',
-              'Inbox',
-              'Starred',
-              'Send email',
-              'Drafts',
-              'Inbox',
-              'Starred',
-              'Send email',
-              'Drafts',
-              'Inbox',
-              'Starred',
-              'Send email',
-              'Drafts',
-            ].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: 'block' }}>
+            {menus.map((menu, index) => (
+              <ListItem key={index} disablePadding sx={{ display: 'block' }}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
@@ -186,41 +220,19 @@ export default function DashboardLayout({ children }: Props) {
                       justifyContent: 'center',
                     }}
                   >
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                    <menu.Icon />
                   </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 'auto',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                  <ListItemText
+                    primary={menu.label}
+                    sx={{ opacity: open ? 1 : 0 }}
+                  />
                 </ListItemButton>
               </ListItem>
             ))}
           </List>
         </SimpleBar>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1 }}>
+      <Box component="main" sx={{ flexGrow: 1, background: '#fafafa' }}>
         <DrawerHeader />
         <Container
           maxWidth="xl"
@@ -229,7 +241,6 @@ export default function DashboardLayout({ children }: Props) {
               xs: 'calc(100vh - 56px)',
               sm: 'calc(100vh - 64px)',
             },
-            background: '#fafafa',
           }}
         >
           {children}
