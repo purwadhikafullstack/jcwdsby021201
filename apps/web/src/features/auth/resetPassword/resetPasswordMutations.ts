@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation';
 import { useMutation } from '@tanstack/react-query';
 import { resetPassword } from '@/features/auth/resetPassword/resetPasswordFetchers';
 import {
@@ -7,16 +6,15 @@ import {
   successNotification,
 } from '@/utils/notifications';
 import { authPages } from '@/utils/routes';
+import { signOut } from 'next-auth/react';
 
 export const useResetPassword = () => {
-  const router = useRouter();
-
   return useMutation({
     mutationFn: resetPassword,
     onSuccess: (data) => {
       if (data.success) {
         successNotification(data.message);
-        router.replace(authPages.login.path);
+        signOut({ callbackUrl: authPages.login.path });
       } else {
         errorNotification(data.message);
       }
