@@ -46,7 +46,7 @@ export default function FeatureSection() {
       <Grid container spacing={4}>
         <Grid item xs={12} md={6}>
           <Box position="relative" bgcolor="black">
-            <Image src={features[0].image} alt={features[0].name} width={500} height={500} />
+            <Image src={features[0].image} alt={features[0].name} layout="responsive" width={500} height={500} />
             <Box position="absolute" bottom={0} left={0} p={2} color="white">
               <Typography variant="h4" gutterBottom>
                 {features[0].name}
@@ -60,27 +60,27 @@ export default function FeatureSection() {
             </Box>
           </Box>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Grid container spacing={4}>
-            <Grid item xs={12}>
-              <Box display="flex" alignItems="center" bgcolor="black">
-                <Box p={2} color="white">
-                  <Typography variant="h4" gutterBottom>
-                    {features[1].name}
-                  </Typography>
-                  <Typography variant="body1" paragraph>
-                    {features[1].description}
-                  </Typography>
-                  <Typography variant="subtitle2" sx={{ textDecoration: 'underline' }}>
-                    Shop Now
-                  </Typography>
-                </Box>
-                <Image src={features[1].image} alt={features[1].name} width={450} height={200} />
-              </Box>
-            </Grid>
+        <Grid item xs={12} md={6} sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Box display="flex" alignItems="center" bgcolor="black" height="100%">
+            <Box p={2} color="white" sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+              <Typography variant="h4" gutterBottom>
+                {features[1].name}
+              </Typography>
+              <Typography variant="body1" paragraph>
+                {features[1].description}
+              </Typography>
+              <Typography variant="subtitle2" sx={{ textDecoration: 'underline' }}>
+                Shop Now
+              </Typography>
+            </Box>
+            <Box sx={{ flex: 1 }}>
+              <Image src={features[1].image} alt={features[1].name} layout="responsive" width={450} height={200} />
+            </Box>
+          </Box>
+          <Grid container spacing={4} mt={0} sx={{ flex: 1 }}>
             <Grid item xs={12} sm={6}>
-              <Box position="relative" bgcolor="black">
-                <Image src={features[2].image} alt={features[2].name} width={250} height={250} />
+              <Box position="relative" bgcolor="black" height="100%">
+                <Image src={features[2].image} alt={features[2].name} layout="responsive" width={250} height={250} />
                 <Box position="absolute" bottom={0} left={0} p={2} color="white">
                   <Typography variant="h6" gutterBottom>
                     {features[2].name}
@@ -95,8 +95,8 @@ export default function FeatureSection() {
               </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <Box position="relative" bgcolor="black">
-                <Image src={features[3].image} alt={features[3].name} width={250} height={250} />
+              <Box position="relative" bgcolor="black" height="100%">
+                <Image src={features[3].image} alt={features[3].name} layout="responsive" width={250} height={250} />
                 <Box position="absolute" bottom={0} left={0} p={2} color="white">
                   <Typography variant="h6" gutterBottom>
                     {features[3].name}

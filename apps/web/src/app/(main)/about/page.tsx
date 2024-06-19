@@ -11,7 +11,12 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 const AboutPage = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4, mb: 8 }}>
-      <Grid container spacing={4} alignItems="center" sx={{ mb: 14 }}>
+      <Grid
+        container
+        spacing={4}
+        alignItems="center"
+        sx={{ mb: 14, textAlign: { xs: 'center', md: 'left' } }}
+      >
         <Grid item xs={12} md={6}>
           <Typography variant="h4" gutterBottom>
             Our Story
@@ -23,8 +28,10 @@ const AboutPage = () => {
             Exclusive has more than 1 Million products to offer, growing at a very fast. Exclusive offers a diverse assortment in categories ranging from consumer.
           </Typography>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Image src="/images/about.webp" alt="Our Story" width={600} height={400} />
+        <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: { xs: 'center', md: 'flex-end' } }}>
+          <Box sx={{ width: { xs: '100%', md: 'auto' } }}>
+            <Image src="/images/about.webp" alt="Our Story" width={600} height={400} layout="responsive" />
+          </Box>
         </Grid>
       </Grid>
 
@@ -32,44 +39,47 @@ const AboutPage = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Our Team
       </Typography>
-      <Grid container spacing={4} justifyContent="center" sx={{ mb: 8 }}>
-        <Grid item xs={12} sm={4}>
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Image src="/images/agent1.png" alt="Team Member" width={180} height={200} />
-            <Typography variant="h6" sx={{ mt: 2 }}>Tom Cruise</Typography>
-            <Typography variant="body2" color="text.secondary">Founder & Chairman</Typography>
-            <Box sx={{ mt: 1 }}>
-              <TwitterIcon sx={{ mx: 1 }} />
-              <InstagramIcon sx={{ mx: 1 }} />
-              <LinkedInIcon sx={{ mx: 1 }} />
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Image src="/images/agent2.png" alt="Team Member" width={160} height={200} />
-            <Typography variant="h6" sx={{ mt: 2 }}>Emma Watson</Typography>
-            <Typography variant="body2" color="text.secondary">Managing Director</Typography>
-            <Box sx={{ mt: 1 }}>
-              <TwitterIcon sx={{ mx: 1 }} />
-              <InstagramIcon sx={{ mx: 1 }} />
-              <LinkedInIcon sx={{ mx: 1 }} />
-            </Box>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} sm={4}>
-          <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
-            <Image src="/images/agent3.png" alt="Team Member" width={150} height={200} />
-            <Typography variant="h6" sx={{ mt: 2 }}>Will Smith</Typography>
-            <Typography variant="body2" color="text.secondary">Product Designer</Typography>
-            <Box sx={{ mt: 1 }}>
-              <TwitterIcon sx={{ mx: 1 }} />
-              <InstagramIcon sx={{ mx: 1 }} />
-              <LinkedInIcon sx={{ mx: 1 }} />
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+      <Box sx={{ overflowX: { xs: 'auto', sm: 'visible' }, display: { xs: 'flex', sm: 'block' }, flexDirection: { xs: 'row', sm: 'column' }, mb: 8 }}>
+  <Grid container spacing={4} justifyContent={{ xs: 'flex-start', sm: 'center' }} sx={{ flexWrap: { xs: 'nowrap', sm: 'wrap' } }}>
+    <Grid item xs={12} sm={4} sx={{ minWidth: { xs: '80%', sm: 'auto' } }}>
+      <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
+        <Image src="/images/agent1.png" alt="Team Member" width={180} height={200} />
+        <Typography variant="h6" sx={{ mt: 2 }}>Tom Cruise</Typography>
+        <Typography variant="body2" color="text.secondary">Founder & Chairman</Typography>
+        <Box sx={{ mt: 1 }}>
+          <TwitterIcon sx={{ mx: 1 }} />
+          <InstagramIcon sx={{ mx: 1 }} />
+          <LinkedInIcon sx={{ mx: 1 }} />
+        </Box>
+      </Paper>
+    </Grid>
+    <Grid item xs={12} sm={4} sx={{ minWidth: { xs: '80%', sm: 'auto' } }}>
+      <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
+        <Image src="/images/agent2.png" alt="Team Member" width={160} height={200} />
+        <Typography variant="h6" sx={{ mt: 2 }}>Emma Watson</Typography>
+        <Typography variant="body2" color="text.secondary">Managing Director</Typography>
+        <Box sx={{ mt: 1 }}>
+          <TwitterIcon sx={{ mx: 1 }} />
+          <InstagramIcon sx={{ mx: 1 }} />
+          <LinkedInIcon sx={{ mx: 1 }} />
+        </Box>
+      </Paper>
+    </Grid>
+    <Grid item xs={12} sm={4} sx={{ minWidth: { xs: '80%', sm: 'auto' } }}>
+      <Paper elevation={3} sx={{ p: 2, textAlign: 'center' }}>
+        <Image src="/images/agent3.png" alt="Team Member" width={150} height={200} />
+        <Typography variant="h6" sx={{ mt: 2 }}>Will Smith</Typography>
+        <Typography variant="body2" color="text.secondary">Product Designer</Typography>
+        <Box sx={{ mt: 1 }}>
+          <TwitterIcon sx={{ mx: 1 }} />
+          <InstagramIcon sx={{ mx: 1 }} />
+          <LinkedInIcon sx={{ mx: 1 }} />
+        </Box>
+      </Paper>
+    </Grid>
+  </Grid>
+</Box>
+
 
       {/* Service Section */}
       <Grid container spacing={4} justifyContent="center" sx={{ mt: 8 }}>

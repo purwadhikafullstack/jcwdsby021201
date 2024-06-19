@@ -25,6 +25,9 @@ const FooterContainer = styled(Box)(({ theme }) => ({
 
 const FooterColumn = styled(Grid)(({ theme }) => ({
   marginBottom: theme.spacing(4),
+  [theme.breakpoints.up('sm')]: {
+    paddingRight: theme.spacing(2),
+  },
 }));
 
 const FooterLink = styled(Link)(({ theme }) => ({
@@ -62,9 +65,6 @@ const InputEmail = styled(TextField)(({ theme }) => ({
     },
     '& input': {
       padding: theme.spacing(1),
-      [theme.breakpoints.up('sm')]: {
-        width: '150px',
-      },
     },
   },
   '& input': {
@@ -76,8 +76,8 @@ export default function Footer() {
   return (
     <FooterContainer>
       <Container maxWidth="lg">
-        <Grid container spacing={4} justifyContent="space-between">
-          <FooterColumn item xs={12} sm={2}>
+        <Grid container spacing={4}>
+          <FooterColumn item xs={12} sm={6} md={3}>
             <Logo />
             <Typography variant="body1" sx={{ mt: 2, color: 'black' }}>
               Subscribe
@@ -107,7 +107,7 @@ export default function Footer() {
               />
             </SubscribeBox>
           </FooterColumn>
-          <FooterColumn item xs={12} sm={2}>
+          <FooterColumn item xs={12} sm={6} md={3}>
             <Typography variant="h6" sx={{ mb: 2, color: 'black' }}>
               Support
             </Typography>
@@ -121,7 +121,7 @@ export default function Footer() {
               +88015-88888-9999
             </Typography>
           </FooterColumn>
-          <FooterColumn item xs={12} sm={2}>
+          <FooterColumn item xs={12} sm={6} md={2}>
             <Typography variant="h6" sx={{ mb: 2, color: 'black' }}>
               Account
             </Typography>
@@ -141,7 +141,7 @@ export default function Footer() {
               <FooterLink href="#">Shop</FooterLink>
             </Typography>
           </FooterColumn>
-          <FooterColumn item xs={12} sm={2}>
+          <FooterColumn item xs={12} sm={6} md={2}>
             <Typography variant="h6" sx={{ mb: 2, color: 'black' }}>
               Quick Link
             </Typography>
@@ -158,33 +158,84 @@ export default function Footer() {
               <FooterLink href="#">Contact</FooterLink>
             </Typography>
           </FooterColumn>
-          <FooterColumn item xs={12} sm={3}>
+          <FooterColumn
+            item
+            xs={12}
+            sm={12}
+            md={2}
+            sx={{
+              textAlign: { xs: 'center', md: 'left' },
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: { xs: 'center', md: 'flex-start' },
+            }}
+          >
             <Typography variant="h6" sx={{ mb: 2, color: 'black' }}>
               Download App
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Image src="/images/QrCode.png" alt="QR Code" width={90} height={90} />
-              <Box sx={{ ml: 2 }}>
-                <Link href="#">
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: { xs: 'center', sm: 'center', md: 'flex-start' },
+                mb: 2,
+                width: '100%',
+              }}
+            >
+              <Box
+                sx={{
+                  display: { xs: 'none', sm: 'block' },
+                  mr: { sm: 2 },
+                }}
+              >
+                <Image
+                  src="/images/QrCode.png"
+                  alt="QR Code"
+                  width={90}
+                  height={90}
+                />
+              </Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'row', sm: 'column' },
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Link
+                  href="#"
+                  sx={{ mx: { xs: 1, sm: 0 }, mb: { xs: -1, sm: 1 } }}
+                >
                   <Image
                     src="/images/GooglePlay.png"
                     alt="Google Play"
                     width={110}
                     height={35}
-                    style={{ marginBottom: '8px' }}
+                    style={{ marginBottom: '8px', display: 'block' }}
                   />
                 </Link>
-                <Link href="#">
+                <Link
+                  href="#"
+                  sx={{ mx: { xs: 1, sm: 0 }, mb: { xs: 0, sm: 1 } }}
+                >
                   <Image
                     src="/images/AppStore.png"
                     alt="App Store"
                     width={110}
                     height={35}
+                    style={{ display: 'block' }}
                   />
                 </Link>
               </Box>
             </Box>
-            <Box>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: { xs: 'center', sm: 'center', md: 'flex-start' },
+                ml: { sm: 2, md: 0 }, // Menambahkan margin kiri untuk selaraskan dengan QR code dan gambar store
+              }}
+            >
               <SocialIcon href="#">
                 <FacebookIcon />
               </SocialIcon>
