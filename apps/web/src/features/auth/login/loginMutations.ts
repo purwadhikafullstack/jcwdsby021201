@@ -6,7 +6,6 @@ import {
   errorNotification,
   successNotification,
 } from '@/utils/notifications';
-import { mainPages } from '@/utils/routes';
 
 export const useLoginTransport = () => {
   const router = useRouter();
@@ -17,12 +16,6 @@ export const useLoginTransport = () => {
       if (data.success) {
         successNotification(data.message);
         router.refresh();
-
-        if (window.history?.length && window.history.length > 2) {
-          router.back();
-        } else {
-          router.replace(mainPages.home.path);
-        }
       } else {
         errorNotification(data.message);
       }

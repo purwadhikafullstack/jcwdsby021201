@@ -17,7 +17,7 @@ export const middleware = async (req: NextRequest) => {
     if (currentPath === dashboardUserPages.profile.path) {
       return NextResponse.next();
     }
-    return NextResponse.redirect(new URL(authPages.login.path, req.url));
+    return NextResponse.rewrite(new URL(authPages.login.path, req.url));
   } else if (session && singInSignUpPath.includes(currentPath)) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   } else if (

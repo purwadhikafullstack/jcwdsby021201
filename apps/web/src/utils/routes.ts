@@ -25,7 +25,7 @@ export const dashboardUserPages: Record<string, Route> = {
 
 export const dashboardAdminPages: Record<string, Route> = {
   category: {
-    path: '/dashboard/admin/category',
+    path: '/dashboard/admin/categories',
     label: 'Category',
     Icon: CategoryIcon,
   },
