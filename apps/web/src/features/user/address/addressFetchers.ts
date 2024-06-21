@@ -3,6 +3,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import { AddressBody, CreateAddress, UpdateAddress } from './type';
 import { Token } from '@mui/icons-material';
 import { AddressRequest } from './type';
+
 export const getAddressById = async (token: string) => {
   const res = await axiosInstance.get<ResponseWithData<AddressBody[]>>(
     '/addresses',

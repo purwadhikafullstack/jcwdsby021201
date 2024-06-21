@@ -17,7 +17,6 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 
 // MUI Icons
@@ -28,12 +27,6 @@ import { SxProps } from '@mui/material/styles';
 import { dashboardAdminPages } from '@/utils/routes';
 import SimpleBar from 'simplebar-react';
 import Logo from '@/components/core/Logo';
-
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-const menus = Object.keys(dashboardAdminPages).map((key) => {
-  const { path, label, Icon } = dashboardAdminPages[key];
-  return { path, label, Icon };
-});
 
 const stickyBox: SxProps = {
   pl: 2,
