@@ -5,6 +5,9 @@ import { join } from 'path';
 import { ErrorMiddleware } from './middlewares/error.middleware';
 import { SampleRouter } from './routers/sample.router';
 import { AuthRouter } from '@/routers/auth.router';
+import { UserRouter } from './routers/user.router';
+import { AddressRouter } from './routers/address.router';
+import { LocationRouter } from './routers/location.router';
 
 export default class App {
   private app: Express;
@@ -29,6 +32,9 @@ export default class App {
   private routes(): void {
     const sampleRouter = new SampleRouter();
     const authRouter = new AuthRouter();
+    const userRouter = new UserRouter();
+    const addressRouter = new AddressRouter();
+    const locationRouter = new LocationRouter();
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student !`);
@@ -37,6 +43,9 @@ export default class App {
     this.app.use('/', express.static(join(__dirname, '../public')));
     this.app.use('/samples', sampleRouter.getRouter());
     this.app.use('/auth', authRouter.getRouter());
+    this.app.use('/users', userRouter.getRouter());
+    this.app.use('/addresses', addressRouter.getRouter());
+    this.app.use('/locations', locationRouter.getRouter());
   }
 
   public start(): void {
