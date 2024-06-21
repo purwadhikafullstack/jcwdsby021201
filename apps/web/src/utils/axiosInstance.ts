@@ -23,4 +23,6 @@ export const createAxiosInstance = async () => {
     },
     (error) => Promise.reject(error),
   );
+
+  return instance;
 };

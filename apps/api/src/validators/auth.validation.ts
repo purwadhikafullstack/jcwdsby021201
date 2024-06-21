@@ -11,7 +11,9 @@ export class AuthValidation {
     password: z
       .string({ message: 'Password is required!' })
       .min(8, { message: 'Password must be at least 8 characters!' }),
-    token: z.string({ message: 'Token is required!' }),
+    token: z.string({ message: 'Token is required!' }).min(1, {
+      message: 'Token must be at least 1 character!',
+    }),
   });
 
   static LOGIN = z.object({
@@ -30,6 +32,8 @@ export class AuthValidation {
     image: z
       .string({ message: 'Image is required!' })
       .url({ message: 'Image is invalid!' }),
-    provider: z.string({ message: 'Provider is required!' }),
+    provider: z.string({ message: 'Provider is required!' }).min(1, {
+      message: 'Provider must be at least 1 character!',
+    }),
   });
 }

@@ -36,3 +36,11 @@ export interface UserSession extends User {
   image?: string | null;
   token?: string;
 }
+
+export type QueryPagination = {
+  page?: number;
+  limit?: number;
+  filter?: string;
+  sortBy?: string;
+  orderBy?: string;
+};

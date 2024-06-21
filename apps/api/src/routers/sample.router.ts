@@ -1,4 +1,5 @@
 import { SampleController } from '@/controllers/sample.controller';
+import { adminGuard, verifyToken } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class SampleRouter {
@@ -12,7 +13,12 @@ export class SampleRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/', this.sampleController.getSample);
+    this.router.get(
+      '/',
+      verifyToken,
+      adminGuard,
+      this.sampleController.getSample,
+    );
     this.router.get('/:id', this.sampleController.getSampleById);
     this.router.post('/', this.sampleController.createSample);
   }

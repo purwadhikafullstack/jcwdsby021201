@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { categories } from './data/categories';
 import axios from 'axios';
 import { users } from './data/users';
 import { SALT, RAJAONGKIR_API_KEY, RAJAONGKIR_API_URL } from '../src/config';
@@ -37,6 +38,13 @@ const seedUsers = async () => {
       role: user.role as Role,
     };
     await prisma.user.create({ data: userData });
+  }
+
+  for (const category of categories) {
+    const categoryData: Prisma.CategoryCreateInput = {
+      ...category,
+    };
+    await prisma.category.create({ data: categoryData });
   }
 };
 

@@ -1,10 +1,11 @@
 import { ResponseWithData, ResponseWithoutData } from '@/features/types';
-import axiosInstance from '@/utils/axiosInstance';
+import axiosInstance, { createAxiosInstance } from '@/utils/axiosInstance';
 import { SampleResponse } from './types';
 
 export const getSamples = async () => {
+  const instance = await createAxiosInstance();
   const res =
-    await axiosInstance.get<ResponseWithData<SampleResponse[]>>('/samples');
+    await instance.get<ResponseWithData<SampleResponse[]>>('/samples');
 
   return res.data;
 };
