@@ -45,6 +45,12 @@ const stickyBox: SxProps = {
   bgcolor: 'white',
 };
 
+const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const menus = Object.keys(dashboardAdminPages).map((key) => {
+  const { path, label, Icon } = dashboardAdminPages[key];
+  return { path, label, Icon };
+});
+
 type Props = {
   children: React.ReactNode;
 };
@@ -82,7 +88,6 @@ export default function DashboardLayout({ children }: Props) {
       </List>
     </Box>
   );
-
   return (
     <Box sx={{ display: 'flex' }}>
       <AppBar

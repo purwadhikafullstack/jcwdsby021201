@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar,
   Toolbar,
@@ -7,14 +7,21 @@ import {
   Button,
   IconButton,
   InputBase,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  Badge,
+  Box,
   Select,
   MenuItem,
-  Badge,
 } from '@mui/material';
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, useTheme } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import Logo from '@/components/core/Logo';
 import Link from 'next/link';
 
@@ -57,20 +64,69 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     padding: theme.spacing(1, 1, 1, 0),
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
-    width: '20ch',
-    [theme.breakpoints.up('sm')]: {
-      width: '20ch',
-    },
+    width: '100%',
   },
 }));
 
 export default function Navbar() {
+  const theme = useTheme();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
+
+  const handleSearchToggle = () => {
+    setSearchOpen(!searchOpen);
+  };
+
+  const mobileMenu = (
+    <Box sx={{ width: 250 }}>
+      <List>
+        <ListItem button component={Link} href="/">
+          <ListItemText primary="Home" />
+        </ListItem>
+        <ListItem button component={Link} href="/contact">
+          <ListItemText primary="Contact" />
+        </ListItem>
+        <ListItem button component={Link} href="/about">
+          <ListItemText primary="About" />
+        </ListItem>
+        <ListItem button>
+          <ListItemText primary="Sign Up" />
+        </ListItem>
+        <ListItem button>
+          <FavoriteIcon />
+        </ListItem>
+        <ListItem button>
+          <Badge badgeContent={4} color="secondary">
+            <ShoppingCartIcon />
+          </Badge>
+        </ListItem>
+      </List>
+    </Box>
+  );
+
   return (
     <React.Fragment>
-      <AppBar position="static" sx={{ backgroundColor: 'black' }}>
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: 'black',
+          display: { xs: 'none', md: 'flex' },
+        }}
+      >
         <Toolbar sx={{ justifyContent: 'center' }}>
           <Typography variant="body1" color="inherit">
-            Summer Sale For All Xiaomi Devices And Free Express Delivery - OFF 50%!
+            Summer Sale For All Xiaomi Devices And Free Express Delivery - OFF
+            50%!
           </Typography>
           <LanguageSelect
             value="english"
@@ -82,20 +138,32 @@ export default function Navbar() {
           </LanguageSelect>
         </Toolbar>
       </AppBar>
-      <AppBar position="static" color="inherit" sx={{ marginTop: '2px' }}>
+      <AppBar
+        position="static"
+        color="inherit"
+        sx={{ marginTop: '2px', display: { xs: 'none', md: 'flex' } }}
+      >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Logo />
           <div>
             <Link href="/" passHref>
-              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Home</Button>
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+                Home
+              </Button>
             </Link>
             <Link href="/contact" passHref>
-              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Contact</Button>
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+                Contact
+              </Button>
             </Link>
             <Link href="/about" passHref>
-              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>About</Button>
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+                About
+              </Button>
             </Link>
-            <Button sx={{ textTransform: 'capitalize', color: 'black' }}>Sign Up</Button>
+            <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+              Sign Up
+            </Button>
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <SearchContainer>
@@ -118,6 +186,44 @@ export default function Navbar() {
           </div>
         </Toolbar>
       </AppBar>
+
+      <AppBar position="static" color="inherit" sx={{ display: { xs: 'flex', md: 'none' } }}>
+        <Toolbar sx={{ justifyContent: 'space-between' }}>
+          <Logo />
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton color="inherit" onClick={handleSearchToggle}>
+              <SearchIcon />
+            </IconButton>
+            <IconButton color="inherit" onClick={toggleDrawer(true)}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <IconButton onClick={toggleDrawer(false)} sx={{ alignSelf: 'flex-end', p: 2 }}>
+          <CloseIcon />
+        </IconButton>
+        {mobileMenu}
+      </Drawer>
+
+      <Drawer anchor="top" open={searchOpen} onClose={handleSearchToggle}>
+        <Box
+          sx={{
+            p: 2,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <StyledInputBase
+            placeholder="What are you looking for?"
+            inputProps={{ 'aria-label': 'search' }}
+          />
+        </Box>
+      </Drawer>
     </React.Fragment>
   );
 }

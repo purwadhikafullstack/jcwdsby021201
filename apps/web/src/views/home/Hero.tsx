@@ -47,7 +47,7 @@ export default function HeroSection() {
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Grid container spacing={4}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={3} sx={{ display: { xs: 'none', md: 'block' } }}>
           <Box display="flex" flexDirection="column" pl={6}>
             {categories.map((category) => (
               <CategoryButton
@@ -60,16 +60,20 @@ export default function HeroSection() {
             ))}
           </Box>
         </Grid>
-        <Divider orientation="vertical" flexItem />
+        <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />
         <Grid item xs={12} md={8}>
           <Carousel>
             {carouselImages.map((image, index) => (
-              <Box key={index}>
+              <Box key={index} sx={{ textAlign: 'center' }}>
                 <Image
                   src={image}
                   alt={`Carousel Image ${index + 1}`}
                   width={800}
                   height={400}
+                  style={{
+                    maxWidth: '100%',
+                    height: 'auto',
+                  }}
                 />
               </Box>
             ))}

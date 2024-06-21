@@ -52,15 +52,41 @@ const CategoryButton = styled(Button, {
 
 export default function CategorySection() {
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [page, setPage] = useState(0);
+
+  const itemsPerPage = {
+    xs: 2,
+    sm: 3,
+    md: 3,
+  };
 
   const handleCategoryClick = (category: string) => {
     setSelectedCategory(category);
   };
 
+  const handleNextPage = () => {
+    const maxPages = Math.ceil(categories.length / itemsPerPage.md);
+    if (page < maxPages - 1) {
+      setPage(page + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 0) {
+      setPage(page - 1);
+    }
+  };
+
+  const getVisibleCategories = () => {
+    const startIndex = page * itemsPerPage.md;
+    const endIndex = startIndex + itemsPerPage.md;
+    return categories.slice(startIndex, endIndex);
+  };
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
       <Box display="flex" alignItems="center" mb={2}>
-      <Box bgcolor="error.main" width={10} height={30} mr={1} borderRadius="3px" />
+        <Box bgcolor="error.main" width={10} height={30} mr={1} borderRadius="3px" />
         <Typography variant="h6" color="error">
           Categories
         </Typography>
@@ -70,16 +96,16 @@ export default function CategorySection() {
           Browse By Category
         </Typography>
         <Box display="flex">
-          <IconButton>
+          <IconButton onClick={handlePrevPage} disabled={page === 0}>
             <ArrowBackIosIcon />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleNextPage} disabled={page >= Math.ceil(categories.length / itemsPerPage.md) - 1}>
             <ArrowForwardIosIcon />
           </IconButton>
         </Box>
       </Box>
       <Grid container spacing={2} justifyContent="center">
-        {categories.map((category) => (
+        {getVisibleCategories().map((category) => (
           <Grid item key={category.name}>
             <CategoryButton
               isSelected={selectedCategory === category.name}

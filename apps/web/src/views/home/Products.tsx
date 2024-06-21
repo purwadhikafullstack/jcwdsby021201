@@ -58,14 +58,51 @@ const products = [
   },
 ];
 
+const itemsPerPage = {
+  xs: 1,
+  sm: 2,
+  md: 4,
+};
+
 export default function ProductSection() {
   const [liked, setLiked] = useState(Array(products.length).fill(false));
+  const [page, setPage] = useState(0);
+  const [itemsToShow, setItemsToShow] = useState(itemsPerPage.md);
 
   const handleLike = (index: any) => {
     const updatedLiked = [...liked];
     updatedLiked[index] = !updatedLiked[index];
     setLiked(updatedLiked);
   };
+
+  const handlePrevPage = () => {
+    setPage((prevPage) => Math.max(prevPage - 1, 0));
+  };
+
+  const handleNextPage = () => {
+    setPage((prevPage) => Math.min(prevPage + 1, Math.ceil(products.length / itemsToShow) - 1));
+  };
+
+  const displayedProducts = products.slice(page * itemsToShow, page * itemsToShow + itemsToShow);
+
+  React.useEffect(() => {
+    const updateItemsToShow = () => {
+      if (window.innerWidth < 600) {
+        setItemsToShow(itemsPerPage.xs);
+      } else if (window.innerWidth < 960) {
+        setItemsToShow(itemsPerPage.sm);
+      } else {
+        setItemsToShow(itemsPerPage.md);
+      }
+    };
+
+    window.addEventListener('resize', updateItemsToShow);
+    updateItemsToShow();
+
+    return () => {
+      window.removeEventListener('resize', updateItemsToShow);
+    };
+  }, []);
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -80,16 +117,16 @@ export default function ProductSection() {
           Explore Our Products
         </Typography>
         <Box display="flex">
-          <IconButton>
+          <IconButton onClick={handlePrevPage} disabled={page === 0}>
             <ArrowBackIosIcon />
           </IconButton>
-          <IconButton>
+          <IconButton onClick={handleNextPage} disabled={page === Math.ceil(products.length / itemsToShow) - 1}>
             <ArrowForwardIosIcon />
           </IconButton>
         </Box>
       </Box>
       <Grid container spacing={2}>
-        {products.map((product, index) => (
+        {displayedProducts.map((product, index) => (
           <Grid item xs={12} sm={6} md={3} key={index}>
             <Box
               sx={{

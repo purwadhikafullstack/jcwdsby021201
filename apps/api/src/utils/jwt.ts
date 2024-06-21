@@ -14,6 +14,7 @@ export function generateJWTTokenWithExpiry(
   return sign(payload, JWT_SECRET, { expiresIn });
 }
 
+
 export function verifyJWTToken(token: string): any {
   return verify(token, JWT_SECRET);
 }
