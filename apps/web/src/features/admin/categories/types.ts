@@ -5,3 +5,11 @@ export type CategoryResponse = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CategoryBody = {
+  name: string;
+};
+
+export interface CategoryUpdate extends CategoryBody {
+  id: string;
+}
