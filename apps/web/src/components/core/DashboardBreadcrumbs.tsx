@@ -10,8 +10,9 @@ import { Route } from '@/utils/routes';
 type Props = {
   action?: 'Create' | 'Update';
   route: Route;
+  size?: 'xl' | 'lg' | 'md' | 'sm' | 'xs';
 };
-export default function DashboardBreadcrumbs({ action, route }: Props) {
+export default function DashboardBreadcrumbs({ action, route, size }: Props) {
   const breadcrumbs = [
     <Typography key="1" color="inherit">
       Dashboard
@@ -45,6 +46,8 @@ export default function DashboardBreadcrumbs({ action, route }: Props) {
         borderRadius: 2,
         border: '1px solid',
         borderColor: 'divider',
+        maxWidth: size ? size : 'lg',
+        mx: 'auto',
       }}
     >
       <Breadcrumbs

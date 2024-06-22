@@ -34,4 +34,19 @@ export class CategoryRepository {
       },
     });
   }
+
+  static async findCategoryById(id: number) {
+    return await prisma.category.findUnique({ where: { id } });
+  }
+
+  static async updateCategoryById(
+    id: number,
+    data: Prisma.CategoryUpdateInput,
+  ) {
+    return await prisma.category.update({ where: { id }, data });
+  }
+
+  static async deleteCategoryById(id: number) {
+    return await prisma.category.delete({ where: { id } });
+  }
 }

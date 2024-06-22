@@ -30,6 +30,27 @@ export class CategoryRouter {
       adminGuard,
       this.categoryController.getCategories,
     );
+
+    this.router.patch(
+      '/:id',
+      verifyToken,
+      superAdminGuard,
+      this.categoryController.updateCategory,
+    );
+
+    this.router.get(
+      '/:id',
+      verifyToken,
+      adminGuard,
+      this.categoryController.getCategory,
+    );
+
+    this.router.delete(
+      '/:id',
+      verifyToken,
+      superAdminGuard,
+      this.categoryController.deleteCategory,
+    );
   }
 
   getRouter(): Router {

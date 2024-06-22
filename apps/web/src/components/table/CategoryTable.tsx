@@ -26,8 +26,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { CategoryResponse } from '@/features/admin/categories/types';
 import { useGetCategories } from '@/features/admin/categories/categoriesQueries';
 import { dashboardAdminPages } from '@/utils/routes';
+import { useDeleteCategory } from '@/features/admin/categories/categoriesMutations';
 
-export default function CategoryListTable() {
+// Custom Components
+import ConfirmationDialog, {
+  SelectedRow,
+} from '@/components/dialog/ConfirmationDialog';
+
+// NextAuth
+import { useSession } from 'next-auth/react';
+import { UserSession } from '@/features/types';
+
+export default function CategoryTable() {
+  const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
@@ -36,12 +48,24 @@ export default function CategoryListTable() {
   });
 
   const router = useRouter();
+  const session = useSession();
+  const user = session.data?.user as UserSession;
 
+  const { mutateAsync, isPending: isMutatePending } = useDeleteCategory();
   const { data, isError, isRefetching, isLoading, refetch } = useGetCategories(
     globalFilter,
     pagination,
     sorting,
   );
+
+  const handleClickOpen = (row: CategoryResponse) => {
+    setOpen(true);
+    setSelectedRow({ id: row.id, name: row.name });
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const columns = useMemo<MRT_ColumnDef<CategoryResponse>[]>(
     () => [
@@ -96,39 +120,57 @@ export default function CategoryListTable() {
     displayColumnDefOptions: {
       'mrt-row-actions': {
         header: '',
-        size: 120,
+        size: user?.role === 'SUPER_ADMIN' ? 120 : 60,
         grow: false,
       },
     },
     renderRowActions: ({ row }) => (
-      <Box sx={{ display: 'flex', gap: '.5rem' }}>
-        <Tooltip title="Edit">
+      <Box
+        sx={{
+          display: 'flex',
+          gap: '.5rem',
+          justifyContent: 'center',
+          width: '100%',
+        }}
+      >
+        <Tooltip title={user?.role === 'SUPER_ADMIN' ? 'Edit' : 'View'}>
           <IconButton
             size="small"
             onClick={() => {
               router.push(
                 dashboardAdminPages.category.path +
-                  `/update/${row.original.slug}`,
+                  `/update/${row.original.id}`,
               );
             }}
           >
             <EditIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton
-            size="small"
-            color="error"
-            onClick={() => {
-              alert('Delete ' + row.original.name);
-            }}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        {user?.role === 'SUPER_ADMIN' && (
+          <Tooltip title="Delete">
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => handleClickOpen(row.original)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
     ),
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <MaterialReactTable table={table} />
+      <ConfirmationDialog
+        open={open}
+        onClose={handleClose}
+        selectedRow={selectedRow}
+        mutateAsync={mutateAsync}
+        isMutatePending={isMutatePending}
+      />
+    </>
+  );
 }
