@@ -15,5 +15,5 @@ export const adminFormStyles: SxProps<Theme> = {
   maxWidth: 'sm',
   display: 'flex',
   flexDirection: 'column',
-  gap: 1,
+  gap: 2,
 };

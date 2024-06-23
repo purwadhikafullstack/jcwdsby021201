@@ -1,5 +1,7 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import React from 'react';
-import Link from 'next/link';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -16,10 +18,16 @@ export default function LinkButton({
   variant,
   disabled,
 }: Props) {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(href);
+  };
   return (
-    <Link href={href} passHref>
+    <>
       {variant === 'create' && (
         <Button
+          onClick={handleClick}
           disabled={disabled}
           variant="contained"
           color="info"
@@ -29,24 +37,22 @@ export default function LinkButton({
           {children}
         </Button>
       )}
-
       {variant === 'back' && (
-        <Link href={href} passHref>
-          <Button
-            disabled={disabled}
-            variant="contained"
-            sx={{
-              backgroundColor: (theme) => theme.palette.grey[500],
-              color: 'white',
-              '&:hover': {
-                backgroundColor: (theme) => theme.palette.grey[600],
-              },
-            }}
-          >
-            {children}
-          </Button>
-        </Link>
+        <Button
+          onClick={handleClick}
+          disabled={disabled}
+          variant="contained"
+          sx={{
+            backgroundColor: (theme) => theme.palette.grey[500],
+            color: 'white',
+            '&:hover': {
+              backgroundColor: (theme) => theme.palette.grey[600],
+            },
+          }}
+        >
+          {children}
+        </Button>
       )}
-    </Link>
+    </>
   );
 }

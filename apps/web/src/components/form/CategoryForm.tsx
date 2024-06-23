@@ -12,9 +12,9 @@ import Button from '@mui/material/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
 import {
-  categoryFormSchema,
+  categorySchema,
   CategoryFormData,
-} from '@/components/form/schemas/categoryFormSchema';
+} from '@/components/form/schemas/categorySchema';
 import { dashboardAdminPages } from '@/utils/routes';
 
 // Styles
@@ -65,12 +65,14 @@ export default function CategoryForm({
   isQueryPending,
 }: CategoryFormProps) {
   const { handleSubmit, control, reset } = useForm<CategoryFormData>({
-    resolver: zodResolver(categoryFormSchema),
+    resolver: zodResolver(categorySchema),
     defaultValues,
   });
 
   const session = useSession();
   const user = session.data?.user as UserSession;
+  const disabledOnPending = isMutatePending || isQueryPending;
+  const onlySuperAdmin = disabledOnPending || user?.role !== 'SUPER_ADMIN';
 
   useEffect(() => {
     if (queryData) reset(queryData.result);
@@ -109,11 +111,7 @@ export default function CategoryForm({
               label="Name"
               variant="outlined"
               placeholder="Category Name"
-              disabled={
-                isMutatePending ||
-                isQueryPending ||
-                user?.role !== 'SUPER_ADMIN'
-              }
+              disabled={onlySuperAdmin}
               {...field}
               helperText={error?.message}
               error={Boolean(error)}
@@ -127,7 +125,7 @@ export default function CategoryForm({
               type="submit"
               variant="contained"
               color="info"
-              disabled={isMutatePending || isQueryPending}
+              disabled={disabledOnPending}
             >
               Submit
             </Button>
@@ -135,7 +133,7 @@ export default function CategoryForm({
           <LinkButton
             href={dashboardAdminPages.category.path}
             variant="back"
-            disabled={isMutatePending || isQueryPending}
+            disabled={disabledOnPending}
           >
             Back
           </LinkButton>

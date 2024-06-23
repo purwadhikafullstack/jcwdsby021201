@@ -7,7 +7,7 @@ export class CategoryRepository {
   }
 
   static async createCategory(data: Prisma.CategoryCreateInput) {
-    return await prisma.category.create({ data });
+    await prisma.category.create({ data });
   }
 
   static async getCategories(
@@ -18,9 +18,7 @@ export class CategoryRepository {
     orderBy: string,
   ) {
     return await prisma.category.findMany({
-      where: {
-        OR: [{ name: { contains: filter } }, { slug: { contains: filter } }],
-      },
+      where: { OR: [{ name: { contains: filter } }] },
       skip: (page - 1) * limit,
       take: limit,
       orderBy: { [sortBy]: orderBy },
@@ -29,9 +27,7 @@ export class CategoryRepository {
 
   static async countCategories(filter: string) {
     return await prisma.category.count({
-      where: {
-        OR: [{ name: { contains: filter } }, { slug: { contains: filter } }],
-      },
+      where: { OR: [{ name: { contains: filter } }] },
     });
   }
 
@@ -43,10 +39,10 @@ export class CategoryRepository {
     id: number,
     data: Prisma.CategoryUpdateInput,
   ) {
-    return await prisma.category.update({ where: { id }, data });
+    await prisma.category.update({ where: { id }, data });
   }
 
   static async deleteCategoryById(id: number) {
-    return await prisma.category.delete({ where: { id } });
+    await prisma.category.delete({ where: { id } });
   }
 }
