@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { CategoryBody, CategoryQuery } from '@/types/category.type';
+import { CategoryBody } from '@/types/category.type';
 import { CategoryService } from '@/services/category.service';
+import { CategoryQuery } from '@/types/category.type';
 
 export class CategoryController {
   async createCategory(req: Request, res: Response, next: NextFunction) {

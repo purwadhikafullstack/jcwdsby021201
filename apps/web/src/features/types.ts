@@ -40,7 +40,7 @@ export interface UserSession extends User {
 export type QueryPagination = {
   page?: number;
   limit?: number;
-  filter?: string;
+  filter?: string | number;
   sortBy?: string;
   orderBy?: string;
 };

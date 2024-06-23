@@ -1,10 +1,10 @@
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  createCategory,
-  deleteCategory,
-  updateCategory,
-} from '@/features/admin/categories/categoriesFetchers';
+  createProduct,
+  deleteProduct,
+  updateProduct,
+} from '@/features/admin/products/productsFetchers';
 import {
   errorFetcherNotification,
   errorNotification,
@@ -12,17 +12,17 @@ import {
 } from '@/utils/notifications';
 import { dashboardAdminPages } from '@/utils/routes';
 
-export const useCreateCategory = () => {
+export const useCreateProduct = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: createCategory,
+    mutationFn: createProduct,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['categories'] });
+        queryClient.invalidateQueries({ queryKey: ['products'] });
         successNotification(data.message);
-        router.push(dashboardAdminPages.category.path);
+        router.push(dashboardAdminPages.product.path);
       } else {
         errorNotification(data.message);
       }
@@ -33,17 +33,15 @@ export const useCreateCategory = () => {
   });
 };
 
-export const useUpdateCategory = () => {
+export const useDeleteProduct = () => {
   const queryClient = useQueryClient();
-  const router = useRouter();
 
   return useMutation({
-    mutationFn: updateCategory,
+    mutationFn: deleteProduct,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['categories'] });
+        queryClient.invalidateQueries({ queryKey: ['products'] });
         successNotification(data.message);
-        router.push(dashboardAdminPages.category.path);
       } else {
         errorNotification(data.message);
       }
@@ -54,15 +52,17 @@ export const useUpdateCategory = () => {
   });
 };
 
-export const useDeleteCategory = () => {
+export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
-    mutationFn: deleteCategory,
+    mutationFn: updateProduct,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['categories'] });
+        queryClient.invalidateQueries({ queryKey: ['products'] });
         successNotification(data.message);
+        router.push(dashboardAdminPages.product.path);
       } else {
         errorNotification(data.message);
       }

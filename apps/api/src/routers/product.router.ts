@@ -1,4 +1,4 @@
-import { CategoryController } from '@/controllers/category.controller';
+import { ProductController } from '@/controllers/product.controller';
 import {
   adminGuard,
   superAdminGuard,
@@ -6,12 +6,12 @@ import {
 } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
-export class CategoryRouter {
+export class ProductRouter {
   private router: Router;
-  private categoryController: CategoryController;
+  private productController: ProductController;
 
   constructor() {
-    this.categoryController = new CategoryController();
+    this.productController = new ProductController();
     this.router = Router();
     this.initializeRoutes();
   }
@@ -21,35 +21,35 @@ export class CategoryRouter {
       '/',
       verifyToken,
       superAdminGuard,
-      this.categoryController.createCategory,
+      this.productController.createProduct,
     );
 
     this.router.get(
       '/',
       verifyToken,
       adminGuard,
-      this.categoryController.getCategories,
+      this.productController.getProducts,
     );
 
     this.router.delete(
       '/:id',
       verifyToken,
       superAdminGuard,
-      this.categoryController.deleteCategory,
+      this.productController.deleteProduct,
     );
 
     this.router.get(
       '/:id',
       verifyToken,
       adminGuard,
-      this.categoryController.getCategory,
+      this.productController.getProduct,
     );
 
     this.router.patch(
       '/:id',
       verifyToken,
       superAdminGuard,
-      this.categoryController.updateCategory,
+      this.productController.updateProduct,
     );
   }
 

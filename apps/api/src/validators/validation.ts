@@ -17,7 +17,10 @@ export class Validation {
       .positive({ message: 'Limit must be a positive number!' })
       .optional(),
     filter: z
-      .string({ invalid_type_error: 'Filter must be a string!' })
+      .union([
+        z.string({ invalid_type_error: 'Filter must be a string!' }),
+        z.coerce.number({ invalid_type_error: 'Filter must be a number!' }),
+      ])
       .optional(),
     sortBy: z
       .string({ invalid_type_error: 'Sorting must be a string!' })
@@ -26,4 +29,12 @@ export class Validation {
       .string({ invalid_type_error: 'Ordering must be a string!' })
       .optional(),
   });
+
+  static INT_ID = z.coerce
+    .number({
+      required_error: 'Id is required!',
+      invalid_type_error: 'Id is invalid!',
+    })
+    .int({ message: 'Id is invalid!' })
+    .positive({ message: 'Id is invalid!' });
 }

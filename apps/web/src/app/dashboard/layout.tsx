@@ -27,11 +27,11 @@ import { SxProps, alpha } from '@mui/material/styles';
 
 // Custom Components
 import Logo from '@/components/core/Logo';
-import { dashboardAdminPages } from '@/utils/routes';
+import { authPages, dashboardAdminPages } from '@/utils/routes';
 import SimpleBar from 'simplebar-react';
 
 // NextAuth
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 
 const stickyBox: SxProps = {
@@ -44,7 +44,7 @@ const stickyBox: SxProps = {
   bgcolor: 'white',
 };
 
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const settings = ['Profile', 'Account', 'Dashboard'];
 const menus = Object.keys(dashboardAdminPages).map((key) => {
   const { path, label, Icon } = dashboardAdminPages[key];
   return { path, label, Icon };
@@ -94,8 +94,8 @@ export default function DashboardLayout({ children }: Props) {
             }}
           >
             <ListItemButton>
-              <ListItemIcon sx={{ minWidth: '40px' }}>
-                {<menu.Icon />}
+              <ListItemIcon sx={{ minWidth: '30px' }}>
+                {<menu.Icon sx={{ fontSize: '18px' }} />}
               </ListItemIcon>
               <ListItemText primary={menu.label} />
             </ListItemButton>
@@ -153,6 +153,16 @@ export default function DashboardLayout({ children }: Props) {
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
+                <MenuItem>
+                  <Typography
+                    textAlign="center"
+                    onClick={() =>
+                      signOut({ callbackUrl: authPages.login.path })
+                    }
+                  >
+                    Logout
+                  </Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>

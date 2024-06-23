@@ -1,7 +1,6 @@
 import Link from 'next/link';
 
-import ResetPasswordForm from '@/components/form/ResetPasswordForm';
-import { authPages, mainPages } from '@/utils/routes';
+import { mainPages } from '@/utils/routes';
 import jwt from 'jsonwebtoken';
 import TokenExpired from '@/components/error/TokenExpired';
 import Box from '@mui/material/Box';

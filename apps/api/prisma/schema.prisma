@@ -36,7 +36,7 @@ model Product {
   id          Int      @id @default(autoincrement())
   slug        String   @unique
   name        String   @unique
-  description String   @db.Text
+  description String?  @db.Text
   price       Float
   categoryId  Int
   createdAt   DateTime @default(now())
@@ -92,7 +92,7 @@ model User {
   isVerified Boolean  @default(false)
   role       Role     @default(USER)
   jwtToken   String?
-  image      String? @default("/profile.jpg")
+  image      String?  @default("/profile.jpg")
   provider   String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -268,20 +268,19 @@ enum MutationStatus {
 }
 
 model Province {
-  id         Int      @id @default(autoincrement())
-  provinceId Int      @unique
+  id         Int    @id @default(autoincrement())
+  provinceId Int    @unique
   name       String
   cities     City[]
 
   @@map("provinces")
-
 }
 
 model City {
-  id        Int      @id @default(autoincrement())
-  cityId    Int      @unique
-  name      String
-  province  Province @relation(fields: [provinceId], references: [provinceId])
+  id         Int      @id @default(autoincrement())
+  cityId     Int      @unique
+  name       String
+  province   Province @relation(fields: [provinceId], references: [provinceId])
   provinceId Int
 
   @@map("cities")

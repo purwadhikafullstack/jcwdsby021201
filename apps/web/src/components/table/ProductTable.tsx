@@ -23,10 +23,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 // React Query
-import { CategoryResponse } from '@/features/admin/categories/types';
-import { useGetCategories } from '@/features/admin/categories/categoriesQueries';
+import { ProductResponse } from '@/features/admin/products/types';
+import { useGetProducts } from '@/features/admin/products/productsQueries';
 import { dashboardAdminPages } from '@/utils/routes';
-import { useDeleteCategory } from '@/features/admin/categories/categoriesMutations';
+import { useDeleteProduct } from '@/features/admin/products/productsMutations';
+
+// Utils
+import { toThousandFlag } from '@/utils/formatter';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
@@ -38,7 +41,7 @@ import ConfirmationDialog, {
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 
-export default function CategoryTable() {
+export default function ProductTable() {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -52,14 +55,14 @@ export default function CategoryTable() {
   const session = useSession();
   const user = session.data?.user as UserSession;
 
-  const { mutateAsync, isPending: isMutatePending } = useDeleteCategory();
-  const { data, isError, isRefetching, isLoading, refetch } = useGetCategories(
+  const { mutateAsync, isPending: isMutatePending } = useDeleteProduct();
+  const { data, isError, isRefetching, isLoading, refetch } = useGetProducts(
     globalFilter,
     pagination,
     sorting,
   );
 
-  const handleClickOpen = (row: CategoryResponse) => {
+  const handleClickOpen = (row: ProductResponse) => {
     setOpen(true);
     setSelectedRow({ id: row.id, name: row.name });
   };
@@ -68,12 +71,30 @@ export default function CategoryTable() {
     setOpen(false);
   };
 
-  const columns = useMemo<MRT_ColumnDef<CategoryResponse>[]>(
+  const columns = useMemo<MRT_ColumnDef<ProductResponse>[]>(
     () => [
       {
         accessorKey: 'name',
         header: 'Name',
         enableColumnActions: false,
+      },
+      {
+        accessorKey: 'price',
+        header: 'Price',
+        enableColumnActions: false,
+        enableFilterMatchHighlighting: false,
+        Cell: ({ cell }) => toThousandFlag(cell.getValue() as number),
+      },
+      {
+        accessorKey: 'description',
+        header: 'Description',
+        enableColumnActions: false,
+      },
+      {
+        accessorKey: 'category.name',
+        header: 'Category',
+        enableColumnActions: false,
+        enableSorting: false,
       },
     ],
     [],
@@ -139,8 +160,7 @@ export default function CategoryTable() {
             size="small"
             onClick={() => {
               router.push(
-                dashboardAdminPages.category.path +
-                  `/update/${row.original.id}`,
+                dashboardAdminPages.product.path + `/update/${row.original.id}`,
               );
             }}
           >
@@ -166,10 +186,10 @@ export default function CategoryTable() {
     <>
       {user?.role === 'SUPER_ADMIN' && (
         <LinkButton
-          href={dashboardAdminPages.category.path + '/create'}
+          href={dashboardAdminPages.product.path + '/create'}
           variant="create"
         >
-          Category
+          Product
         </LinkButton>
       )}
       <Box sx={{ maxWidth: '100%', mt: 2 }}>
