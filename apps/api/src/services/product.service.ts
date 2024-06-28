@@ -1,7 +1,9 @@
 import { CategoryRepository } from '@/repositories/category.repository';
 import { ProductRepository } from '@/repositories/product.repository';
-import { ProductBody } from '@/types/product.type';
+import { ProductPictureRepository } from '@/repositories/productPicture.repository';
+import { ProductBody, ProductForm } from '@/types/product.type';
 import { ProductQuery } from '@/types/product.type';
+import { deleteFile } from '@/utils/file';
 import {
   responseDataWithPagination,
   responseWithData,
@@ -10,12 +12,15 @@ import {
 import { generateSlug } from '@/utils/text';
 import { ProductValidation } from '@/validators/product.validation';
 import { Validation } from '@/validators/validation';
-import { Prisma } from '@prisma/client';
 
 export class ProductService {
-  static async createProduct(body: ProductBody) {
+  static async createProduct(
+    body: ProductForm,
+    files: Express.Multer.File[] = [],
+  ) {
+    const validatedFiles = ProductValidation.filesValidation(files);
     const { name, price, description, categoryId } = Validation.validate(
-      ProductValidation.BODY,
+      ProductValidation.FORM,
       body,
     );
     const trimName = name.trim();
@@ -23,19 +28,31 @@ export class ProductService {
     const checkName = await ProductRepository.findProductByName(trimName);
     if (checkName) return responseWithoutData(400, false, 'Name Already Exist');
 
-    const checkCategory = await CategoryRepository.findCategoryById(categoryId);
+    const checkCategory = await CategoryRepository.findCategoryById(
+      Number(categoryId),
+    );
     if (!checkCategory) {
       return responseWithoutData(400, false, 'Category Not Found');
     }
 
     const slug = generateSlug(trimName);
-    await ProductRepository.createProduct({
+    const product = await ProductRepository.createProduct({
       name: trimName,
       slug,
-      price,
+      price: Number(price),
       description,
-      category: { connect: { id: categoryId } },
+      category: { connect: { id: Number(categoryId) } },
     });
+
+    if (validatedFiles.length) {
+      for (const file of validatedFiles) {
+        await ProductPictureRepository.createProductPicture({
+          product: { connect: { id: product.id } },
+          url: '/assets/products/' + file.filename,
+          name: file.originalname,
+        });
+      }
+    }
 
     return responseWithoutData(201, true, 'Success Create Product');
   }
@@ -84,12 +101,16 @@ export class ProductService {
       return responseWithoutData(404, false, 'Product Not Found');
     }
 
+    if (checkId.pictures.length) {
+      for (const picture of checkId.pictures) {
+        deleteFile('../../public', picture.url);
+      }
+    }
+
     try {
       await ProductRepository.deleteProductById(Number(newId));
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        return responseWithoutData(500, false, 'Internal Server Error');
-      }
+      return responseWithoutData(500, false, 'Internal Server Error');
     }
 
     return responseWithoutData(200, true, 'Success Delete Product');
@@ -139,5 +160,52 @@ export class ProductService {
     });
 
     return responseWithoutData(200, true, 'Success Update Product');
+  }
+
+  static async deleteProductImage(imageId: string) {
+    const newId = Validation.validate(Validation.INT_ID, imageId);
+    const checkId = await ProductPictureRepository.findProductPictureById(
+      Number(newId),
+    );
+
+    if (!checkId) {
+      return responseWithoutData(404, false, 'Product Image Not Found');
+    }
+
+    try {
+      deleteFile('../../public', checkId.url);
+      await ProductPictureRepository.deleteProductPictureById(Number(newId));
+    } catch (error) {
+      return responseWithoutData(500, false, 'Internal Server Error');
+    }
+
+    return responseWithoutData(200, true, 'Success Delete Product Image');
+  }
+
+  static async addProductImages(id: string, files: Express.Multer.File[] = []) {
+    const validatedFiles = ProductValidation.filesValidation(files);
+    const newId = Validation.validate(Validation.INT_ID, id);
+
+    const checkId = await ProductRepository.findProductById(Number(newId));
+    if (!checkId) {
+      return responseWithoutData(404, false, 'Product Not Found');
+    }
+
+    if (!validatedFiles.length) {
+      return responseWithoutData(400, false, 'No File Uploaded');
+    }
+
+    for (const file of validatedFiles) {
+      const { id, url, name } =
+        await ProductPictureRepository.createProductPicture({
+          product: { connect: { id: Number(newId) } },
+          url: '/assets/products/' + file.filename,
+          name: file.originalname,
+        });
+
+      checkId.pictures.push({ id, name, url });
+    }
+
+    return responseWithData(200, 'Success Add Product Image', checkId);
   }
 }

@@ -1,5 +1,13 @@
 import { ZodType, z } from 'zod';
 
+export const MAX_FILE_SIZE = 1 * 1024 * 1024;
+export const ACCEPTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/gif',
+];
+
 export class Validation {
   static validate<T>(schema: ZodType, data: T): T {
     return schema.parse(data);

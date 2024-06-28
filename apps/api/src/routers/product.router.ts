@@ -4,6 +4,7 @@ import {
   superAdminGuard,
   verifyToken,
 } from '@/middlewares/auth.middleware';
+import { uploader } from '@/middlewares/uploader.middleware';
 import { Router } from 'express';
 
 export class ProductRouter {
@@ -21,6 +22,7 @@ export class ProductRouter {
       '/',
       verifyToken,
       superAdminGuard,
+      uploader('/products', 'PRD').array('files'),
       this.productController.createProduct,
     );
 
@@ -29,6 +31,21 @@ export class ProductRouter {
       verifyToken,
       adminGuard,
       this.productController.getProducts,
+    );
+
+    this.router.delete(
+      '/upload/:imageId',
+      verifyToken,
+      superAdminGuard,
+      this.productController.deleteProductImage,
+    );
+
+    this.router.post(
+      '/upload/:id',
+      verifyToken,
+      superAdminGuard,
+      uploader('/products', 'PRD').array('files'),
+      this.productController.addProductImages,
     );
 
     this.router.delete(

@@ -5,6 +5,13 @@ export type ProductBody = {
   categoryId: number;
 };
 
+export type ProductForm = {
+  name: string;
+  price: string;
+  description: string;
+  categoryId: string;
+};
+
 export type ProductQuery = {
   page?: number;
   limit?: number;

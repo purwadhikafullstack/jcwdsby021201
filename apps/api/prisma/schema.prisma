@@ -54,12 +54,13 @@ model Product {
 
 model ProductPicture {
   id        Int      @id @default(autoincrement())
+  name      String
   url       String
   productId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  product Product @relation(fields: [productId], references: [id])
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("product_pictures")
 }

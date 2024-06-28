@@ -15,10 +15,3 @@ export const toThousandFlag = (
 export const toNumberFromThousandFlag = (num: string) => {
   return parseFloat(num.replace(/,/g, ''));
 };
-
-export const deletePropertyWhenEmpty = (obj: Record<string, any>) => {
-  for (const key in obj) {
-    if (obj[key] === '') delete obj[key];
-  }
-  return obj;
-};

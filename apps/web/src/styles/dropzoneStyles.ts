@@ -5,7 +5,6 @@ export const dropzoneContainerStyles: SxProps<Theme> = {
   borderColor: (theme) => theme.palette.grey[300],
   backgroundColor: (theme) => theme.palette.grey[100],
   height: 200,
-  cursor: 'pointer',
   borderRadius: 1,
   display: 'flex',
   flexDirection: 'column',

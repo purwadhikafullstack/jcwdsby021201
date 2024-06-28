@@ -1,7 +1,6 @@
 'use client';
 
-import Image from 'next/image';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 // MUI Components
@@ -10,12 +9,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-
-// MUI Icons
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,49 +20,38 @@ import {
 
 // Styles
 import {
-  dropzoneContainerStyles,
-  dropzoneThumbStyles,
-} from '@/styles/dropzoneStyles';
-import {
   adminFormContainerStyles,
   adminFormStyles,
 } from '@/styles/adminFormStyles';
 
 // Types
 import { ResponseWithData, UserSession } from '@/features/types';
-import { ProductResponse } from '@/features/admin/products/types';
+import { Pictures, ProductResponse } from '@/features/admin/products/types';
 
 // TanStack
+import { useGetCategories } from '@/features/admin/categories/categoriesQueries';
 import {
-  useGetCategories,
-  useGetCategory,
-} from '@/features/admin/categories/categoriesQueries';
-import {
-  useCreateCategory,
-  useUpdateCategory,
-} from '@/features/admin/categories/categoriesMutations';
+  useCreateProduct,
+  useDeleteProductImage,
+  useUpdateProduct,
+} from '@/features/admin/products/productsMutations';
+import { useGetProduct } from '@/features/admin/products/productsQueries';
 
 // Utils
-import { errorFetcherNotification } from '@/utils/notifications';
-import { dashboardAdminPages } from '@/utils/routes';
 import {
-  deletePropertyWhenEmpty,
-  toNumberFromThousandFlag,
-  toThousandFlag,
-} from '@/utils/formatter';
+  errorFetcherNotification,
+  errorNotification,
+} from '@/utils/notifications';
+import { dashboardAdminPages } from '@/utils/routes';
+import { toNumberFromThousandFlag, toThousandFlag } from '@/utils/formatter';
 import { useDebounce } from 'use-debounce';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
+import ProductFormDropzone from '@/views/admin/products/ProductFormDropzone';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
-import { useDropzone } from 'react-dropzone';
-import {
-  useCreateProduct,
-  useUpdateProduct,
-} from '@/features/admin/products/productsMutations';
-import { useGetProduct } from '@/features/admin/products/productsQueries';
 
 const defaultValues: ProductFormData = {
   name: '',
@@ -85,11 +67,9 @@ type ProductFormProps = {
   errorQuery?: Error | null;
   isQueryPending?: boolean;
   isErrorQuery?: boolean;
+  refetchQuery?: () => void;
+  id?: string;
 };
-
-interface FileWithPreview extends File {
-  preview: string;
-}
 
 export default function ProductForm({
   mutateAsync,
@@ -98,14 +78,18 @@ export default function ProductForm({
   errorQuery,
   isErrorQuery,
   isQueryPending,
+  refetchQuery,
+  id,
 }: ProductFormProps) {
   const [inputValue, setInputValue] = useState('');
   const [debouncedInputValue] = useDebounce(inputValue, 300);
+  const [files, setFiles] = useState<Pictures[]>([]);
   const { handleSubmit, control, reset } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues,
   });
 
+  const router = useRouter();
   const session = useSession();
   const user = session.data?.user as UserSession;
   const disabledOnPending = isMutatePending || isQueryPending;
@@ -118,78 +102,62 @@ export default function ProductForm({
   );
 
   useEffect(() => {
-    if (queryData) {
-      const newResult = {
+    if (queryData?.success === false && id) {
+      errorNotification(queryData?.message || 'Page not found');
+      router.push(dashboardAdminPages.product.path);
+    }
+  }, [queryData, router, id]);
+
+  useEffect(() => {
+    if (queryData?.result && id) {
+      const { name, price, categoryId, description, pictures } = {
         ...queryData.result,
-        price: toThousandFlag(queryData.result.price),
+        price: toThousandFlag(queryData?.result?.price),
       };
 
-      reset(newResult);
+      setFiles(pictures);
+      reset({ name, price, categoryId, description });
     }
-  }, [queryData, reset]);
+  }, [queryData?.result, reset, id]);
 
   if (isErrorQuery) {
     errorFetcherNotification(errorQuery);
   }
 
-  // TODO: Upload File using Dropzone
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const maxSize = 1 * 1024 * 1024;
+  const { mutateAsync: mutateDeleteAsync } = useDeleteProductImage();
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: { 'image/jpeg': [], 'image/png': [] },
-    onDrop: (acceptedFiles) => {
-      const validFiles = acceptedFiles.filter((file) => {
-        return file.size <= maxSize;
-      });
+  const handleDeleteFile = async (imageId: number) => {
+    if (id) await mutateDeleteAsync(`${imageId}`);
 
-      const newFiles = validFiles.map((file) => {
-        return Object.assign(file, {
-          preview: URL.createObjectURL(file),
-        });
-      });
-
-      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
-    },
-    maxSize,
-    disabled: onlySuperAdmin,
-  });
-
-  const handleDeleteFile = (index: number) => {
-    const updatedFiles = [...files];
-    updatedFiles.splice(index, 1);
-    setFiles(updatedFiles);
+    const index = files.findIndex((file) => file.id === imageId);
+    if (index !== -1) {
+      setFiles([...files]);
+    } else {
+      errorNotification('Something went wrong');
+    }
   };
 
-  const thumbs = files.map((file, index) => (
-    <Box key={index} sx={dropzoneThumbStyles}>
-      <IconButton
-        size="small"
-        color="error"
-        onClick={() => handleDeleteFile(index)}
-        sx={{ position: 'absolute', zIndex: 1, top: -10, right: -10 }}
-      >
-        <DeleteIcon />
-      </IconButton>
-      <Image
-        src={file.preview}
-        alt={file.name}
-        width={104}
-        height={104}
-        objectFit="cover"
-        onLoad={() => URL.revokeObjectURL(file.preview)}
-      />
-    </Box>
-  ));
-
   const onSubmit = async (data: ProductFormData) => {
-    const newData = { ...data, price: toNumberFromThousandFlag(data.price) };
-    const payload = deletePropertyWhenEmpty(newData);
+    const payload: any = {
+      ...data,
+      price: toNumberFromThousandFlag(data.price),
+    };
+
+    const formData = new FormData();
+    for (const key in payload) {
+      if (payload[key]) {
+        formData.append(key, payload[key]);
+      }
+    }
+
+    files.forEach((file) => {
+      formData.append('files', file as unknown as File);
+    });
 
     if (queryData) {
       await mutateAsync({ ...payload, id: queryData.result.id });
     } else {
-      await mutateAsync(payload);
+      await mutateAsync(formData);
     }
     reset(defaultValues);
   };
@@ -203,27 +171,15 @@ export default function ProductForm({
         onSubmit={handleSubmit(onSubmit)}
         sx={adminFormStyles}
       >
-        <Box>
-          <Box {...getRootProps()} sx={dropzoneContainerStyles}>
-            <input {...getInputProps()} />
-            <CloudUploadIcon
-              sx={{ fontSize: 50, color: (theme) => theme.palette.grey[600] }}
-            />
-            <Typography sx={{ color: (theme) => theme.palette.grey[600] }}>
-              Drag & drop some files here, or click to select files
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ color: (theme) => theme.palette.grey[600] }}
-            >
-              (Only *.jpeg, *.jpg and *.png images will be accepted, max 1MB
-              each)
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-            {thumbs}
-          </Box>
-        </Box>
+        <ProductFormDropzone
+          id={id}
+          refetchQuery={refetchQuery}
+          files={files}
+          setFiles={setFiles}
+          disabled={onlySuperAdmin}
+          handleDeleteFile={handleDeleteFile}
+          user={user}
+        />
 
         <Controller
           control={control}
@@ -299,7 +255,7 @@ export default function ProductForm({
               }}
               value={
                 value
-                  ? data?.result.find((category) => category.id === value)
+                  ? data?.result?.find((category) => category.id === value)
                   : null
               }
               onInputChange={(_, newInputValue) => {
@@ -372,6 +328,7 @@ export function ProductFormUpdate() {
     error: errorQuery,
     isPending: isQueryPending,
     isError: isErrorQuery,
+    refetch: refetchQuery,
   } = useGetProduct(id);
 
   return (
@@ -382,6 +339,8 @@ export function ProductFormUpdate() {
       errorQuery={errorQuery}
       isQueryPending={isQueryPending}
       isErrorQuery={isErrorQuery}
+      refetchQuery={refetchQuery}
+      id={id}
     />
   );
 }
