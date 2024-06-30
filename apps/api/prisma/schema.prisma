@@ -68,10 +68,12 @@ model ProductPicture {
 model Warehouse {
   id         Int      @id @default(autoincrement())
   name       String
-  address    String
-  province   String
-  city       String
+  address    String   @db.Text
+  provinceId Int
+  cityId     Int
   postalCode String
+  latitude   Float
+  longitude  Float
   userId     Int?     @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
@@ -81,6 +83,8 @@ model Warehouse {
   productWarehouses           ProductWarehouse[]
   sourceJournalMutations      JournalMutation[]  @relation("SourceWarehouse")
   destinationJournalMutations JournalMutation[]  @relation("DestinationWarehouse")
+  province                    Province           @relation(fields: [provinceId], references: [id])
+  city                        City               @relation(fields: [cityId], references: [id])
 
   @@map("warehouses")
 }
@@ -114,7 +118,7 @@ enum Role {
 model Address {
   id         Int      @id @default(autoincrement())
   name       String
-  address    String
+  address    String   @db.Text
   province   String
   city       String
   postalCode String
@@ -269,19 +273,21 @@ enum MutationStatus {
 }
 
 model Province {
-  id         Int    @id @default(autoincrement())
-  provinceId Int    @unique
+  id         Int         @id @default(autoincrement())
+  provinceId Int         @unique
   name       String
   cities     City[]
+  warehouses Warehouse[]
 
   @@map("provinces")
 }
 
 model City {
-  id         Int      @id @default(autoincrement())
-  cityId     Int      @unique
+  id         Int         @id @default(autoincrement())
+  cityId     Int         @unique
   name       String
-  province   Province @relation(fields: [provinceId], references: [provinceId])
+  province   Province    @relation(fields: [provinceId], references: [provinceId])
+  warehouses Warehouse[]
   provinceId Int
 
   @@map("cities")

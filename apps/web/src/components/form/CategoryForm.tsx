@@ -102,8 +102,8 @@ export default function CategoryForm({
       await mutateAsync({ ...data, id: queryData.result.id });
     } else {
       await mutateAsync(data);
+      reset(defaultValues);
     }
-    reset(defaultValues);
   };
 
   return (

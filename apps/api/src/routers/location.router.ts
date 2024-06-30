@@ -13,9 +13,16 @@ export class LocationRouter {
 
   private initializeRoutes(): void {
     this.router.get('/province', this.locationController.getProvince);
-    this.router.get('/:provinceId', this.locationController.getCities);
-    this.router.get('/province/:provinceId', this.locationController.getProvinceForProfile);
+    this.router.get(
+      '/cities/:provinceId',
+      this.locationController.getCitiesPagination,
+    );
+    this.router.get(
+      '/province/:provinceId',
+      this.locationController.getProvinceForProfile,
+    );
     this.router.get('/city/:cityId', this.locationController.getCityForProfile);
+    this.router.get('/:provinceId', this.locationController.getCities);
   }
 
   getRouter(): Router {

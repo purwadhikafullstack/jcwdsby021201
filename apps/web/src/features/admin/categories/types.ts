@@ -1,13 +1,12 @@
-export type CategoryResponse = {
-  id: number;
+export type CategoryBody = {
   name: string;
+};
+
+export type CategoryResponse = CategoryBody & {
+  id: number;
   slug: string;
   createdAt: string;
   updatedAt: string;
-};
-
-export type CategoryBody = {
-  name: string;
 };
 
 export interface CategoryUpdate extends CategoryBody {

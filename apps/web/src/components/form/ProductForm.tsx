@@ -25,8 +25,9 @@ import {
 } from '@/styles/adminFormStyles';
 
 // Types
-import { ResponseWithData, UserSession } from '@/features/types';
+import { OptionLabel, ResponseWithData, UserSession } from '@/features/types';
 import { Pictures, ProductResponse } from '@/features/admin/products/types';
+import { CategoryResponse } from '@/features/admin/categories/types';
 
 // TanStack
 import { useGetCategories } from '@/features/admin/categories/categoriesQueries';
@@ -101,6 +102,25 @@ export default function ProductForm({
     [{ id: 'name', desc: false }],
   );
 
+  const [options, setOptions] = useState<CategoryResponse[] | OptionLabel[]>(
+    [],
+  );
+  const [category, setCategory] = useState<OptionLabel | null>(null);
+
+  useEffect(() => {
+    if (data?.result) {
+      setOptions(data.result);
+    }
+  }, [data?.result]);
+
+  useEffect(() => {
+    if (category && !options.find((opt) => opt.id === category.id)) {
+      setOptions([...options, category]);
+    } else {
+      setOptions(options);
+    }
+  }, [category, options]);
+
   useEffect(() => {
     if (queryData?.success === false && id) {
       errorNotification(queryData?.message || 'Page not found');
@@ -117,6 +137,7 @@ export default function ProductForm({
 
       setFiles(pictures);
       reset({ name, price, categoryId, description });
+      setCategory({ id: categoryId, name: queryData?.result?.category?.name });
     }
   }, [queryData?.result, reset, id]);
 
@@ -125,7 +146,6 @@ export default function ProductForm({
   }
 
   const { mutateAsync: mutateDeleteAsync } = useDeleteProductImage();
-
   const handleDeleteFile = async (imageId: number) => {
     if (id) await mutateDeleteAsync(`${imageId}`);
 
@@ -155,11 +175,11 @@ export default function ProductForm({
     });
 
     if (queryData) {
-      await mutateAsync({ ...payload, id: queryData.result.id });
+      await mutateAsync({ ...payload, id: queryData?.result?.id });
     } else {
       await mutateAsync(formData);
+      reset(defaultValues);
     }
-    reset(defaultValues);
   };
 
   return (
@@ -236,7 +256,7 @@ export default function ProductForm({
               disabled={onlySuperAdmin}
               {...field}
               multiline
-              rows={4}
+              minRows={3}
               InputLabelProps={{ shrink: true }}
             />
           )}
@@ -248,15 +268,13 @@ export default function ProductForm({
             <Autocomplete
               openOnFocus
               disabled={onlySuperAdmin}
-              options={data?.result ?? []}
-              getOptionLabel={(option) => option.name}
+              options={options}
+              getOptionLabel={(option) => option.name || ''}
               onChange={(_, value) => {
                 onChange(value?.id ?? null);
               }}
               value={
-                value
-                  ? data?.result?.find((category) => category.id === value)
-                  : null
+                value ? options.find((category) => category.id === value) : null
               }
               onInputChange={(_, newInputValue) => {
                 setInputValue(newInputValue);

@@ -1,3 +1,5 @@
+import { OptionLabel } from '@/features/types';
+
 export type ProductBody = {
   name: string;
   price: number;
@@ -5,9 +7,7 @@ export type ProductBody = {
   categoryId: number;
 };
 
-export interface ProductUpdate extends ProductBody {
-  id: number;
-}
+export type ProductUpdate = ProductBody & { id: number };
 
 export type UploadPictures = {
   id: string;
@@ -21,19 +21,12 @@ export type Pictures = {
   preview?: string;
 };
 
-export type ProductResponse = {
+export type ProductResponse = ProductBody & {
   id: number;
   slug: string;
-  name: string;
-  description: string | null;
-  price: number;
-  categoryId: number;
   createdAt: string;
   updatedAt: string;
-  category: {
-    id: number;
-    name: string;
-  };
+  category: OptionLabel;
   pictures: Pictures[];
 };
 
