@@ -38,17 +38,17 @@ export class LocationRepository {
   }
 
   static async getCityForProfile(cityId: number) {
-    return await prisma.city.findMany({ where: { cityId: cityId } });
+    return await prisma.city.findMany({ where: { id: cityId } });
   }
 
   static async getProvinceById(provinceId: number) {
     return await prisma.province.findUnique({
-      where: { provinceId: provinceId },
+      where: { id: provinceId },
     });
   }
 
   static async getCityById(cityId: number) {
-    return await prisma.city.findUnique({ where: { cityId: cityId } });
+    return await prisma.city.findUnique({ where: { id: cityId } });
   }
 
   static async countProvinces(filter: string) {
