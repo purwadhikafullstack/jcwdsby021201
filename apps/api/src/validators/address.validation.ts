@@ -8,13 +8,15 @@ export class AddressValidation {
     address: z
       .string({ message: 'Address is required!' })
       .min(5, 'Address must be at least 5 characters!'),
-    city: z.string().min(1, 'City is required'),
-    province: z.string().min(1, 'Province is required'),
+    cityId: z.number().min(1, 'City is required'),
+    provinceId: z.number().min(1, 'Province is required'),
     postalCode: z
       .string()
       .regex(/^\d{5}$/, 'Postal Code must be a 5 digit number'),
     userId: z.number({ message: 'userId is required!' }),
     isPrimary: z.boolean(),
+    latitude: z.number(),
+    longitude: z.number(),
   });
 
   static UPDATE = z.object({
@@ -23,14 +25,16 @@ export class AddressValidation {
       .string()
       .min(5, 'Address must be at least 5 characters!')
       .optional(),
-    city: z.string().min(1, 'City is required').optional(),
-    province: z.string().min(1, 'Province is required').optional(),
+    cityId: z.number().min(1, 'City is required').optional(),
+    provinceId: z.number().min(1, 'Province is required').optional(),
     postalCode: z
       .string()
       .regex(/^\d{5}$/, 'Postal Code must be a 5 digit number')
       .optional(),
     userId: z.number().optional(),
     isPrimary: z.boolean().optional(),
+    latitude: z.number().optional(),
+    longitude: z.number().optional(),
   });
 
   static ONLY_ADDRESS_ID = z

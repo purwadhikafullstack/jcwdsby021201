@@ -5,7 +5,7 @@ import {
   responseWithData,
   responseWithoutData,
 } from '@/utils/response';
-import { LOcationValidation } from '@/validators/location.validation';
+import { LocationValidation } from '@/validators/location.validation';
 import { Validation } from '@/validators/validation';
 
 export class LocationService {
@@ -48,7 +48,7 @@ export class LocationService {
   }
   static async getCitiesByProvince(provinceId: number) {
     const newProvinceId = Validation.validate(
-      LOcationValidation.ONLY_PROVINCE_ID,
+      LocationValidation.ONLY_PROVINCE_ID,
       Number(provinceId),
     );
     const response = await LocationRepository.getCities(newProvinceId);
@@ -57,7 +57,7 @@ export class LocationService {
 
   static async getProvinceForProfile(provinceId: number) {
     const newProvinceId = Validation.validate(
-      LOcationValidation.ONLY_PROVINCE_ID,
+      LocationValidation.ONLY_PROVINCE_ID,
       Number(provinceId),
     );
     const response =
@@ -67,7 +67,7 @@ export class LocationService {
 
   static async getCityForProfile(cityId: number) {
     const newCityId = Validation.validate(
-      LOcationValidation.ONLY_CITY_ID,
+      LocationValidation.ONLY_CITY_ID,
       Number(cityId),
     );
     const response = await LocationRepository.getCityForProfile(newCityId);

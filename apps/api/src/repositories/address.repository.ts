@@ -19,6 +19,16 @@ export class AddressRepository {
   }
 
   static async deleteAddressByAddressId(id: number, addressId: number) {
+    const addressInUse = await prisma.order.findFirst({
+      where: {
+        addressId: addressId,
+      },
+    });
+
+    if (addressInUse) {
+      throw new Error('Address is currently in use and cannot be deleted');
+    }
+
     return await prisma.address.delete({
       where: {
         id: addressId,
@@ -28,21 +38,40 @@ export class AddressRepository {
   }
 
   static async addAddress(id: number, body: AddressBody) {
+    const existingAddresses = await prisma.address.findMany({
+      where: {
+        userId: id,
+      },
+    });
+
+    const isPrimary = existingAddresses.length === 0;
+
     return await prisma.address.create({
       data: {
         name: body.name,
         address: body.address,
-        city: body.city,
-        province: body.province,
+        cityId: body.cityId,
+        provinceId: body.provinceId,
         postalCode: body.postalCode,
         userId: id,
-        isPrimary: false,
+        isPrimary: isPrimary,
+        latitude: body.latitude,
+        longitude: body.longitude,
       },
     });
   }
 
   static async updateAddress(id: number, addressId: number, body: AddressBody) {
-    const { name, address, city, province, postalCode, isPrimary } = body;
+    const {
+      name,
+      address,
+      cityId,
+      provinceId,
+      postalCode,
+      isPrimary,
+      latitude,
+      longitude,
+    } = body;
 
     // Cari alamat lain dengan isPrimary: true untuk pengguna ini
     const existingPrimaryAddress = await prisma.address.findFirst({
@@ -76,10 +105,12 @@ export class AddressRepository {
       data: {
         name: name,
         address: address,
-        city: city,
-        province: province,
+        cityId: cityId,
+        provinceId: provinceId,
         postalCode: postalCode,
         isPrimary: isPrimary,
+        latitude: latitude,
+        longitude: longitude,
       },
     });
 

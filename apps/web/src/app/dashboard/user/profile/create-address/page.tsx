@@ -3,7 +3,7 @@ import * as React from 'react';
 interface IAppProps {}
 
 const App: React.FunctionComponent<IAppProps> = (props) => {
-  return <AddressForm />;
+  return <AddressForm shouldRedirect={true} />;
 };
 
 export default App;

@@ -71,9 +71,9 @@ const AddressList: React.FunctionComponent<IAddressListProps> = (props) => {
 const AddressCard = ({ address }: { address: any }) => {
   const router = useRouter();
   const { data: provinceName, isLoading: isProvinceLoading } =
-    useGetProvinceName(address.province);
+    useGetProvinceName(address.provinceId);
   const { data: cityName, isLoading: isCityLoading } = useGetCityName(
-    address.city,
+    address.cityId,
   );
 
   return (
@@ -84,6 +84,7 @@ const AddressCard = ({ address }: { address: any }) => {
         }
         sx={{
           width: 345,
+          cursor: 'pointer',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
@@ -112,11 +113,13 @@ const AddressCard = ({ address }: { address: any }) => {
             Province:{' '}
             {isProvinceLoading
               ? 'Loading...'
-              : provinceName?.name || address.province}
+              : provinceName?.name || address.provinceId}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             City:{' '}
-            {isCityLoading ? 'Loading...' : cityName?.[0]?.name || address.city}
+            {isCityLoading
+              ? 'Loading...'
+              : cityName?.[0]?.name || address.cityId}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             Postal Code: {address.postalCode}

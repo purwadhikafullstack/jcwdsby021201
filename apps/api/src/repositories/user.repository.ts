@@ -35,8 +35,8 @@ export class UserRepository {
     return await prisma.user.update({
       where: { id },
       data: {
-        password,
         username,
+        password,
       },
     });
   }

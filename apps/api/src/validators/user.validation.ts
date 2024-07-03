@@ -6,7 +6,7 @@ export class UserValidation {
       .string({ message: 'Username must be string!' })
       .min(3, { message: 'Username must be at least 3 characters long' })
       .max(50, { message: 'Username must not exceed 50 characters' })
-      .regex(/^[a-zA-Z0-9_]+$/, {
+      .regex(/^[a-zA-Z0-9_ ]+$/, {
         message: 'Username can only contain letters, numbers, and underscores',
       })
       .optional(),

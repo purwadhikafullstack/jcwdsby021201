@@ -2,43 +2,48 @@
 import { Controller, useForm } from 'react-hook-form';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
 import { Button, Box, Typography, TextField } from '@mui/material';
-import { z } from 'zod';
 import {
-  ProfilePictureSchema,
-  profilePictureSchema,
-} from './schemas/updateProfileSchema';
+  UploadPictureSchema,
+  uploadPictureSchema,
+} from './schemas/uploadPictureSchema';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useChangeProfilePicture } from '@/features/user/profile/profileMutation';
+import { useUploadPaymmentProof } from '@/features/user/order/orderMutation';
 
-interface ProfilePictureFormProps {
-  userId: number;
+interface UploadPictureFormProps {
   handleClose: () => void;
+  type: 'profile' | 'paymentProof';
+  orderId?: number;
 }
 
-export default function ProfilePictureForm({
-  userId,
+export default function UploadPictureForm({
   handleClose,
-}: ProfilePictureFormProps) {
+  type,
+  orderId,
+}: UploadPictureFormProps) {
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(profilePictureSchema),
+  } = useForm<UploadPictureSchema>({
+    resolver: zodResolver(uploadPictureSchema),
   });
 
+  //STATE UNTUK FILENYA
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [errorMessage, setErrorMessage] = React.useState('');
 
+  //TOKEN
   const session = useSession();
   const user = session.data?.user as UserSession;
   const token = user?.token;
 
+  //MUTATION YANG DIGUNAKAN :
   const { mutateAsync } = useChangeProfilePicture();
+  const { mutateAsync: uploadPaymentProof } = useUploadPaymmentProof();
 
   const onSubmit = async () => {
     try {
@@ -47,15 +52,18 @@ export default function ProfilePictureForm({
         return;
       }
 
+      //Validasi Image Type
       const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
       const isValidFormat = allowedFormats.includes(selectedFile.type);
       const isValidSize = selectedFile.size <= 1024 * 1024;
 
+      //Validasi Image Type
       if (!isValidFormat) {
         setErrorMessage('Only JPG, JPEG, PNG, and GIF files are allowed.');
         return;
       }
 
+      //Validasi Image Type
       if (!isValidSize) {
         setErrorMessage('Maximum file size is 1MB.');
         return;
@@ -67,7 +75,17 @@ export default function ProfilePictureForm({
       formData.append('image', selectedFile);
 
       if (token) {
-        await mutateAsync({ token, data: formData });
+        if (type === 'profile') {
+          await mutateAsync({ token, data: formData });
+        } else {
+          if (orderId) {
+            await uploadPaymentProof({
+              token,
+              orderId,
+              data: formData,
+            });
+          }
+        }
       }
       reset();
       handleClose();

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export class LOcationValidation {
+export class LocationValidation {
   static ONLY_PROVINCE_ID = z
     .number({ message: 'Province ID must be number!' })
     .min(1, { message: 'Email must be at least 1 characters long' });

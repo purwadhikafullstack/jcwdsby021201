@@ -76,4 +76,14 @@ export class ProductController {
       next(error);
     }
   }
+
+  public async getStock(req: Request, res: Response, next: NextFunction) {
+    try {
+      const params = Number(req.params.productId);
+      const response = await ProductService.getStock(params);
+      return res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

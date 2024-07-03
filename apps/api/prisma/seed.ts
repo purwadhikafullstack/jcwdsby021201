@@ -50,37 +50,38 @@ const seedUsers = async () => {
 
 const seedProvinces = async (provinces: any[]) => {
   for (const province of provinces) {
+    const data: Prisma.ProvinceCreateInput = {
+      id: Number(province.province_id),
+      name: province.province,
+    };
     await prisma.province.create({
-      data: {
-        provinceId: Number(province.province_id),
-        name: province.province,
-      },
+      data,
     });
   }
 };
 
 const seedCities = async (cities: any[]) => {
   for (const city of cities) {
-    await prisma.city.create({
-      data: {
-        cityId: Number(city.city_id),
-        name: city.city_name,
-        province: {
-          connect: {
-            provinceId: Number(city.province_id),
-          },
+    const data: Prisma.CityCreateInput = {
+      id: Number(city.city_id),
+      name: city.city_name,
+      province: {
+        connect: {
+          id: Number(city.province_id),
         },
       },
+    };
+    await prisma.city.create({
+      data,
     });
   }
 };
 
 const seed = async () => {
   try {
-    
     const provinces = await fetchProvinces();
     const cities = await fetchCities();
-    
+
     await seedUsers();
     await seedProvinces(provinces);
     await seedCities(cities);

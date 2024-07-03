@@ -48,6 +48,8 @@ export class ProductRouter {
       this.productController.addProductImages,
     );
 
+    this.router.get('/stock/:productId', this.productController.getStock);
+
     this.router.delete(
       '/:id',
       verifyToken,

@@ -16,7 +16,7 @@ export const useFetchProvince = () => {
   });
 };
 
-export const useFetchCities = (provinceId: string) => {
+export const useFetchCities = (provinceId: number) => {
   return useQuery({
     queryKey: ['city', provinceId],
     queryFn: () => getCities(provinceId!),
@@ -24,7 +24,7 @@ export const useFetchCities = (provinceId: string) => {
   });
 };
 
-export const useGetProvinceName = (provinceId: string) => {
+export const useGetProvinceName = (provinceId: number) => {
   return useQuery({
     queryKey: ['province-name', provinceId],
     queryFn: () => getProvinceName(provinceId!),
@@ -32,7 +32,7 @@ export const useGetProvinceName = (provinceId: string) => {
   });
 };
 
-export const useGetCityName = (cityId: string) => {
+export const useGetCityName = (cityId: number) => {
   return useQuery({
     queryKey: ['province-name', cityId],
     queryFn: () => getCityName(cityId!),

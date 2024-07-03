@@ -1,10 +1,10 @@
 export type AddressBody = {
   name: string;
   address: string;
-  city: string;
-  province: string;
+  cityId: number;
+  provinceId: number;
   postalCode: string;
   isPrimary: boolean;
+  latitude: number;
+  longitude: number;
 };
-
-

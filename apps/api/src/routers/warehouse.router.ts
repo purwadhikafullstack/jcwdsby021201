@@ -27,6 +27,8 @@ export class WarehouseRouter {
       this.warehouseController.getWarehouses,
     );
 
+    this.router.post('/nearest', this.warehouseController.findNearestWarehouse);
+
     this.router.delete(
       '/:id',
       verifyToken,

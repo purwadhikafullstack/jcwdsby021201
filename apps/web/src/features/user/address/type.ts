@@ -1,10 +1,13 @@
 export type AddressBody = {
   name: string;
   address: string;
-  province: string;
-  city: string;
+  provinceId: number;
+  cityId: number;
   postalCode: string;
   isPrimary: Boolean;
+  id?: number;
+  latitude: number;
+  longitude: number;
 };
 
 export type AddressRequest = {

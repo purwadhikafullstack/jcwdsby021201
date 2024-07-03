@@ -31,7 +31,9 @@ export class LocationRepository {
 
   static async getProvinceForProfile(provinceId: number) {
     return await prisma.province.findMany({
-      where: { provinceId: provinceId },
+      where: {
+        id: provinceId,
+      },
     });
   }
 

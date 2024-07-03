@@ -74,7 +74,7 @@ export default function CategoryTable() {
         accessorKey: 'name',
         header: 'Name',
         enableColumnActions: false,
-      },
+      }
     ],
     [],
   );
@@ -161,6 +161,7 @@ export default function CategoryTable() {
       </Box>
     ),
   });
+  
 
   return (
     <>

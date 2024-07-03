@@ -13,7 +13,6 @@ import {
   Divider,
   Skeleton,
 } from '@mui/material';
-import { Verified } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useGetProfileById } from '@/features/user/profile/profileQueries';
@@ -21,7 +20,11 @@ import ChangeUsernameForm from '@/components/form/UpdateUsernameForm';
 import ChangePasswordForm from '@/components/form/UpdatePasswordForm';
 import ChangeEmailForm from '@/components/form/UpdateEmailForm';
 import { useGetAddressById } from '@/features/user/address/addressQueries';
-import ProfilePictureForm from '@/components/form/UpdateProfileForm';
+import ProfilePictureForm from '@/components/form/UploadPictureForm';
+import UsernameModalUpdate from '@/components/modal/UsernameModalUpdate';
+import PasswordModalUpdate from '@/components/modal/PasswordModalUpdate';
+import EmailModalUpdate from '@/components/modal/EmailModalUpdate';
+import ProfileModalUpdate from '@/components/modal/ProfileModalUpdate';
 
 interface IProfileProps {}
 
@@ -34,7 +37,6 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
   );
   const { data, error, isLoading } = useGetProfileById(token || '');
 
-  const [dataUser, setDataUser] = React.useState<any>([]);
   const [open, setOpen] = React.useState(false);
   const [profilePictureModal, setProfilePictureModal] = React.useState(false);
   const [passwordModal, setPasswordModal] = React.useState(false);
@@ -87,9 +89,12 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             <Box>
               {isLoading ? (
                 <Skeleton variant="circular" width={150} height={150} />
-              ) : data?.image ? (
+              ) : data ? (
                 <img
-                  src={process.env.NEXT_PUBLIC_BASE_API_URL + `${data.image}`}
+                  src={
+                    process.env.NEXT_PUBLIC_BASE_API_URL + `${data.image}` ||
+                    `${data?.image}`
+                  }
                   alt="Profile"
                   width={150}
                   height={150}
@@ -102,38 +107,7 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             </Box>
           </Grid>
         </Grid>
-        <Modal
-          open={profilePictureModal}
-          onClose={handleCloseProfilePictureModal}
-          closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
-        >
-          <Fade in={profilePictureModal}>
-            <Box
-              sx={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: '90%',
-                maxWidth: 400,
-                bgcolor: 'background.paper',
-                p: 4,
-                border: '1px solid #ccc',
-                borderRadius: '8px',
-                boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              <ProfilePictureForm
-                userId={5}
-                handleClose={handleCloseProfilePictureModal}
-              />
-            </Box>
-          </Fade>
-        </Modal>
+
         <Grid container spacing={2}>
           <Grid item xs={12} display="flex" justifyContent="center"></Grid>
           <Grid item xs={12}>
@@ -148,7 +122,7 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             </Typography>
             {isLoading ? (
               <Skeleton variant="rectangular" width="100%" />
-            ) : data?.username ? (
+            ) : data ? (
               <Button variant="outlined" onClick={handleOpen} fullWidth>
                 {' '}
                 {data?.username ? data?.username : 'Choose username'}
@@ -216,13 +190,13 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             </Typography>
             {isLoading ? (
               <Skeleton variant="rectangular" width="100%" />
-            ) : data?.password ? (
+            ) : data ? (
               <Button
                 variant="outlined"
                 fullWidth
                 onClick={handleOpenPasswordModal}
               >
-                {data?.password ? 'SECRET' : ''}
+                {data?.password ? 'SECRET' : 'SECRET'}
               </Button>
             ) : (
               <Skeleton variant="rectangular" width="100%" />
@@ -230,99 +204,28 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
           </Grid>
         </Grid>
       </Container>
-      <Modal
+
+      <ProfileModalUpdate
+        open={profilePictureModal}
+        handleClose={handleCloseProfilePictureModal}
+      />
+
+      <UsernameModalUpdate
         open={open}
-        onClose={handleClose}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={open}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '90%',
-              maxWidth: 400,
-              bgcolor: 'background.paper',
-              p: 4,
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            <ChangeUsernameForm
-              initialUsername={data?.username ? data?.username : ''}
-              handleClose={handleClose}
-            />
-          </Box>
-        </Fade>
-      </Modal>
-      <Modal
+        handleClose={handleClose}
+        initialUsername={data?.username ? data?.username : ''}
+      />
+
+      <PasswordModalUpdate
         open={passwordModal}
-        onClose={handleClosePasswordModal}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={passwordModal}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '90%',
-              maxWidth: 400,
-              bgcolor: 'background.paper',
-              p: 4,
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            <ChangePasswordForm handleClose={handleClosePasswordModal} />
-          </Box>
-        </Fade>
-      </Modal>
-      <Modal
+        handleClose={handleClosePasswordModal}
+      />
+
+      <EmailModalUpdate
         open={emailModal}
-        onClose={handleCloseEmailModal}
-        closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
-      >
-        <Fade in={emailModal}>
-          <Box
-            sx={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              width: '90%',
-              maxWidth: 400,
-              bgcolor: 'background.paper',
-              p: 4,
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            <ChangeEmailForm
-              initialEmail={data?.email ? data?.email : ''}
-              handleClose={handleCloseEmailModal}
-            />
-          </Box>
-        </Fade>
-      </Modal>
+        handleClose={handleCloseEmailModal}
+        initialEmail={data?.email ? data?.email : ''}
+      />
     </Box>
   );
 };

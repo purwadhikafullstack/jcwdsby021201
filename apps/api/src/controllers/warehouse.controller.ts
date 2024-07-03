@@ -53,4 +53,18 @@ export class WarehouseController {
       next(error);
     }
   }
+
+  public async findNearestWarehouse(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const body = req.body as any;
+      const response = await WarehouseService.findNearestWarehouse(body);
+      return res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

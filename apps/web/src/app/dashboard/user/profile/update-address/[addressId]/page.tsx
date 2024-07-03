@@ -36,6 +36,8 @@ import { useGetAddressByAddressId } from '@/features/user/address/addressQueries
 import {
   useFetchCities,
   useFetchProvince,
+  useGetCityName,
+  useGetProvinceName,
 } from '@/features/user/location/locationQueries';
 import { AddressBody } from '@/features/user/address/type';
 import { deleteAddress } from '@/features/user/address/addressFetchers';
@@ -43,16 +45,20 @@ import {
   useDeleteAddress,
   useUpdateAddress,
 } from '@/features/user/address/addressMutations';
+import Map from '@/components/map/Map';
+import { errorNotification } from '@/utils/notifications';
 
 // Penampung
 const defaultValues: AddressSchema = {
   name: '',
   address: '',
-  city: '',
-  province: '',
+  cityId: 0,
+  provinceId: 0,
   postalCode: '',
   userId: 0,
   isPrimary: false,
+  latitude: 0,
+  longitude: 0,
 };
 
 const UpdateAddress: React.FunctionComponent = () => {
@@ -69,8 +75,6 @@ const UpdateAddress: React.FunctionComponent = () => {
   const addressId = id.addressId;
   const {
     data,
-    error,
-    isLoading,
   }: {
     data: AddressBody | undefined;
     error: Error | null;
@@ -79,9 +83,10 @@ const UpdateAddress: React.FunctionComponent = () => {
 
   //PENGATURAN NGAMBIL PROVINCE DAN CITY
   const { data: provinces, isLoading: isLoadingProvinces } = useFetchProvince();
-  const [selectedProvince, setSelectedProvince] = React.useState<string>('');
+  const [selectedProvince, setSelectedProvince] = React.useState<number>(0);
   const { data: cities, isLoading: isLoadingCities } =
     useFetchCities(selectedProvince);
+  const [selectedCity, setSelectedCity] = React.useState<number>(0);
 
   //Penggunaan Mutation
   const { mutateAsync: deleteAddressMutateAsync, isPending: isDeletePending } =
@@ -89,42 +94,67 @@ const UpdateAddress: React.FunctionComponent = () => {
   const { mutateAsync: updateAddressMutateAsync, isPending: isUpdatePending } =
     useUpdateAddress();
 
+  //State untuk titik koordinat:
+  const [coordinates, setCoordinates] = React.useState<{
+    lat: number;
+    lon: number;
+  } | null>(null);
+
   React.useEffect(() => {
-    if (data && data.province) {
+    if (data && data.provinceId) {
       setValue('name', data.name);
       setValue('address', data.address);
-      setValue('city', data.city);
-      setValue('province', data.province);
+      setValue('cityId', data.cityId);
+      setValue('provinceId', data.provinceId);
       setValue('postalCode', data.postalCode);
       setValue('isPrimary', data.isPrimary === true ? true : false);
-      setSelectedProvince(data.province);
+      setValue('latitude', data.latitude);
+      setValue('longitude', data.longitude);
+      setSelectedProvince(data.provinceId);
+
+      if (data.latitude && data.longitude) {
+        setCoordinates({
+          lat: data.latitude,
+          lon: data.longitude,
+        });
+      }
     }
   }, [data, setValue]);
 
-  const handleProvinceChange = (event: SelectChangeEvent<string>) => {
-    const provinceId = event.target.value as string;
-    setSelectedProvince(String(provinceId));
-    setValue('province', String(provinceId));
-    setValue('city', '');
+  const handleProvinceChange = (event: SelectChangeEvent<number>) => {
+    const provinceId = event.target.value as number;
+    setSelectedProvince(provinceId);
+    setValue('provinceId', provinceId);
+    setValue('cityId', 0);
+    setCoordinates(null);
   };
 
-  const handleCityChange = (event: SelectChangeEvent<string>) => {
-    const cityId = event.target.value as string;
-    setValue('city', cityId);
+  const handleCityChange = (event: SelectChangeEvent<number>) => {
+    const cityId = event.target.value as number;
+    setSelectedCity(cityId);
+    setValue('cityId', cityId);
   };
 
   const onSubmit = async (data: AddressSchema) => {
     try {
-      if (token) {
+      if (!coordinates) {
+        errorNotification('Please mark your location on the map.');
+        return;
+      }
+      if (token && coordinates) {
+        const dataWithCoordinates = {
+          ...data,
+          latitude: coordinates.lat,
+          longitude: coordinates.lon,
+        };
         await updateAddressMutateAsync({
-          token: token,
+          token,
           addressId: String(addressId),
-          data,
+          data: dataWithCoordinates,
         });
-        reset(defaultValues);
       }
     } catch (error) {
-      console.error('Error:', error);
+      errorNotification('Sorry, an error occurred on our server');
     }
   };
 
@@ -141,6 +171,17 @@ const UpdateAddress: React.FunctionComponent = () => {
     }
   };
 
+  // Fungsi untuk mengatur koordinat yang diperoleh dari komponen Map
+  const handleCoordinatesChange = (lat: number, lon: number) => {
+    setCoordinates({ lat: lat, lon: lon });
+  };
+  React.useEffect(() => {
+    if (coordinates) {
+      setValue('latitude', coordinates.lat);
+      setValue('longitude', coordinates.lon);
+    }
+  }, [coordinates, setValue]);
+
   return (
     <Box
       component="form"
@@ -150,13 +191,13 @@ const UpdateAddress: React.FunctionComponent = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 2, // Gunakan theme.spacing
-        maxWidth: 500, // Sedikit lebih lebar
-        padding: 3, // Tambahkan padding
-        borderRadius: 2, // Rounding corners
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', // Tambahkan shadow
-        backgroundColor: 'background.paper', // Sesuaikan dengan theme
-        margin: 'auto', // Tengah-kan form
+        gap: 2,
+        maxWidth: '800px',
+        padding: 3,
+        borderRadius: 2,
+        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
+        backgroundColor: 'background.paper',
+        margin: 'auto',
         marginTop: '20px',
       }}
     >
@@ -204,7 +245,7 @@ const UpdateAddress: React.FunctionComponent = () => {
 
       <Controller
         control={control}
-        name="province"
+        name="provinceId"
         render={({ field, fieldState: { error } }) => (
           <FormControl fullWidth>
             <InputLabel id="province-label">Province</InputLabel>
@@ -213,7 +254,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               required
               error={Boolean(error)}
               label="Province"
-              id="province"
+              id="provinceId"
               labelId="province-label"
               onChange={handleProvinceChange}
             >
@@ -221,10 +262,7 @@ const UpdateAddress: React.FunctionComponent = () => {
                 <em>None</em>
               </MenuItem>
               {provinces?.map((province: any) => (
-                <MenuItem
-                  key={province.provinceId}
-                  value={String(province.provinceId)}
-                >
+                <MenuItem key={province.id} value={Number(province.id)}>
                   {province.name}
                 </MenuItem>
               ))}
@@ -240,7 +278,7 @@ const UpdateAddress: React.FunctionComponent = () => {
 
       <Controller
         control={control}
-        name="city"
+        name="cityId"
         render={({ field, fieldState: { error } }) => (
           <FormControl fullWidth>
             <InputLabel id="city-label">City</InputLabel>
@@ -249,7 +287,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               required
               error={Boolean(error)}
               label="City"
-              id="city"
+              id="cityId"
               labelId="city-label"
               onChange={handleCityChange}
             >
@@ -257,7 +295,7 @@ const UpdateAddress: React.FunctionComponent = () => {
                 <em>None</em>
               </MenuItem>
               {cities?.map((city: any) => (
-                <MenuItem key={city.cityId} value={String(city.cityId)}>
+                <MenuItem key={city.id} value={city.id}>
                   {city.name}
                 </MenuItem>
               ))}
@@ -306,6 +344,20 @@ const UpdateAddress: React.FunctionComponent = () => {
           />
         )}
       />
+      <Typography color="primary">
+        Please mark your address again, to help us find your address more easily
+      </Typography>
+
+      <Box sx={{ height: '400px', width: '100%' }}>
+        <Map
+          onCoordinatesChange={handleCoordinatesChange}
+          selectedCoordinates={
+            coordinates
+              ? { lat: Number(coordinates.lat), lon: Number(coordinates.lon) }
+              : null
+          }
+        />
+      </Box>
 
       <Box display="flex" justifyContent="space-between">
         <Button

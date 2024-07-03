@@ -35,14 +35,15 @@ export const useUpdateAddress = () => {
   });
 };
 
-export const useAddAddress = () => {
+export const useAddAddress = (shouldRedirect = true) => {
   const router = useRouter();
-
   return useMutation({
     mutationFn: addAddress,
     onSuccess: (data) => {
       if (data.success) {
-        router.push('/dashboard/user/profile/address');
+        if (shouldRedirect) {
+          router.push('/dashboard/user/profile/address');
+        }
         successNotification(data.message);
       } else {
         errorNotification(data.message);

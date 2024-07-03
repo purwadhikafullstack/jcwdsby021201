@@ -138,4 +138,9 @@ export class WarehouseService {
 
     return responseWithoutData(200, true, 'Success Update Warehouse');
   }
+
+  static async findNearestWarehouse(body: any) {
+    const response = await WarehouseRepository.findNearestWarehouse(body);
+    return responseWithData(200, 'Success Get Product', response);
+  }
 }

@@ -24,6 +24,11 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Logo from '@/components/core/Logo';
 import Link from 'next/link';
+import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import { UserSession } from '@/features/types';
+import { useGetCountProductCart } from '@/features/user/cart/cartQueries';
+import { useRouter } from 'next/navigation';
 
 const LanguageSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -69,19 +74,28 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function Navbar() {
+  const session = useSession();
+  const user = session.data?.user as UserSession;
+  const token = user?.token;
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const router = useRouter();
 
-  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    if (
-      event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
-    ) {
-      return;
-    }
-    setDrawerOpen(open);
-  };
+  const { data } = useGetCountProductCart(token || '');
+
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === 'keydown' &&
+        ((event as React.KeyboardEvent).key === 'Tab' ||
+          (event as React.KeyboardEvent).key === 'Shift')
+      ) {
+        return;
+      }
+      setDrawerOpen(open);
+    };
 
   const handleSearchToggle = () => {
     setSearchOpen(!searchOpen);
@@ -179,7 +193,11 @@ export default function Navbar() {
               <FavoriteIcon />
             </IconButton>
             <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
+              <Badge
+                onClick={() => router.push('/cart')}
+                badgeContent={data?.count ? data.count : '0'}
+                color="secondary"
+              >
                 <ShoppingCartIcon />
               </Badge>
             </IconButton>
@@ -187,7 +205,11 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
 
-      <AppBar position="static" color="inherit" sx={{ display: { xs: 'flex', md: 'none' } }}>
+      <AppBar
+        position="static"
+        color="inherit"
+        sx={{ display: { xs: 'flex', md: 'none' } }}
+      >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Logo />
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -202,7 +224,10 @@ export default function Navbar() {
       </AppBar>
 
       <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
-        <IconButton onClick={toggleDrawer(false)} sx={{ alignSelf: 'flex-end', p: 2 }}>
+        <IconButton
+          onClick={toggleDrawer(false)}
+          sx={{ alignSelf: 'flex-end', p: 2 }}
+        >
           <CloseIcon />
         </IconButton>
         {mobileMenu}

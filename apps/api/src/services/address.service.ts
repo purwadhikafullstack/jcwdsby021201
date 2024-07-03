@@ -11,7 +11,10 @@ export class AddressService {
   }
 
   static async getAddressByAddressId(id: number, addressId: number) {
-    const newAddressId = Validation.validate(AddressValidation.ONLY_ADDRESS_ID, Number(addressId))
+    const newAddressId = Validation.validate(
+      AddressValidation.ONLY_ADDRESS_ID,
+      Number(addressId),
+    );
     const response = await AddressRepository.getAddressByAddressId(
       id,
       newAddressId,
@@ -19,15 +22,20 @@ export class AddressService {
     return responseWithData(200, 'Success get Address', {
       name: response?.name,
       address: response?.address,
-      province: response?.province,
-      city: response?.city,
+      provinceId: response?.provinceId,
+      cityId: response?.cityId,
       postalCode: response?.postalCode,
       isPrimary: response?.isPrimary,
+      latitude: response?.latitude,
+      longitude: response?.longitude,
     });
   }
 
   static async deleteAddressByAddressId(id: number, addressId: number) {
-    const newAddressId = Validation.validate(AddressValidation.ONLY_ADDRESS_ID, Number(addressId))
+    const newAddressId = Validation.validate(
+      AddressValidation.ONLY_ADDRESS_ID,
+      Number(addressId),
+    );
     const response = await AddressRepository.deleteAddressByAddressId(
       id,
       newAddressId,
@@ -38,19 +46,29 @@ export class AddressService {
   static async addAddress(id: number, body: AddressBody) {
     const newBody = Validation.validate(AddressValidation.CREATE, body);
     const response = await AddressRepository.addAddress(id, newBody);
-    return responseWithoutData(201, true, 'Success create Address');
+
+    const successMessage = response.isPrimary
+      ? 'Success create primary Address'
+      : 'Success create Address';
+    return responseWithoutData(201, true, successMessage);
   }
 
   static async updateAddress(id: number, addressId: number, body: AddressBody) {
-    const newBody = Validation.validate(AddressValidation.UPDATE, body)
-    const response = await AddressRepository.updateAddress(id, addressId, newBody);
+    const newBody = Validation.validate(AddressValidation.UPDATE, body);
+    const response = await AddressRepository.updateAddress(
+      id,
+      addressId,
+      newBody,
+    );
     return responseWithData(200, 'Success get Address', {
       name: response?.name,
       address: response?.address,
-      province: response?.province,
-      city: response?.city,
+      provinceId: response?.provinceId,
+      cityId: response?.cityId,
       postalCode: response?.postalCode,
       isPrimary: response?.isPrimary,
+      latitude: response.latitude,
+      longitude: response.longitude,
     });
   }
 }

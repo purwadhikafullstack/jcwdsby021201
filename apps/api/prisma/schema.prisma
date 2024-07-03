@@ -119,16 +119,20 @@ model Address {
   id         Int      @id @default(autoincrement())
   name       String
   address    String   @db.Text
-  province   String
-  city       String
+  provinceId Int
+  cityId     Int
   postalCode String
   isPrimary  Boolean  @default(false)
   userId     Int
+  latitude   Float
+  longitude  Float
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  user   User    @relation(fields: [userId], references: [id])
-  orders Order[]
+  user     User     @relation(fields: [userId], references: [id])
+  orders   Order[]
+  province Province @relation(fields: [provinceId], references: [id])
+  city     City     @relation(fields: [cityId], references: [id])
 
   @@map("addresses")
 }
@@ -228,6 +232,7 @@ model JournalProduct {
   quantity           Int
   transactionType    ProductTransactionType
   productWarehouseId Int
+  description        String                 @db.Text
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
 
@@ -249,6 +254,7 @@ model JournalMutation {
   productId              Int
   sourceWarehouseId      Int
   destinationWarehouseId Int
+  description            String                 @db.Text
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
 
@@ -273,22 +279,22 @@ enum MutationStatus {
 }
 
 model Province {
-  id         Int         @id @default(autoincrement())
-  provinceId Int         @unique
+  id         Int         @id
   name       String
   cities     City[]
   warehouses Warehouse[]
+  addresses  Address[]
 
   @@map("provinces")
 }
 
 model City {
-  id         Int         @id @default(autoincrement())
-  cityId     Int         @unique
+  id         Int         @id
   name       String
-  province   Province    @relation(fields: [provinceId], references: [provinceId])
-  warehouses Warehouse[]
   provinceId Int
+  warehouses Warehouse[]
+  province   Province    @relation(fields: [provinceId], references: [id])
+  addresses  Address[]
 
   @@map("cities")
 }

@@ -208,4 +208,10 @@ export class ProductService {
 
     return responseWithData(200, 'Success Add Product Image', checkId);
   }
+
+  static async getStock(productId: number) {
+    const response = await ProductRepository.getStock(productId);
+
+    return responseWithData(200, 'Success Get Product', response._sum);
+  }
 }

@@ -18,21 +18,21 @@ export const getProvince = async () => {
   return res.data.result;
 };
 
-export const getCities = async (provinceId: string) => {
+export const getCities = async (provinceId: number) => {
   const res = await axiosInstance.get<ResponseWithData<LocationBody[]>>(
     `/locations/${provinceId}`,
   );
   return res.data.result;
 };
 
-export const getProvinceName = async (provinceId: string) => {
+export const getProvinceName = async (provinceId: number) => {
   const res = await axiosInstance.get<ResponseWithData<LocationName[]>>(
     `/locations/province/${provinceId}`,
   );
   return res.data.result[0];
 };
 
-export const getCityName = async (cityId: string) => {
+export const getCityName = async (cityId: number) => {
   const res = await axiosInstance.get<ResponseWithData<LocationName[]>>(
     `/locations/city/${cityId}`,
   );

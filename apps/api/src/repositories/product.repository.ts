@@ -79,4 +79,11 @@ export class ProductRepository {
   static async updateProductById(id: number, data: Prisma.ProductUpdateInput) {
     await prisma.product.update({ where: { id }, data });
   }
+
+  static async getStock(productId: number) {
+    return await prisma.productWarehouse.aggregate({
+      where: { productId },
+      _sum: { stock: true },
+    });
+  }
 }
