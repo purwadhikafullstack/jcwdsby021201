@@ -59,7 +59,7 @@ export const updateQuantity = async ({ token, data }: CartProduct) => {
 
 export const checkStock = async (productId: number) => {
   const res = await axiosInstance.get<ResponseWithData>(
-    `/products/${productId}`,
+    `/products/stock/${productId}`,
   );
   return res.data.result.stock;
 };

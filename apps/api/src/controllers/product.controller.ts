@@ -86,4 +86,17 @@ export class ProductController {
       next(error);
     }
   }
+
+  public async getProductForUser(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const response = await ProductService.getProductForUser();
+      return res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

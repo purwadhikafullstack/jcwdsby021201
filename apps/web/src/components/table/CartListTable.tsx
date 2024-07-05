@@ -13,6 +13,8 @@ import {
   TextField,
 } from '@mui/material';
 import { ProductBody } from '@/features/user/cart/type';
+import Image from 'next/image';
+import StyledButton from '../button/StyledButton';
 interface ITableCartProps {
   product: ProductBody[] | undefined;
   updateQuantity: (productId: number, newQuantity: number) => void;
@@ -50,9 +52,7 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
         <Typography variant="h6" align="center">
           Cart is Empty
         </Typography>
-        <Button variant="contained" sx={{ mt: 2 }}>
-          Let's Explore Product
-        </Button>
+        <StyledButton>Let's Explore Product</StyledButton>
       </Box>
     );
   }
@@ -73,7 +73,7 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
             <TableRow key={item.id}>
               <TableCell>
                 <Box display="flex" alignItems="center">
-                  <img
+                  <Image
                     src={
                       process.env.NEXT_PUBLIC_BASE_API_URL + `${item.image}` ||
                       `${item.image}`
@@ -83,7 +83,13 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
                     height={50}
                     style={{ marginRight: 10 }}
                   />
-                  <Typography>{item.name}</Typography>
+                  <Typography
+                    sx={{
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {item.name}
+                  </Typography>
                 </Box>
               </TableCell>
               <TableCell>IDR. {item.price.toLocaleString()}</TableCell>
@@ -108,13 +114,13 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
                 IDR.{(item.price * item.quantity).toLocaleString()}
               </TableCell>
               <TableCell>
-                <Button
+                <StyledButton
                   variant="contained"
                   color="error"
                   onClick={() => deleteProduct(item.productId)}
                 >
                   Remove
-                </Button>
+                </StyledButton>
               </TableCell>
             </TableRow>
           ))}

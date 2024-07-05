@@ -24,6 +24,9 @@ export const authPages: Record<string, Route> = {
 
 export const dashboardUserPages: Record<string, Route> = {
   profile: { path: '/dashboard/user/profile', label: 'Profile' },
+  purchases: { path: '/dashboard/user/order/to-pay', label: 'To Pay' },
+  shipping: { path: '/dashboard/user/order/to-ship', label: 'To Ship' },
+  receive: { path: '/dashboard/user/order/to-receive', label: 'To Receive' },
 };
 
 export const dashboardAdminPages: Record<string, Route> = {

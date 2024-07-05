@@ -72,3 +72,35 @@ export type OrderShippedRequest = {
   orderNumber?: string;
   token: string;
 };
+
+export type QueryPagination = {
+  page?: number;
+  limit?: number;
+  filter?: string | number;
+  sortBy?: string;
+  orderBy?: string;
+};
+
+export type QueryPaginationWithToken = {
+  token: string;
+  params: QueryPagination;
+};
+
+export type CobaBody = {
+  name: string;
+};
+export type CobaResponse = CobaBody & {
+  id: number;
+  paymentStatus: string;
+  shippingCost: number;
+  total: number;
+  paymentMethod: string;
+  paymentProof: null;
+  expirePayment: string;
+  warehouseId: number;
+  cartId: number;
+  addressId: number;
+  createdAt: string;
+  updatedAt: string;
+  image?: string;
+};

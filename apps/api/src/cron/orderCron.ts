@@ -4,7 +4,7 @@ import { OrderRepository } from '@/repositories/order.repository';
 import cron from 'node-cron';
 
 export function startOrderCronJobs() {
-  cron.schedule('*/5 * * * *', async () => {
+  cron.schedule('*/60 * * * *', async () => {
     try {
       const canceledCount = await OrderRepository.cancelExpiredOrders();
       console.log(

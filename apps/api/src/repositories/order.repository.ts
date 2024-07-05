@@ -18,7 +18,7 @@ export class OrderRepository {
       longitude,
     } = body;
 
-    const expirePayment = new Date(Date.now() + 5 * 60 * 1000); //di 5 menit dulu
+    const expirePayment = new Date(Date.now() + 60 * 60 * 1000); //di 5 menit dulu
 
     return await prisma.$transaction(async (tx) => {
       //cari tahu nama gudangnya:
@@ -201,42 +201,6 @@ export class OrderRepository {
     });
   }
 
-  static async getOrderByUserId(id: number) {
-    return prisma.order.findMany({
-      where: {
-        cart: {
-          userId: id,
-        },
-        paymentStatus: 'UNPAID',
-      },
-      select: {
-        id: true,
-        name: true,
-        total: true,
-        paymentMethod: true,
-        expirePayment: true,
-        orderProducts: {
-          select: {
-            quantity: true,
-            price: true,
-            total: true,
-            product: {
-              select: {
-                id: true,
-                name: true,
-                pictures: {
-                  select: {
-                    url: true,
-                  },
-                  take: 1,
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-  }
 
   static async uploadPaymentProof(
     id: number,
@@ -370,28 +334,53 @@ export class OrderRepository {
     return result;
   }
 
-  static async getShippedOrder(id: number) {
-    return prisma.order.findMany({
+  static async receivedOrder(id: number, orderId: number) {
+    return await prisma.order.updateMany({
       where: {
+        id: orderId,
         cart: {
           userId: id,
         },
         paymentStatus: 'SHIPPED',
       },
-      select: {
-        id: true,
-        name: true,
-        total: true,
-        paymentMethod: true,
-        expirePayment: true,
+      data: {
+        paymentStatus: 'DELIVERED',
+      },
+    });
+  }
+
+  static async getToPayOrder(
+    id: number,
+    page: number,
+    limit: number,
+    filter: string,
+    sortBy: string,
+    orderBy: string,
+  ) {
+    const orders = await prisma.order.findMany({
+      where: {
+        cart: {
+          userId: id,
+        },
+        paymentStatus: 'UNPAID',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
         orderProducts: {
-          select: {
-            quantity: true,
-            price: true,
-            total: true,
+          include: {
             product: {
               select: {
-                id: true,
                 name: true,
                 pictures: {
                   select: {
@@ -404,20 +393,204 @@ export class OrderRepository {
           },
         },
       },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { [sortBy]: orderBy },
+    });
+    return orders.map((order) => {
+      const productPhoto =
+        order.orderProducts[0]?.product.pictures[0]?.url || null;
+
+      return {
+        ...order,
+        product: order.orderProducts.map((product) => product.product.name),
+        image: productPhoto,
+        orderProducts: undefined,
+      };
+    });
+  }
+  static async countToPayOrder(id: number, filter: string) {
+    return await prisma.order.count({
+      where: {
+        cart: { userId: id },
+        paymentStatus: 'UNPAID',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
+      },
     });
   }
 
-  static async receivedOrder(id: number, orderId: number) {
-    return await prisma.order.updateMany({
+  static async getToShipOrder(
+    id: number,
+    page: number,
+    limit: number,
+    filter: string,
+    sortBy: string,
+    orderBy: string,
+  ) {
+    const orders = await prisma.order.findMany({
       where: {
-        id: orderId,
         cart: {
           userId: id,
         },
         paymentStatus: 'SHIPPED',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
       },
-      data: {
+      include: {
+        orderProducts: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                pictures: {
+                  select: {
+                    url: true,
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { [sortBy]: orderBy },
+    });
+    return orders.map((order) => {
+      const productPhoto =
+        order.orderProducts[0]?.product.pictures[0]?.url || null;
+
+      return {
+        ...order,
+        product: order.orderProducts.map((product) => product.product.name),
+        image: productPhoto,
+        orderProducts: undefined,
+      };
+    });
+  }
+
+  static async countToShipOrder(id: number, filter: string) {
+    return await prisma.order.count({
+      where: {
+        cart: { userId: id },
+        paymentStatus: 'SHIPPED',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  static async getToReceive(
+    id: number,
+    page: number,
+    limit: number,
+    filter: string,
+    sortBy: string,
+    orderBy: string,
+  ) {
+    const orders = await prisma.order.findMany({
+      where: {
+        cart: {
+          userId: id,
+        },
         paymentStatus: 'DELIVERED',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        orderProducts: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                pictures: {
+                  select: {
+                    url: true,
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { [sortBy]: orderBy },
+    });
+    return orders.map((order) => {
+      const productPhoto =
+        order.orderProducts[0]?.product.pictures[0]?.url || null;
+
+      return {
+        ...order,
+        product: order.orderProducts.map((product) => product.product.name),
+        image: productPhoto,
+        orderProducts: undefined,
+      };
+    });
+  }
+
+  
+  static async countToReceiveOrder(id: number, filter: string) {
+    return await prisma.order.count({
+      where: {
+        cart: { userId: id },
+        paymentStatus: 'DELIVERED',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
       },
     });
   }

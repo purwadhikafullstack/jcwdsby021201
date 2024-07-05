@@ -223,4 +223,16 @@ export class ProductService {
 
     return responseWithData(200, 'Success Get Product', response._sum);
   }
+
+  static async getProductForUser() {
+    const response = await ProductRepository.getProductForUser();
+    const newResponse = response.map((product) => {
+      return {
+        ...product,
+        pictures: product.pictures[0].url ? product.pictures[0].url : null,
+      };
+    });
+
+    return responseWithData(200, 'Success Get Product', newResponse);
+  }
 }

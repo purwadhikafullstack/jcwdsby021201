@@ -33,8 +33,9 @@ export const getAddressByAddressId = async (
 };
 
 export const deleteAddress = async ({ token, addressId }: AddressRequest) => {
-  const res = await axiosInstance.delete<ResponseWithoutData>(
-    `/addresses/${addressId}`,
+  const res = await axiosInstance.patch<ResponseWithoutData>(
+    `/addresses/deactivate/${addressId}`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -51,7 +52,7 @@ export const updateAddress = async ({
   data,
 }: UpdateAddress) => {
   const res = await axiosInstance.patch<ResponseWithoutData>(
-    `/addresses/${addressId}`,
+    `/addresses/edit/${addressId}`,
     data,
     {
       headers: {

@@ -7,24 +7,18 @@ import {
   Typography,
   Container,
   Grid,
-  Modal,
-  Backdrop,
-  Fade,
   Divider,
   Skeleton,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useGetProfileById } from '@/features/user/profile/profileQueries';
-import ChangeUsernameForm from '@/components/form/UpdateUsernameForm';
-import ChangePasswordForm from '@/components/form/UpdatePasswordForm';
-import ChangeEmailForm from '@/components/form/UpdateEmailForm';
 import { useGetAddressById } from '@/features/user/address/addressQueries';
-import ProfilePictureForm from '@/components/form/UploadPictureForm';
 import UsernameModalUpdate from '@/components/modal/UsernameModalUpdate';
 import PasswordModalUpdate from '@/components/modal/PasswordModalUpdate';
 import EmailModalUpdate from '@/components/modal/EmailModalUpdate';
 import ProfileModalUpdate from '@/components/modal/ProfileModalUpdate';
+import Image from 'next/image';
 
 interface IProfileProps {}
 
@@ -90,7 +84,7 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
               {isLoading ? (
                 <Skeleton variant="circular" width={150} height={150} />
               ) : data ? (
-                <img
+                <Image
                   src={
                     process.env.NEXT_PUBLIC_BASE_API_URL + `${data.image}` ||
                     `${data?.image}`

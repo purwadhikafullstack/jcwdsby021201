@@ -5,7 +5,7 @@ import { AddressBody } from '@/types/address.type';
 export class AddressRepository {
   static async getAddressById(id: number) {
     return await prisma.address.findMany({
-      where: { userId: id },
+      where: { userId: id, isDeleted: false },
     });
   }
 
@@ -19,20 +19,13 @@ export class AddressRepository {
   }
 
   static async deleteAddressByAddressId(id: number, addressId: number) {
-    const addressInUse = await prisma.order.findFirst({
-      where: {
-        addressId: addressId,
-      },
-    });
-
-    if (addressInUse) {
-      throw new Error('Address is currently in use and cannot be deleted');
-    }
-
-    return await prisma.address.delete({
+    return await prisma.address.update({
       where: {
         id: addressId,
         userId: id,
+      },
+      data: {
+        isDeleted: true,
       },
     });
   }
@@ -73,18 +66,18 @@ export class AddressRepository {
       longitude,
     } = body;
 
-    // Cari alamat lain dengan isPrimary: true untuk pengguna ini
+    // cari alamat lain dengan isPrimary true
     const existingPrimaryAddress = await prisma.address.findFirst({
       where: {
         userId: id,
         isPrimary: true,
         NOT: {
-          id: addressId, // Tidak termasuk alamat yang sedang diupdate
+          id: addressId, // tidak termasuk alamat yang sedang diupdate
         },
       },
     });
 
-    // Jika ada alamat lain dengan isPrimary: true, atur menjadi false
+    // jika ada alamat lain dengan isPrimary: true, atur menjadi false
     if (existingPrimaryAddress) {
       await prisma.address.update({
         where: {

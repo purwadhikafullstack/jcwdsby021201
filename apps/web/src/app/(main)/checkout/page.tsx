@@ -1,4 +1,5 @@
 'use client';
+import AddidasButton from '@/components/button/StyledButton';
 import AddressForm from '@/components/form/AddAddressForm';
 import CheckoutTable from '@/components/table/CheckoutTable';
 import { UserSession } from '@/features/types';
@@ -21,6 +22,7 @@ import {
   Typography,
   SelectChangeEvent,
   Alert,
+  Box,
 } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
@@ -36,7 +38,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
 
   const [selectedAddressId, setSelectedAddressId] = React.useState<number>(0);
   const [shippingCost, setShippingCost] = React.useState<number>(0);
-  const [paymentMethod, setPaymentMethod] = React.useState('bank_transfer');
+  const [paymentMethod, setPaymentMethod] = React.useState('mandiri');
   const [courier, setCourier] = React.useState('jne');
   const [warehouse, setWarehouse] = React.useState('');
   const [warehouseCity, setWarehouseCity] = React.useState('');
@@ -60,14 +62,14 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
   const calculateShippingCost = async (cityId: string, origin: string) => {
     try {
       const shippingCost = await fetchShippingCost({
-        courier,
+        courier: courier,
         destination: cityId,
-        origin,
+        origin: origin,
         weight: 1000,
       });
+
       setShippingCost(shippingCost);
     } catch (error) {
-      console.error('Error fetching shipping cost:', error);
       setShippingCost(0);
     }
   };
@@ -81,7 +83,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
         calculateShippingCost(String(selectedAddress.cityId), warehouseCity);
       }
     }
-  }, [courier, selectedAddressId, warehouseCity]);
+  }, [selectedAddressId, warehouseCity, courier]);
 
   //FETCH AWAL UNTUK ADDRESS YANG DIPILIH
   React.useEffect(() => {
@@ -105,12 +107,12 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
             longitude: primaryAddr.longitude,
           });
           setWarehouse(warehousePick.warehouseId);
-          setWarehouseCity(warehousePick.city);
+          setWarehouseCity(String(warehousePick.city.id));
 
-          // Sekarang kita memiliki warehouseCity, kita bisa mengambil biaya pengiriman
+          // warehouse :
           await calculateShippingCost(
             String(primaryAddr.cityId),
-            warehousePick.city,
+            String(warehousePick.city.id),
           );
         } catch (error) {
           console.error('Error checkout:', error);
@@ -122,7 +124,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
     };
 
     initializeCheckout();
-  }, [dataAddress]);
+  }, [dataAddress, courier]);
 
   //INI PERUBAHAN ADDRESS :
   const handleAddressChange = async (
@@ -147,11 +149,12 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
           latitude: selectedAddress.latitude,
           longitude: selectedAddress.longitude,
         });
+
         setWarehouse(warehousePick.warehouseId);
-        setWarehouseCity(warehousePick.city);
+        setWarehouseCity(warehousePick.city.id);
         await calculateShippingCost(
           String(selectedAddress.cityId),
-          warehousePick.city,
+          String(warehousePick.city.id),
         );
       }
     }
@@ -161,6 +164,18 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
   const calculateTotal = () => {
     return product?.reduce((sum, item) => sum + item.quantity * item.price, 0);
   };
+
+  //generate abstrak buat order name:
+  function generateRandomAlphabet(length: number) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length),
+      );
+    }
+    return result;
+  }
 
   const handleCheckout = async () => {
     try {
@@ -186,8 +201,17 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
       });
 
       const total = (calculateTotal() || 0) + shippingCost;
+
+      //buat tanggal di order :
+      const order = new Date().toISOString();
+      const formattedDate = new Date(order)
+        .toLocaleDateString('en-GB')
+        .split('/')
+        .reverse()
+        .join('-');
+
       const orderData = {
-        name: 'Order ' + new Date().toISOString(),
+        name: 'Order-' + formattedDate + '-' + generateRandomAlphabet(7),
         paymentStatus: 'UNPAID',
         shippingCost: shippingCost,
         total: total,
@@ -208,7 +232,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
 
       if (token) {
         const response = await createOrder({ token, orderData });
-        router.push('/dashboard/user/order/my-order');
+        router.push('/transfer');
       } else {
         setErrorMessage('User token is not available. Please log in again.');
       }
@@ -225,7 +249,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
           {errorMessage}
         </Alert>
       )}
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ textTransform: 'uppercase' }}>
         Checkout
       </Typography>
       <Grid container spacing={3}>
@@ -256,8 +280,12 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 fullWidth
               >
-                <MenuItem value="bank_transfer">Bank Transfer</MenuItem>
-                <MenuItem value="e_wallet">E-Wallet</MenuItem>
+                <MenuItem value="mandiri">Bank Mandiri</MenuItem>
+                <MenuItem value="bca">Bank BCA</MenuItem>
+                <MenuItem value="bri">Bank BRI</MenuItem>
+                <MenuItem value="bni">Bank BNI</MenuItem>
+                <MenuItem value="gopay">Go-Pay</MenuItem>
+                <MenuItem value="ovo">OVO</MenuItem>
               </Select>
             </Grid>
           </Grid>
@@ -280,10 +308,11 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
             </Grid>
           </Grid>
         </Grid>
-
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ backgroundColor: 'eee' }}>
           <Paper style={{ padding: 16 }}>
-            <Typography variant="h6">Order Summary</Typography>
+            <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
+              Order Summary
+            </Typography>
             <Typography variant="body1">
               Subtotal: Rp {calculateTotal()?.toLocaleString()}
             </Typography>
@@ -291,16 +320,18 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
               Shipping Cost: Rp {shippingCost.toLocaleString()}
             </Typography>
             <Divider />
-            <Typography variant="body1">Total: Rp ....</Typography>
-            <Button
+            <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+              Total : Rp {(calculateTotal()! + shippingCost).toLocaleString()}
+            </Typography>
+            <AddidasButton
               variant="contained"
               color="primary"
               fullWidth
               style={{ marginTop: 16 }}
               onClick={handleCheckout}
             >
-              Make Order!
-            </Button>
+              Make Order
+            </AddidasButton>
           </Paper>
           {showAddressForm && (
             <Grid item xs={12}>

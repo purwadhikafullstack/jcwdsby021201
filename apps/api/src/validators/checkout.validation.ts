@@ -8,7 +8,7 @@ export class CheckoutValidation {
       .min(1, { message: 'Destination City ID must not be empty' }),
     origin: z
       .string({ message: 'originCityId is required!' })
-      .min(1, { message: 'Destination City ID must not be empty' }),
+      .min(1, { message: 'originCityId must not be empty' }),
     weight: z
       .number({ message: 'weight is required!' })
       .positive({ message: 'Weight must be a positive number' }),

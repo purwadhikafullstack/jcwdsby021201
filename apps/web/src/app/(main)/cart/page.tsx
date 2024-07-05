@@ -1,13 +1,6 @@
 'use client';
 import React from 'react';
-import {
-  Container,
-  Grid,
-  Typography,
-  Paper,
-  Button,
-  Alert,
-} from '@mui/material';
+import { Container, Grid, Typography, Paper, Alert } from '@mui/material';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import {
@@ -20,6 +13,7 @@ import { ProductBody } from '@/features/user/cart/type';
 import TableCart from '@/components/table/CartListTable';
 import { checkStock } from '@/features/user/cart/cartFecther';
 import { errorFetcherNotification } from '@/utils/notifications';
+import StyledButton from '@/components/button/StyledButton';
 
 const Cart = () => {
   const router = useRouter();
@@ -48,7 +42,7 @@ const Cart = () => {
         });
       }
     } catch (error) {
-      errorFetcherNotification(error)
+      errorFetcherNotification(error);
     }
   };
 
@@ -65,7 +59,7 @@ const Cart = () => {
         });
       }
     } catch (error) {
-      errorFetcherNotification(error)
+      errorFetcherNotification(error);
     }
   };
 
@@ -117,9 +111,9 @@ const Cart = () => {
     return true;
   };
 
-  const calculateTotal = () => {    
+  const calculateTotal = () => {
     return product?.reduce((total, item) => {
-      return total + (item.price * item.quantity);
+      return total + item.price * item.quantity;
     }, 0);
   };
 
@@ -132,7 +126,7 @@ const Cart = () => {
 
   return (
     <Container sx={{ my: '120px' }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ textTransform: 'uppercase' }}>
         Shopping Cart
       </Typography>
       {errorMessage && (
@@ -151,9 +145,13 @@ const Cart = () => {
         </Grid>
         <Grid item xs={12} md={4}>
           <Paper style={{ padding: 16 }}>
-            <Typography variant="h6">Order Summary</Typography>
-            <Typography variant="body1">Total : {calculateTotal()?.toLocaleString()}</Typography>
-            <Button
+            <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
+              Order Summary
+            </Typography>
+            <Typography variant="body1">
+              Total : {calculateTotal()?.toLocaleString()}
+            </Typography>
+            <StyledButton
               onClick={handleCheckout}
               variant="contained"
               color="inherit"
@@ -161,7 +159,7 @@ const Cart = () => {
               style={{ marginTop: 16 }}
             >
               Checkout
-            </Button>
+            </StyledButton>
           </Paper>
         </Grid>
       </Grid>

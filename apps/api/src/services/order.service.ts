@@ -1,5 +1,10 @@
 import { OrderRepository } from '@/repositories/order.repository';
-import { responseWithData } from '@/utils/response';
+import { OrderQuery } from '@/types/order.type';
+import {
+  responseDataWithPagination,
+  responseWithData,
+  responseWithoutData,
+} from '@/utils/response';
 import { OrderValidation } from '@/validators/order.validation';
 import { Validation } from '@/validators/validation';
 
@@ -10,42 +15,17 @@ export class OrderService {
     return responseWithData(200, 'Order created successfully', response);
   }
 
-  static async getOrderByUserId(id: number) {
-    const response = await OrderRepository.getOrderByUserId(id);
-    const simplifiedOrders = response.map((order) => ({
-      id: order.id,
-      name: order.name,
-      total: order.total,
-      paymentMethod: order.paymentMethod,
-      expirePayment: order.expirePayment,
-      orderProducts: order.orderProducts.map((op) => ({
-        quantity: op.quantity,
-        price: op.price,
-        total: op.total,
-        product: {
-          id: op.product.id,
-          name: op.product.name,
-          picture: op.product.pictures[0]?.url || null,
-        },
-      })),
-    }));
-    return responseWithData(
-      200,
-      'Order created successfully',
-      simplifiedOrders,
-    );
-  }
-
   static async uploadPaymentProof(
     id: number,
     orderId: number,
     file: Express.Multer.File,
   ) {
-    //INI BELUM VALIDASI FILE DI BACKEND
+    const validatedFiles = OrderValidation.fileValidation(file);
+
     const response = await OrderRepository.uploadPaymentProof(
       id,
       orderId,
-      file,
+      validatedFiles,
     );
     return responseWithData(200, 'Success upload payment Proofy', {
       paymentProof: response.paymentProof,
@@ -71,35 +51,107 @@ export class OrderService {
     return responseWithData(200, 'Success cancel order', response);
   }
 
-  static async getShippedOrder(id: number) {
-    const response = await OrderRepository.getShippedOrder(id);
-    const simplifiedOrders = response.map((order) => ({
-      id: order.id,
-      name: order.name,
-      total: order.total,
-      paymentMethod: order.paymentMethod,
-      expirePayment: order.expirePayment,
-      orderProducts: order.orderProducts.map((op) => ({
-        quantity: op.quantity,
-        price: op.price,
-        total: op.total,
-        product: {
-          id: op.product.id,
-          name: op.product.name,
-          picture: op.product.pictures[0]?.url || null,
-        },
-      })),
-    }));
-    return responseWithData(
-      200,
-      'Success get Shipped Order',
-      simplifiedOrders,
-    );
+  static async receivedOrder(id: number, orderId: number) {
+    const response = await OrderRepository.receivedOrder(id, orderId);
+    return responseWithData(200, 'Success received Order ', response);
   }
 
-  static async receivedOrder(id: number, orderId: number){
-    const response = await OrderRepository.receivedOrder(id,orderId);
-    return responseWithData(200, 'Success received Order ', response);
+  static async getToPayOrder(id: number, query: OrderQuery) {
+    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
 
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const queryFilter = filter || '';
+    const querySortBy = sortBy || 'name';
+    const queryOrderBy = orderBy || 'asc';
+
+    const response = await OrderRepository.getToPayOrder(
+      id,
+      queryPage,
+      queryLimit,
+      queryFilter,
+      querySortBy,
+      queryOrderBy,
+    );
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await OrderRepository.countToPayOrder(id, queryFilter);
+    return responseDataWithPagination(200, 'Success Get Categories', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
+  }
+
+  static async getToShipOrder(id: number, query: OrderQuery) {
+    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const queryFilter = filter || '';
+    const querySortBy = sortBy || 'name';
+    const queryOrderBy = orderBy || 'asc';
+
+    const response = await OrderRepository.getToShipOrder(
+      id,
+      queryPage,
+      queryLimit,
+      queryFilter,
+      querySortBy,
+      queryOrderBy,
+    );
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await OrderRepository.countToShipOrder(id, queryFilter);
+    return responseDataWithPagination(200, 'Success Get Categories', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
+  }
+
+  static async getToReceive(id: number, query: OrderQuery) {
+    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const queryFilter = filter || '';
+    const querySortBy = sortBy || 'name';
+    const queryOrderBy = orderBy || 'asc';
+
+    const response = await OrderRepository.getToReceive(
+      id,
+      queryPage,
+      queryLimit,
+      queryFilter,
+      querySortBy,
+      queryOrderBy,
+    );
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await OrderRepository.countToReceiveOrder(id, queryFilter);
+    return responseDataWithPagination(200, 'Success Get Categories', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
   }
 }

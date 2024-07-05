@@ -22,14 +22,28 @@ export class OrderRouter {
       this.orderController.handleCheckout,
     );
 
+    this.router.post('/check-mutate', this.orderController.checkAndMutateStock);
+    //BARU
     this.router.get(
-      '/',
+      '/to-pay',
       verifyToken,
       userGuard,
-      this.orderController.getOrderByUserId,
+      this.orderController.getToPayOrder,
     );
 
-    this.router.post('/check-mutate', this.orderController.checkAndMutateStock);
+    this.router.get(
+      '/to-ship',
+      verifyToken,
+      userGuard,
+      this.orderController.getToShipOrder,
+    );
+
+    this.router.get(
+      '/to-receive',
+      verifyToken,
+      userGuard,
+      this.orderController.getToReceive,
+    );
 
     this.router.patch(
       '/cancel-order/:orderId',
@@ -44,13 +58,6 @@ export class OrderRouter {
       userGuard,
       uploader('/payment', 'PAYMENT').single('image'),
       this.orderController.uploadPaymentProof,
-    );
-
-    this.router.get(
-      '/shipped-order',
-      verifyToken,
-      userGuard,
-      this.orderController.getShippedOrder,
     );
 
     this.router.patch(

@@ -21,8 +21,8 @@ export class AddressRouter {
       this.addressController.getAddressById,
     );
 
-    this.router.delete(
-      '/:addressId',
+    this.router.patch(
+      '/deactivate/:addressId',
       verifyToken,
       userGuard,
       this.addressController.deleteAddressByAddressId,
@@ -36,7 +36,7 @@ export class AddressRouter {
     );
 
     this.router.patch(
-      '/:addressId',
+      '/edit/:addressId',
       verifyToken,
       userGuard,
       this.addressController.updateAddress,

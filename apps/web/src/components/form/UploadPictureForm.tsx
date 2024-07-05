@@ -52,18 +52,27 @@ export default function UploadPictureForm({
         return;
       }
 
-      //Validasi Image Type
-      const allowedFormats = ['image/jpeg', 'image/png', 'image/gif'];
+      let allowedFormats: string[];
+      let errorMessage: string;
+
+      if (type === 'profile') {
+        allowedFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+        errorMessage =
+          'Only JPG, JPEG, PNG, and GIF files are allowed for profile pictures.';
+      } else {
+        allowedFormats = ['image/jpeg', 'image/jpg', 'image/png'];
+        errorMessage =
+          'Only JPG, JPEG, and PNG files are allowed for payment proof.';
+      }
+
       const isValidFormat = allowedFormats.includes(selectedFile.type);
       const isValidSize = selectedFile.size <= 1024 * 1024;
 
-      //Validasi Image Type
       if (!isValidFormat) {
-        setErrorMessage('Only JPG, JPEG, PNG, and GIF files are allowed.');
+        setErrorMessage(errorMessage);
         return;
       }
 
-      //Validasi Image Type
       if (!isValidSize) {
         setErrorMessage('Maximum file size is 1MB.');
         return;
@@ -97,8 +106,8 @@ export default function UploadPictureForm({
 
   return (
     <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-      <Typography variant="h6" mb={2}>
-        Change Profile Picture
+      <Typography variant="h6" mb={2} sx={{ textTransform: 'uppercase' }}>
+        {type === 'profile' ? 'Change Profile Picture' : 'Upload Payment Proof'}
       </Typography>
       {errorMessage && <Typography color="error">{errorMessage}</Typography>}
       <Controller
@@ -126,7 +135,20 @@ export default function UploadPictureForm({
           </>
         )}
       />
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+      <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        sx={{
+          mt: '10px',
+          color: 'white',
+          backgroundColor: 'black',
+          borderRadius: '0px',
+          '&:hover': {
+            backgroundColor: '#333333',
+          },
+        }}
+      >
         Submit
       </Button>
     </Box>

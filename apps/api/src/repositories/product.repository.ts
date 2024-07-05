@@ -86,4 +86,16 @@ export class ProductRepository {
       _sum: { stock: true },
     });
   }
+
+  static async getProductForUser() {
+    return await prisma.product.findMany({
+      include: {
+        pictures: {
+          select: {
+            url: true,
+          },
+        },
+      },
+    });
+  }
 }

@@ -1,4 +1,9 @@
 import { z } from 'zod';
+import { deleteFile } from '@/utils/file';
+import { ErrorResponse } from '@/utils/error';
+
+const MAX_FILE_SIZE = 1 * 1024 * 1024;
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
 export class OrderValidation {
   static CHECKOUT_BODY = z.object({
@@ -41,4 +46,23 @@ export class OrderValidation {
       }),
     ),
   });
+
+  static fileValidation(file: Express.Multer.File) {
+    if (!file) throw new ErrorResponse(400, 'Image is required!');
+
+    if (file.size > MAX_FILE_SIZE) {
+      deleteFile('../../public/assets/payment', file.filename);
+      throw new ErrorResponse(400, 'Image must be less than 1MB!');
+    }
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.mimetype)) {
+      deleteFile('../../public/assets/payment', file.filename);
+      throw new ErrorResponse(
+        400,
+        '.jpg, .jpeg, and .png  files are only accepted.',
+      );
+    }
+
+    return file;
+  }
 }

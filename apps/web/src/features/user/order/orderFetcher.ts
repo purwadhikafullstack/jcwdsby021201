@@ -1,9 +1,15 @@
-import { ResponseWithData, ResponseWithoutData } from '@/features/types';
+import {
+  ResponseDataPagination,
+  ResponseWithData,
+  ResponseWithoutData,
+} from '@/features/types';
 import axiosInstance from '@/utils/axiosInstance';
 import {
   CancelOrder,
   CheckMutateOtomaticOrder,
+  CobaResponse,
   OrderDataBody,
+  QueryPagination,
   ReceiveOrder,
   ShippingCostParams,
   UploadPaymentProof,
@@ -26,15 +32,6 @@ export const uploadPaymmentProof = async ({
   );
 
   return res.data;
-};
-
-export const getOrders = async (token: string) => {
-  const res = await axiosInstance.get<ResponseWithData>('/orders', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res.data.result;
 };
 
 export const cancelOrder = async ({ token, orderId }: CancelOrder) => {
@@ -60,10 +57,13 @@ export const fetchWarehouseNearest = async ({
   latitude,
   longitude,
 }: WarehouseNearestParams) => {
-  const res = await axiosInstance.post<ResponseWithData>('/warehouses/nearest', {
-    latitude,
-    longitude,
-  });
+  const res = await axiosInstance.post<ResponseWithData>(
+    '/warehouses/nearest',
+    {
+      latitude,
+      longitude,
+    },
+  );
   return res.data.result;
 };
 
@@ -88,23 +88,71 @@ export const createOrder = async ({ token, orderData }: OrderDataBody) => {
   return res.data;
 };
 
-export const getShippedOrders = async (token: string) => {
-  const res = await axiosInstance.get<ResponseWithData>(
-    '/orders/shipped-order',
+export const receiveOrder = async ({ token, orderId }: ReceiveOrder) => {
+  const res = await axiosInstance.patch<ResponseWithoutData>(
+    `/orders//receive-order/${orderId}`,
+    {},
     {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     },
   );
-  return res.data.result;
+
+  return res.data;
 };
 
-export const receiveOrder = async ({ token, orderId }: ReceiveOrder) => {
-  const res = await axiosInstance.patch<ResponseWithoutData>(
-    `/orders//receive-order/${orderId}`,
-    {},
+export const getUnpaidOrder = async ({
+  token,
+  params,
+}: {
+  token: string;
+  params: QueryPagination;
+}) => {
+  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+    '/orders//to-pay',
     {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return res.data;
+};
+
+export const getToShipOrder = async ({
+  token,
+  params,
+}: {
+  token: string;
+  params: QueryPagination;
+}) => {
+  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+    '/orders/to-ship',
+    {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return res.data;
+};
+
+export const getToReceiveOrder = async ({
+  token,
+  params,
+}: {
+  token: string;
+  params: QueryPagination;
+}) => {
+  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+    '/orders/to-receive',
+    {
+      params,
       headers: {
         Authorization: `Bearer ${token}`,
       },

@@ -6,7 +6,11 @@ import {
 } from '@/types/user.type';
 import { sendEmail } from '@/utils/emailSender';
 import { hashPassword } from '@/utils/hash';
-import { generateJWTTokenWithExpiry, generateJWTTokenWithoutExpiry, verifyJWTToken } from '@/utils/jwt';
+import {
+  generateJWTTokenWithExpiry,
+  generateJWTTokenWithoutExpiry,
+  verifyJWTToken,
+} from '@/utils/jwt';
 import { responseWithData, responseWithoutData } from '@/utils/response';
 import { clientRoutes } from '@/utils/routes';
 import { UserValidation } from '@/validators/user.validation';
@@ -90,8 +94,12 @@ export class UserService {
     if (!id || !file) {
       responseWithoutData(400, false, 'Token and file are required');
     }
+    const validatedFiles = UserValidation.fileValidation(file);
 
-    const response = await UserRepository.changeProfilPicture(id, file);
+    const response = await UserRepository.changeProfilPicture(
+      id,
+      validatedFiles,
+    );
 
     return responseWithData(200, 'Profile picture updated successfully', {
       image: response?.image,

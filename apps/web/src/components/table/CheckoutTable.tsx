@@ -14,6 +14,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { ProductBody } from '@/features/user/cart/type';
+import Image from 'next/image';
 interface ICheckoutTableProps {
   product: ProductBody[] | undefined;
 }
@@ -37,7 +38,7 @@ const CheckoutTable: React.FunctionComponent<ICheckoutTableProps> = ({
             <TableRow key={item.id}>
               <TableCell>
                 <Box display="flex" alignItems="center">
-                  <img
+                  <Image
                     src={
                       process.env.NEXT_PUBLIC_BASE_API_URL + `${item.image}` ||
                       `${item.image}`
@@ -47,7 +48,13 @@ const CheckoutTable: React.FunctionComponent<ICheckoutTableProps> = ({
                     height={50}
                     style={{ marginRight: 10 }}
                   />
-                  <Typography>{item.name}</Typography>
+                  <Typography
+                    sx={{
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {item.name}
+                  </Typography>
                 </Box>
               </TableCell>
               <TableCell>{item.quantity}</TableCell>
