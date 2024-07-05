@@ -219,11 +219,13 @@ model ProductWarehouse {
   warehouseId Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deleted     Boolean  @default(false)
 
   warehouse       Warehouse        @relation(fields: [warehouseId], references: [id])
   product         Product          @relation(fields: [productId], references: [id])
   journalProducts JournalProduct[]
 
+  @@unique([productId, warehouseId])
   @@map("product_warehouses")
 }
 
@@ -231,12 +233,12 @@ model JournalProduct {
   id                 Int                    @id @default(autoincrement())
   quantity           Int
   transactionType    ProductTransactionType
-  productWarehouseId Int
   description        String                 @db.Text
+  productWarehouseId Int
   createdAt          DateTime               @default(now())
   updatedAt          DateTime               @updatedAt
 
-  ProductWarehouse ProductWarehouse @relation(fields: [productWarehouseId], references: [id])
+  productWarehouse ProductWarehouse @relation(fields: [productWarehouseId], references: [id])
 
   @@map("journal_products")
 }
@@ -251,10 +253,10 @@ model JournalMutation {
   quantity               Int
   transactionType        MutaionTransactionType
   status                 MutationStatus
+  description            String                 @db.Text
   productId              Int
   sourceWarehouseId      Int
   destinationWarehouseId Int
-  description            String                 @db.Text
   createdAt              DateTime               @default(now())
   updatedAt              DateTime               @updatedAt
 
@@ -279,8 +281,9 @@ enum MutationStatus {
 }
 
 model Province {
-  id         Int         @id
-  name       String
+  id   Int    @id
+  name String
+
   cities     City[]
   warehouses Warehouse[]
   addresses  Address[]
@@ -289,9 +292,10 @@ model Province {
 }
 
 model City {
-  id         Int         @id
+  id         Int    @id
   name       String
   provinceId Int
+
   warehouses Warehouse[]
   province   Province    @relation(fields: [provinceId], references: [id])
   addresses  Address[]

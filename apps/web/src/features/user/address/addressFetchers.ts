@@ -64,7 +64,6 @@ export const updateAddress = async ({
 };
 
 export const addAddress = async ({ token, addressData }: CreateAddress) => {
-  console.log('Sending address data:', addressData);
   const res = await axiosInstance.post<ResponseWithoutData>(
     `/addresses`,
     addressData,

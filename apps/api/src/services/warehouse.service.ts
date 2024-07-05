@@ -1,5 +1,6 @@
 import { LocationRepository } from '@/repositories/location.repository';
 import { WarehouseRepository } from '@/repositories/warehouse.repository';
+import { UserDecoded } from '@/types/auth.type';
 import { WarehouseBody, WarehouseQuery } from '@/types/warehouse.type';
 import {
   responseDataWithPagination,
@@ -50,7 +51,7 @@ export class WarehouseService {
     const queryPage = page || 1;
     const queryLimit = limit || 10;
     const queryFilter = filter || '';
-    const querySortBy = sortBy || 'name';
+    const querySortBy = sortBy || 'id';
     const queryOrderBy = orderBy || 'asc';
 
     const response = await WarehouseRepository.getWarehouses(
@@ -142,5 +143,16 @@ export class WarehouseService {
   static async findNearestWarehouse(body: any) {
     const response = await WarehouseRepository.findNearestWarehouse(body);
     return responseWithData(200, 'Success Get Product', response);
+  }
+
+  static async getUserWarehouse(user: UserDecoded) {
+    console.log(user);
+
+    const response = await WarehouseRepository.findWarehouseByUserId(user.id);
+    if (!response) {
+      return responseWithoutData(404, false, 'Warehouse Not Found');
+    }
+
+    return responseWithData(200, 'Success Get User Warehouse', response);
   }
 }

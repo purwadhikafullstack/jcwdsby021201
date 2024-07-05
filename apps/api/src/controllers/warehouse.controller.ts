@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { WarehouseService } from '@/services/warehouse.service';
 import { WarehouseBody, WarehouseQuery } from '@/types/warehouse.type';
+import { UserDecoded } from '@/types/auth.type';
 
 export class WarehouseController {
   async createWarehouse(req: Request, res: Response, next: NextFunction) {
@@ -62,6 +63,20 @@ export class WarehouseController {
     try {
       const body = req.body as any;
       const response = await WarehouseService.findNearestWarehouse(body);
+      return res.status(200).send(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getUserWarehouse(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const user = res.locals.decoded as UserDecoded;
+      const response = await WarehouseService.getUserWarehouse(user);
       return res.status(200).send(response);
     } catch (error) {
       next(error);

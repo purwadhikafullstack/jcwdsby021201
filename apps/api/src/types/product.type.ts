@@ -1,3 +1,5 @@
+import { Prisma } from '@prisma/client';
+
 export type ProductBody = {
   name: string;
   price: number;
@@ -18,4 +20,17 @@ export type ProductQuery = {
   filter?: string | number;
   sortBy?: string;
   orderBy?: string;
+};
+
+export type ProductResponse = Prisma.ProductGetPayload<{
+  include: {
+    category: { select: { id: true; name: true } };
+    pictures: { select: { id: true; name: true; url: true } };
+  };
+}>;
+
+export type ProductDeleteInventory = {
+  id: number;
+  name: string;
+  price: number;
 };

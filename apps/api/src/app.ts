@@ -15,6 +15,7 @@ import { CartRouter } from '@/routers/cart.router';
 import { CheckoutRouter } from '@/routers/checkout.router';
 import { OrderRouter } from '@/routers/order.router';
 import { startOrderCronJobs } from './cron/orderCron';
+import { InventoryRouter } from '@/routers/inventory.router';
 
 export default class App {
   private app: Express;
@@ -48,6 +49,7 @@ export default class App {
     const checkoutRouter = new CheckoutRouter();
     const orderRouter = new OrderRouter();
     const warehouseRouter = new WarehouseRouter();
+    const inventories = new InventoryRouter();
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student !`);
@@ -65,6 +67,7 @@ export default class App {
     this.app.use('/carts', cartRouter.getRouter());
     this.app.use('/checkouts', checkoutRouter.getRouter());
     this.app.use('/orders', orderRouter.getRouter());
+    this.app.use('/inventories', inventories.getRouter());
   }
 
   private startCronJobs(): void {

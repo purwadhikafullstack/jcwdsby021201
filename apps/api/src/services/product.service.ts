@@ -12,6 +12,7 @@ import {
 import { generateSlug } from '@/utils/text';
 import { ProductValidation } from '@/validators/product.validation';
 import { Validation } from '@/validators/validation';
+import { Prisma } from '@prisma/client';
 
 export class ProductService {
   static async createProduct(
@@ -101,15 +102,23 @@ export class ProductService {
       return responseWithoutData(404, false, 'Product Not Found');
     }
 
-    if (checkId.pictures.length) {
-      for (const picture of checkId.pictures) {
-        deleteFile('../../public', picture.url);
-      }
-    }
-
     try {
       await ProductRepository.deleteProductById(Number(newId));
+      if (checkId.pictures.length) {
+        for (const picture of checkId.pictures) {
+          deleteFile('../../public', picture.url);
+        }
+      }
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2003') {
+          return responseWithoutData(
+            400,
+            false,
+            'Product Has Transaction, Can Not Be Deleted',
+          );
+        }
+      }
       return responseWithoutData(500, false, 'Internal Server Error');
     }
 
@@ -173,8 +182,8 @@ export class ProductService {
     }
 
     try {
-      deleteFile('../../public', checkId.url);
       await ProductPictureRepository.deleteProductPictureById(Number(newId));
+      deleteFile('../../public', checkId.url);
     } catch (error) {
       return responseWithoutData(500, false, 'Internal Server Error');
     }

@@ -26,6 +26,7 @@ export class WarehouseRepository {
       include: {
         province: { select: { id: true, name: true } },
         city: { select: { id: true, name: true } },
+        user: { select: { id: true, username: true } },
       },
       skip: (page - 1) * limit,
       take: limit,
@@ -53,6 +54,7 @@ export class WarehouseRepository {
       include: {
         province: { select: { id: true, name: true } },
         city: { select: { id: true, name: true } },
+        user: { select: { id: true, username: true } },
       },
     });
   }
@@ -142,5 +144,16 @@ export class WarehouseRepository {
       distance: shortestDistance,
       city: nearestWarehouse.city,
     };
+  }
+
+  static async findWarehouseByUserId(id: number) {
+    return await prisma.warehouse.findUnique({
+      where: { userId: id },
+      include: {
+        province: { select: { id: true, name: true } },
+        city: { select: { id: true, name: true } },
+        user: { select: { id: true, username: true } },
+      },
+    });
   }
 }

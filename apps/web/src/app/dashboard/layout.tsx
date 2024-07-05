@@ -45,10 +45,19 @@ const stickyBox: SxProps = {
 };
 
 const settings = ['Profile', 'Account', 'Dashboard'];
-const menus = Object.keys(dashboardAdminPages).map((key) => {
-  const { path, label, Icon } = dashboardAdminPages[key];
-  return { path, label, Icon };
-});
+
+const menuSuperAdmin = [
+  dashboardAdminPages.warehouse,
+  dashboardAdminPages.category,
+  dashboardAdminPages.product,
+  dashboardAdminPages.inventory,
+];
+
+const menuWarehouseAdmin = [
+  dashboardAdminPages.category,
+  dashboardAdminPages.product,
+  dashboardAdminPages.inventory,
+];
 
 type Props = {
   children: React.ReactNode;
@@ -82,25 +91,46 @@ export default function DashboardLayout({ children }: Props) {
         <Logo />
       </Box>
       <List dense={true}>
-        {menus.map((menu, index) => (
-          <ListItem
-            key={index}
-            disablePadding
-            onClick={() => router.push(menu.path)}
-            sx={{
-              '&:hover': {
-                bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
-              },
-            }}
-          >
-            <ListItemButton>
-              <ListItemIcon sx={{ minWidth: '30px' }}>
-                {<menu.Icon sx={{ fontSize: '18px' }} />}
-              </ListItemIcon>
-              <ListItemText primary={menu.label} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {user?.role === 'SUPER_ADMIN' &&
+          menuSuperAdmin.map((menu, index) => (
+            <ListItem
+              key={index}
+              disablePadding
+              onClick={() => router.push(menu.path)}
+              sx={{
+                '&:hover': {
+                  bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
+                },
+              }}
+            >
+              <ListItemButton>
+                <ListItemIcon sx={{ minWidth: '30px' }}>
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
+                </ListItemIcon>
+                <ListItemText primary={menu.label} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        {user?.role === 'ADMIN' &&
+          menuWarehouseAdmin.map((menu, index) => (
+            <ListItem
+              key={index}
+              disablePadding
+              onClick={() => router.push(menu.path)}
+              sx={{
+                '&:hover': {
+                  bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
+                },
+              }}
+            >
+              <ListItemButton>
+                <ListItemIcon sx={{ minWidth: '30px' }}>
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
+                </ListItemIcon>
+                <ListItemText primary={menu.label} />
+              </ListItemButton>
+            </ListItem>
+          ))}
       </List>
     </Box>
   );

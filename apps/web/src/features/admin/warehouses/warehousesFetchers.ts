@@ -49,3 +49,11 @@ export const updateWarehouse = async ({ id, ...data }: WarehouseUpdate) => {
 
   return res.data;
 };
+
+export const getUserWarehouse = async () => {
+  const instance = await createAxiosInstance();
+  const res =
+    await instance.get<ResponseWithData<WarehouseResponse>>(`/warehouses/user`);
+
+  return res.data;
+};

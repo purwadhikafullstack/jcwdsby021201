@@ -90,6 +90,7 @@ export class AuthService {
     const token = generateJWTTokenWithoutExpiry({
       id: checkMail.id,
       role: checkMail.role,
+      username: checkMail.username,
     });
 
     return responseWithData(200, 'Success Login', {
@@ -135,6 +136,7 @@ export class AuthService {
     const token = generateJWTTokenWithoutExpiry({
       id: checkMail.id,
       role: checkMail.role,
+      username: checkMail.username,
     });
 
     return responseWithData(200, 'Success Login', {

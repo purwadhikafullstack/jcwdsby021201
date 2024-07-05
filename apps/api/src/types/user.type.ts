@@ -8,5 +8,5 @@ export type UpdateEmailBody = {
 };
 
 export type ActivationBody = {
-    token: string;
-}
+  token: string;
+};

@@ -17,6 +17,10 @@ export type WarehouseResponse = WarehouseBody & {
   updatedAt: string;
   province: OptionLabel;
   city: OptionLabel;
+  user: {
+    id: number;
+    username: string | null;
+  };
 };
 
 export type WarehouseUpdate = WarehouseBody & { id: number };

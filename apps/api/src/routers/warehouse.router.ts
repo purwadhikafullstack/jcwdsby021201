@@ -1,5 +1,9 @@
 import { WarehouseController } from '@/controllers/warehouse.controller';
-import { superAdminGuard, verifyToken } from '@/middlewares/auth.middleware';
+import {
+  adminWarehouseGuard,
+  superAdminGuard,
+  verifyToken,
+} from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
 export class WarehouseRouter {
@@ -28,6 +32,13 @@ export class WarehouseRouter {
     );
 
     this.router.post('/nearest', this.warehouseController.findNearestWarehouse);
+
+    this.router.get(
+      '/user',
+      verifyToken,
+      adminWarehouseGuard,
+      this.warehouseController.getUserWarehouse,
+    );
 
     this.router.delete(
       '/:id',

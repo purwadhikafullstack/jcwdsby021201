@@ -85,6 +85,10 @@ export default function ProductForm({
   const [inputValue, setInputValue] = useState('');
   const [debouncedInputValue] = useDebounce(inputValue, 300);
   const [files, setFiles] = useState<Pictures[]>([]);
+  const [options, setOptions] = useState<CategoryResponse[] | OptionLabel[]>(
+    [],
+  );
+  const [category, setCategory] = useState<OptionLabel | null>(null);
   const { handleSubmit, control, reset } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues,
@@ -101,11 +105,6 @@ export default function ProductForm({
     { pageIndex: 0, pageSize: 5 },
     [{ id: 'name', desc: false }],
   );
-
-  const [options, setOptions] = useState<CategoryResponse[] | OptionLabel[]>(
-    [],
-  );
-  const [category, setCategory] = useState<OptionLabel | null>(null);
 
   useEffect(() => {
     if (data?.result) {

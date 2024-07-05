@@ -28,14 +28,16 @@ export type Pagination = {
   order_by?: string;
 };
 
-export interface UserSession extends User {
-  username?: string;
-  email?: string;
-  isVerified?: boolean;
-  role?: 'SUPER_ADMIN' | 'ADMIN' | 'USER';
-  image?: string | null;
-  token?: string;
-}
+export type UserSession =
+  | (User & {
+      username?: string;
+      email?: string;
+      isVerified?: boolean;
+      role?: 'SUPER_ADMIN' | 'ADMIN' | 'USER';
+      image?: string | null;
+      token?: string;
+    })
+  | undefined;
 
 export type QueryPagination = {
   page?: number;
@@ -48,4 +50,9 @@ export type QueryPagination = {
 export type OptionLabel = {
   id: number;
   name: string;
+};
+
+export type UserOption = {
+  id: number;
+  username: string | null;
 };

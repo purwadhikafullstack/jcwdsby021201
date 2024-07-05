@@ -60,9 +60,7 @@ import { LatLngExpression } from 'leaflet';
 
 const WarehouseMap = dynamic(
   () => import('@/views/admin/warehouses/WarehouseMap'),
-  {
-    ssr: false,
-  },
+  { ssr: false },
 );
 
 const defaultValues: WarehouseFormData = {
@@ -99,11 +97,21 @@ export default function WarehouseForm({
   const [inputCity, setInputCity] = useState('');
   const [debouncedInputCity] = useDebounce(inputCity, 300);
   const [location, setLocation] = useState<LatLngExpression | null>(null);
+  const [province, setProvince] = useState<OptionLabel | null>(null);
+  const [city, setCity] = useState<OptionLabel | null>(null);
+  const [optionsProvince, setOptionsProvince] = useState<
+    ProvinceResponse[] | OptionLabel[]
+  >([]);
+  const [optionsCity, setOptionsCity] = useState<
+    CityResponse[] | OptionLabel[]
+  >([]);
   const { handleSubmit, control, reset, watch, setValue } =
     useForm<WarehouseFormData>({
       resolver: zodResolver(warehouseSchema),
       defaultValues,
     });
+
+  const selectedProvince = watch('provinceId') || 0;
 
   const router = useRouter();
   const session = useSession();
@@ -117,10 +125,14 @@ export default function WarehouseForm({
       { pageIndex: 0, pageSize: 5 },
       [{ id: 'name', desc: false }],
     );
-  const [optionsProvince, setOptionsProvince] = useState<
-    ProvinceResponse[] | OptionLabel[]
-  >([]);
-  const [province, setProvince] = useState<OptionLabel | null>(null);
+
+  const { data: cities, isRefetching: isCityRefetching } =
+    useGetCitiesPagination(
+      `${selectedProvince}`,
+      debouncedInputCity,
+      { pageIndex: 0, pageSize: 5 },
+      [{ id: 'name', desc: false }],
+    );
 
   useEffect(() => {
     if (provinces?.result) {
@@ -136,24 +148,11 @@ export default function WarehouseForm({
     }
   }, [province, optionsProvince]);
 
-  const selectedProvince = watch('provinceId') || 0;
   useEffect(() => {
     if (!selectedProvince) {
       setOptionsCity([]);
     }
   }, [selectedProvince]);
-
-  const { data: cities, isRefetching: isCityRefetching } =
-    useGetCitiesPagination(
-      `${selectedProvince}`,
-      debouncedInputCity,
-      { pageIndex: 0, pageSize: 5 },
-      [{ id: 'name', desc: false }],
-    );
-  const [optionsCity, setOptionsCity] = useState<
-    CityResponse[] | OptionLabel[]
-  >([]);
-  const [city, setCity] = useState<OptionLabel | null>(null);
 
   useEffect(() => {
     if (cities?.result) {

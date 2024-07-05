@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/utils/auth';
 import type { NextRequest } from 'next/server';
-import { authPages, dashboardUserPages, mainPages } from '@/utils/routes';
+import {
+  authPages,
+  dashboardAdminPages,
+  dashboardUserPages,
+  mainPages,
+} from '@/utils/routes';
 import { UserSession } from '@/features/types';
 
 export const middleware = async (req: NextRequest) => {
@@ -28,6 +33,11 @@ export const middleware = async (req: NextRequest) => {
   } else if (
     user?.role !== 'USER' &&
     currentPath.startsWith(dashboardUserPath)
+  ) {
+    return NextResponse.redirect(new URL(mainPages.home.path, req.url));
+  } else if (
+    user?.role === 'ADMIN' &&
+    currentPath.startsWith(dashboardAdminPages.warehouse.path)
   ) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   }
