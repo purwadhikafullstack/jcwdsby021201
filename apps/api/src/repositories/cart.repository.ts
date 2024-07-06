@@ -70,7 +70,7 @@ export class CartRepository {
       select: {
         productCarts: {
           include: {
-            Product: {
+            product: {
               select: {
                 id: true,
                 description: true,

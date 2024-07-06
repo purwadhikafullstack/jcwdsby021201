@@ -42,7 +42,7 @@ export class CartService {
 
   static async getProductCart(id: number) {
     const response = await CartRepository.getProductCart(id);
-    const newResponse = response[0].productCarts.map((item) => ({
+    const newResponse = response[0].productCarts.map((item:any) => ({
       id: item.id,
       quantity: item.quantity,
       productId: item.productId,
