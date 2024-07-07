@@ -42,17 +42,17 @@ export class CartService {
 
   static async getProductCart(id: number) {
     const response = await CartRepository.getProductCart(id);
-    const newResponse = response[0].productCarts.map((item:any) => ({
+    const newResponse = response[0].productCarts.map((item: any) => ({
       id: item.id,
       quantity: item.quantity,
       productId: item.productId,
       cartId: item.cartId,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
-      description: item.Product.description,
-      price: item.Product.price,
-      name: item.Product.name,
-      image: item.Product.pictures[0].url,
+      description: item.product.description,
+      price: item.product.price,
+      name: item.product.name,
+      image: item.product.pictures[0].url,
     }));
     return responseWithData(200, 'Success getProduct for Cart', newResponse);
   }

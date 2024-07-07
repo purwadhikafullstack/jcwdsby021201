@@ -1,5 +1,3 @@
-// backend/cron/orderCron.ts
-
 import { OrderRepository } from '@/repositories/order.repository';
 import cron from 'node-cron';
 
@@ -13,6 +11,20 @@ export function startOrderCronJobs() {
     } catch (error) {
       console.error(
         `[${new Date().toISOString()}] Error canceling expired orders:`,
+        error,
+      );
+    }
+  });
+
+  cron.schedule('*/60 * * * *', async () => {
+    try {
+      const receivedCount = await OrderRepository.autoReceiveOrders();
+      console.log(
+        `[${new Date().toISOString()}] Auto-received ${receivedCount} orders`,
+      );
+    } catch (error) {
+      console.error(
+        `[${new Date().toISOString()}] Error auto-receiving orders:`,
         error,
       );
     }

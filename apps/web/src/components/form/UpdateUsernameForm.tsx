@@ -16,6 +16,7 @@ import { Button, Box, Typography, TextField } from '@mui/material';
 import { UserSession } from '@/features/types';
 import { useSession } from 'next-auth/react';
 import { useChangeProfileUpdate } from '@/features/user/profile/profileMutation';
+import StyledButton from '../button/StyledButton';
 // Penampung
 
 interface ChangeUsernameFormProps {
@@ -85,9 +86,9 @@ export default function ChangeUsernameForm({
         )}
       />
 
-      <Button type="submit" variant="contained" startIcon={<AddIcon />}>
+      <StyledButton type="submit" variant="contained" startIcon={<AddIcon />}>
         Submit
-      </Button>
+      </StyledButton>
     </Box>
   );
 }

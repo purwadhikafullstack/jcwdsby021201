@@ -11,10 +11,14 @@ import 'leaflet/dist/leaflet.css';
 import './style.css';
 import L from 'leaflet';
 import { TextField, Button, Box } from '@mui/material';
-import { errorFetcherNotification, errorNotification } from '@/utils/notifications';
+import {
+  errorFetcherNotification,
+  errorNotification,
+} from '@/utils/notifications';
 import axios from 'axios';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
+import StyledButton from '../button/StyledButton';
 
 /**
  *  - Marker Image
@@ -89,9 +93,9 @@ const SearchBox = ({
         onChange={(e) => setSearchQuery(e.target.value)}
         sx={{ backgroundColor: 'white' }}
       />
-      <Button onClick={handleSearch} variant="contained" sx={{ ml: 2 }}>
+      <StyledButton onClick={handleSearch} variant="contained" sx={{ ml: 2 }}>
         Search
-      </Button>
+      </StyledButton>
     </Box>
   );
 };

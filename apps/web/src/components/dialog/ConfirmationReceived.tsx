@@ -46,7 +46,12 @@ const ConfirmationReceived: React.FC<ConfirmationReceivedProps> = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button
+          onClick={onClose}
+          sx={{
+            color: 'black',
+          }}
+        >
           No
         </Button>
         <Button
@@ -54,7 +59,7 @@ const ConfirmationReceived: React.FC<ConfirmationReceivedProps> = ({
           autoFocus
           disabled={isPending}
           sx={{
-            color:'white',
+            color: 'white',
             backgroundColor: 'black',
             borderRadius: '0px',
             '&:hover': {

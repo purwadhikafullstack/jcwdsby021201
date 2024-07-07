@@ -147,8 +147,8 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
                   sx={{
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    display: '-webkit-box',
                     WebkitLineClamp: 1,
+                    display: '-webkit-box',
                     WebkitBoxOrient: 'vertical',
                     fontSize: '12px',
                   }}

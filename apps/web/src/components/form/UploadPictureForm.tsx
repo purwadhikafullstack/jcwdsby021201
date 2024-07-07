@@ -11,6 +11,7 @@ import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useChangeProfilePicture } from '@/features/user/profile/profileMutation';
 import { useUploadPaymmentProof } from '@/features/user/order/orderMutation';
+import StyledButton from '../button/StyledButton';
 
 interface UploadPictureFormProps {
   handleClose: () => void;
@@ -135,22 +136,9 @@ export default function UploadPictureForm({
           </>
         )}
       />
-      <Button
-        type="submit"
-        variant="contained"
-        color="primary"
-        sx={{
-          mt: '10px',
-          color: 'white',
-          backgroundColor: 'black',
-          borderRadius: '0px',
-          '&:hover': {
-            backgroundColor: '#333333',
-          },
-        }}
-      >
+      <StyledButton type="submit" sx={{ mt: '10px' }}>
         Submit
-      </Button>
+      </StyledButton>
     </Box>
   );
 }

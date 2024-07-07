@@ -26,6 +26,7 @@ import {
 import { useChangeProfileUpdate } from '@/features/user/profile/profileMutation';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
+import StyledButton from '../button/StyledButton';
 
 interface ChangePasswordFormProps {
   handleClose: () => void;
@@ -148,9 +149,9 @@ export default function ChangePasswordForm({
         )}
       />
 
-      <Button type="submit" variant="contained" startIcon={<LockIcon />}>
+      <StyledButton type="submit" variant="contained" startIcon={<LockIcon />}>
         Submit
-      </Button>
+      </StyledButton>
     </Box>
   );
 }

@@ -3,7 +3,10 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import StoreIcon from '@mui/icons-material/Store';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import InboxIcon from '@mui/icons-material/Inbox';
 export type Route = {
   path: string;
   label?: string;
@@ -24,10 +27,26 @@ export const authPages: Record<string, Route> = {
 };
 
 export const dashboardUserPages: Record<string, Route> = {
-  profile: { path: '/dashboard/user/profile', label: 'Profile' },
-  purchases: { path: '/dashboard/user/order/to-pay', label: 'To Pay' },
-  shipping: { path: '/dashboard/user/order/to-ship', label: 'To Ship' },
-  receive: { path: '/dashboard/user/order/to-receive', label: 'To Receive' },
+  purchases: {
+    path: '/dashboard/user/order/to-pay',
+    label: 'To Pay',
+    Icon: StoreIcon,
+  },
+  shipping: {
+    path: '/dashboard/user/order/to-ship',
+    label: 'To Ship',
+    Icon: LocalShippingIcon,
+  },
+  receive: {
+    path: '/dashboard/user/order/to-receive',
+    label: 'To Receive',
+    Icon: InboxIcon,
+  },
+  profile: {
+    path: '/dashboard/user/profile',
+    label: 'Profile',
+    Icon: AccountCircleIcon,
+  },
 };
 
 export const dashboardAdminPages: Record<string, Route> = {

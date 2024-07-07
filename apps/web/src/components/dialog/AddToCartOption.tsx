@@ -61,7 +61,13 @@ const AddToCartConfirmation: React.FC<AddToCartConfirmationProps> = ({
               onClick={goToCart}
               color="primary"
               variant="contained"
-              sx={{ backgroundColor: 'black', borderRadius: '0px' }}
+              sx={{
+                backgroundColor: 'black',
+                borderRadius: '0px',
+                '&:hover': {
+                  backgroundColor: '#333333',
+                },
+              }}
             >
               Go to Cart
             </Button>

@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
+import StyledButton from '../button/StyledButton';
 
 interface ConfirmationCancelProps {
   open: boolean;
@@ -45,7 +46,12 @@ const ConfirmationCancel: React.FC<ConfirmationCancelProps> = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
+        <Button
+          onClick={onClose}
+          sx={{
+            color: 'black',
+          }}
+        >
           No
         </Button>
         <Button
@@ -53,6 +59,14 @@ const ConfirmationCancel: React.FC<ConfirmationCancelProps> = ({
           color="primary"
           autoFocus
           disabled={isPending}
+          sx={{
+            color: 'white',
+            backgroundColor: 'black',
+            borderRadius: '0px',
+            '&:hover': {
+              backgroundColor: '#333333',
+            },
+          }}
         >
           {isPending ? <CircularProgress size={24} /> : 'Yes'}
         </Button>

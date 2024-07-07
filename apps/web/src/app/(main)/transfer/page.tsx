@@ -87,7 +87,6 @@ const PaymentInstructions = () => {
         'Confirm and pay',
       ],
     },
-    // Tambahkan metode pembayaran lain sesuai kebutuhan
   ];
 
   return (
@@ -154,7 +153,13 @@ const PaymentInstructions = () => {
         <Button
           variant="contained"
           fullWidth
-          sx={{ color: 'white', backgroundColor: 'black' }}
+          sx={{
+            color: 'white',
+            backgroundColor: 'black',
+            '&:hover': {
+              backgroundColor: '#333333',
+            },
+          }}
           onClick={() => router.push('/dashboard/user/order/to-pay')}
         >
           Go To Order Page

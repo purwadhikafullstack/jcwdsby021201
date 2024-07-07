@@ -10,55 +10,34 @@ import {
   Divider,
   Skeleton,
 } from '@mui/material';
-import { useSession } from 'next-auth/react';
-import { UserSession } from '@/features/types';
-import { useGetProfileById } from '@/features/user/profile/profileQueries';
-import { useGetAddressById } from '@/features/user/address/addressQueries';
 import UsernameModalUpdate from '@/components/modal/UsernameModalUpdate';
 import PasswordModalUpdate from '@/components/modal/PasswordModalUpdate';
 import EmailModalUpdate from '@/components/modal/EmailModalUpdate';
 import ProfileModalUpdate from '@/components/modal/ProfileModalUpdate';
 import Image from 'next/image';
+import StyledButton from '@/components/button/StyledButton';
+import { useProfileLogic } from './useProfileLogic';
 
 interface IProfileProps {}
 
 const Profile: React.FunctionComponent<IProfileProps> = (props) => {
-  const session = useSession();
-  const user = session.data?.user as UserSession;
-  const token = user?.token;
-  const { data: dataAddress, error: errorAddress } = useGetAddressById(
-    token || '',
-  );
-  const { data, error, isLoading } = useGetProfileById(token || '');
-
-  const [open, setOpen] = React.useState(false);
-  const [profilePictureModal, setProfilePictureModal] = React.useState(false);
-  const [passwordModal, setPasswordModal] = React.useState(false);
-  const [primaryAddress, setPrimaryAddress] = React.useState<string>('');
-  const [emailModal, setEmailModal] = React.useState(false);
-
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const handleOpenPasswordModal = () => setPasswordModal(true);
-  const handleClosePasswordModal = () => setPasswordModal(false);
-
-  const handleOpenEmailModal = () => setEmailModal(true);
-  const handleCloseEmailModal = () => setEmailModal(false);
-
-  const handleOpenProfilePictureModal = () => setProfilePictureModal(true);
-  const handleCloseProfilePictureModal = () => setProfilePictureModal(false);
-
-  React.useEffect(() => {
-    if (dataAddress) {
-      const primaryAddr = dataAddress?.find((addr: any) => addr.isPrimary);
-      if (primaryAddr) {
-        setPrimaryAddress(primaryAddr.address);
-      } else {
-        setPrimaryAddress('Anda Belum Memasukan alamat utama');
-      }
-    }
-  }, [dataAddress]);
+  const {
+    data,
+    isLoading,
+    primaryAddress,
+    open,
+    profilePictureModal,
+    passwordModal,
+    emailModal,
+    handleOpen,
+    handleClose,
+    handleOpenPasswordModal,
+    handleClosePasswordModal,
+    handleOpenEmailModal,
+    handleCloseEmailModal,
+    handleOpenProfilePictureModal,
+    handleCloseProfilePictureModal,
+  } = useProfileLogic();
 
   return (
     <Box
@@ -117,10 +96,10 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             {isLoading ? (
               <Skeleton variant="rectangular" width="100%" />
             ) : data ? (
-              <Button variant="outlined" onClick={handleOpen} fullWidth>
+              <StyledButton variant="outlined" onClick={handleOpen} fullWidth>
                 {' '}
                 {data?.username ? data?.username : 'Choose username'}
-              </Button>
+              </StyledButton>
             ) : (
               <Skeleton variant="rectangular" width="100%" />
             )}
@@ -138,14 +117,10 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             {isLoading ? (
               <Skeleton variant="rectangular" width="100%" />
             ) : data?.email ? (
-              <Button
-                variant="outlined"
-                onClick={handleOpenEmailModal}
-                fullWidth
-              >
+              <StyledButton onClick={handleOpenEmailModal} fullWidth>
                 {' '}
                 {data?.email}
-              </Button>
+              </StyledButton>
             ) : (
               <Skeleton variant="rectangular" width="100%" />
             )}
@@ -164,9 +139,9 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
               {isLoading ? (
                 <Skeleton variant="rectangular" width="100%" />
               ) : primaryAddress ? (
-                <Button variant="outlined" fullWidth>
+                <StyledButton variant="outlined" fullWidth>
                   {primaryAddress ? primaryAddress : 'Location'}
-                </Button>
+                </StyledButton>
               ) : (
                 <Skeleton variant="rectangular" width="100%" />
               )}
@@ -185,13 +160,9 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
             {isLoading ? (
               <Skeleton variant="rectangular" width="100%" />
             ) : data ? (
-              <Button
-                variant="outlined"
-                fullWidth
-                onClick={handleOpenPasswordModal}
-              >
+              <StyledButton fullWidth onClick={handleOpenPasswordModal}>
                 {data?.password ? 'SECRET' : 'SECRET'}
-              </Button>
+              </StyledButton>
             ) : (
               <Skeleton variant="rectangular" width="100%" />
             )}

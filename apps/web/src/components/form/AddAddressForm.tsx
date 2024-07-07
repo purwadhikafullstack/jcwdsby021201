@@ -26,6 +26,7 @@ import {
 import { useAddAddress } from '@/features/user/address/addressMutations';
 import Map from '../map/Map';
 import { errorNotification } from '@/utils/notifications';
+import StyledButton from '../button/StyledButton';
 
 const defaultValues: AddressSchema = {
   name: '',
@@ -299,9 +300,9 @@ export default function AddressForm({
         />
       </Box>
 
-      <Button type="submit" variant="contained" startIcon={<AddIcon />}>
+      <StyledButton type="submit" variant="contained" startIcon={<AddIcon />}>
         Submit
-      </Button>
+      </StyledButton>
     </Box>
   );
 }

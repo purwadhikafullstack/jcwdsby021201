@@ -18,8 +18,6 @@ import Box from '@mui/material/Box';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
-import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 // React Query
 import { useGetUnpaidOrder } from '@/features/user/order/orderQueries';

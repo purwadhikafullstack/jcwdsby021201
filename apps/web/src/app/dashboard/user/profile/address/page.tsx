@@ -18,6 +18,7 @@ import {
   useGetCityName,
 } from '@/features/user/location/locationQueries';
 import { useRouter } from 'next/navigation';
+import StyledButton from '@/components/button/StyledButton';
 
 interface IAddressListProps {}
 
@@ -58,9 +59,9 @@ const AddressList: React.FunctionComponent<IAddressListProps> = (props) => {
 
         <Box mt={3}>
           <Link href={'/dashboard/user/profile/create-address'} passHref>
-            <Button variant="contained" color="primary">
+            <StyledButton variant="contained" color="primary">
               Add New Address
-            </Button>
+            </StyledButton>
           </Link>
         </Box>
       </Box>
@@ -135,14 +136,14 @@ const AddressCard = ({ address }: { address: any }) => {
           )}
         </CardContent>
         <Box p={2} textAlign="center">
-          <Button
+          <StyledButton
             variant="outlined"
             color="primary"
             component="span"
             size="small"
           >
             Edit
-          </Button>
+          </StyledButton>
         </Box>
       </Card>
     </Grid>

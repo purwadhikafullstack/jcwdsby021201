@@ -1,5 +1,4 @@
 import prisma from '@/prisma';
-import { MutationStatus, PaymentStatus, TransactionType } from '@prisma/client';
 import { WarehouseRepository } from './warehouse.repository';
 
 export class OrderRepository {
@@ -171,37 +170,8 @@ export class OrderRepository {
         },
       });
 
-      // for (const orderProduct of orderProducts) {
-      //   // balikin stock produk ke warehouse
-      //   await tx.productWarehouse.updateMany({
-      //     where: {
-      //       productId: orderProduct.productId,
-      //       warehouseId: updatedOrder.warehouseId,
-      //     },
-      //     data: {
-      //       stock: {
-      //         increment: orderProduct.quantity,
-      //       },
-      //     },
-      //   });
-
-      //   // jurnal keluar masuk
-      //   await tx.journalProduct.create({
-      //     data: {
-      //       quantity: orderProduct.quantity,
-      //       transactionType: 'IN',
-      //       description: 'Stock entered due to cancel order',
-      //       productWarehouseId: (await tx.productWarehouse.findFirst({
-      //         where: {
-      //           productId: orderProduct.productId,
-      //           warehouseId: updatedOrder.warehouseId,
-      //         },
-      //       }))!.id,
-      //     },
-      //   });
-      // }
       for (const orderProduct of orderProducts) {
-        // Return stock to warehouse
+        // baliki stock ke gudang
         const productWarehouse = await tx.productWarehouse.findFirst({
           where: {
             productId: orderProduct.productId,
@@ -224,7 +194,7 @@ export class OrderRepository {
           },
         });
 
-        // Create journal mutation
+        // buat jurnal mutationnya :
         await tx.journalMutation.create({
           data: {
             quantity: orderProduct.quantity,
@@ -245,7 +215,7 @@ export class OrderRepository {
     orderId: number,
     file: Express.Multer.File,
   ) {
-    // Pertama, cari order yang sesuai
+    //cari order yang sesuai
     const order = await prisma.order.findFirst({
       where: {
         id: orderId,
@@ -259,7 +229,7 @@ export class OrderRepository {
       throw new Error('Order not found');
     }
 
-    // Kemudian, update order tersebut
+    // update order tersebut
     return await prisma.order.update({
       where: {
         id: orderId, // Atau bisa juga menggunakan cartId: order.cartId
@@ -314,16 +284,16 @@ export class OrderRepository {
               stockProcess: product.quantity,
               sourceWarehouseId: warehouseWithStock.warehouseId,
               destinationWarehouseId: warehouseId,
-              status: 'COMPLETED',
+              status: 'APPROVED',
               note: `Stock transfer for order fulfillment`,
-              productId: product.productId
+              productId: product.productId,
             },
           });
 
           await tx.journalMutation.create({
             data: {
               quantity: product.quantity,
-              transactionType: TransactionType.OUT,
+              transactionType: 'OUT',
               description: `Stock OUT ${stockInWarehouse?.product.name} from ${warehouseWithStock.warehouse.name} to ${stockInWarehouse?.warehouse.name}, qty : ${product.quantity} for ORDER.`,
               productWarehouseId: warehouseWithStock.id,
               warehouseId: warehouseWithStock.warehouseId,
@@ -387,6 +357,41 @@ export class OrderRepository {
       data: {
         paymentStatus: 'DELIVERED',
       },
+    });
+  }
+
+  static async autoReceiveOrders() {
+    const now = new Date();
+
+    return await prisma.$transaction(async (tx) => {
+      const ordersToAutoReceive = await tx.order.findMany({
+        where: {
+          paymentStatus: 'SHIPPED',
+          //ini seharusnya pake shippedAtnya :
+          updatedAt: {
+            lt: now,
+          },
+        },
+      });
+
+      let autoReceivedCount = 0;
+      for (const order of ordersToAutoReceive) {
+        try {
+          await tx.order.update({
+            where: {
+              id: order.id,
+            },
+            data: {
+              paymentStatus: 'DELIVERED',
+            },
+          });
+          autoReceivedCount++;
+        } catch (error) {
+          console.error(`Failed to auto-receive order ${order.id}:`, error);
+        }
+      }
+
+      return autoReceivedCount;
     });
   }
 

@@ -27,7 +27,11 @@ import { SxProps, alpha } from '@mui/material/styles';
 
 // Custom Components
 import Logo from '@/components/core/Logo';
-import { authPages, dashboardAdminPages } from '@/utils/routes';
+import {
+  authPages,
+  dashboardAdminPages,
+  dashboardUserPages,
+} from '@/utils/routes';
 import SimpleBar from 'simplebar-react';
 
 // NextAuth
@@ -59,6 +63,13 @@ const menuWarehouseAdmin = [
   dashboardAdminPages.product,
   dashboardAdminPages.inventory,
   dashboardAdminPages.mutation,
+];
+
+const menuUser = [
+  dashboardUserPages.purchases,
+  dashboardUserPages.shipping,
+  dashboardUserPages.receive,
+  dashboardUserPages.profile,
 ];
 
 type Props = {
@@ -115,6 +126,26 @@ export default function DashboardLayout({ children }: Props) {
           ))}
         {user?.role === 'ADMIN' &&
           menuWarehouseAdmin.map((menu, index) => (
+            <ListItem
+              key={index}
+              disablePadding
+              onClick={() => router.push(menu.path)}
+              sx={{
+                '&:hover': {
+                  bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
+                },
+              }}
+            >
+              <ListItemButton>
+                <ListItemIcon sx={{ minWidth: '30px' }}>
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
+                </ListItemIcon>
+                <ListItemText primary={menu.label} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        {user?.role === 'USER' &&
+          menuUser.map((menu, index) => (
             <ListItem
               key={index}
               disablePadding

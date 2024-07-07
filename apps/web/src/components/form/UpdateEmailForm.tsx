@@ -8,6 +8,7 @@ import { Send as SendIcon } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useChangeProfileEmail } from '@/features/user/profile/profileMutation';
+import StyledButton from '../button/StyledButton';
 
 interface ChangeEmailFormProps {
   initialEmail: string;
@@ -108,9 +109,9 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
         )}
       />
 
-      <Button type="submit" variant="contained" startIcon={<SendIcon />}>
+      <StyledButton type="submit" variant="contained" startIcon={<SendIcon />}>
         Submit
-      </Button>
+      </StyledButton>
     </Box>
   );
 };

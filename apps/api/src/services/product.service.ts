@@ -229,7 +229,10 @@ export class ProductService {
     const newResponse = response.map((product) => {
       return {
         ...product,
-        pictures: product.pictures[0].url ? product.pictures[0].url : null,
+        pictures:
+          product.pictures && product.pictures.length > 0
+            ? product.pictures[0].url
+            : null,
       };
     });
 
