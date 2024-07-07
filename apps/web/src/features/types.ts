@@ -45,6 +45,7 @@ export type QueryPagination = {
   filter?: string | number;
   sortBy?: string;
   orderBy?: string;
+  excludeId?: number;
 };
 
 export type OptionLabel = {

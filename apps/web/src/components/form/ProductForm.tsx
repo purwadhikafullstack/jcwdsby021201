@@ -97,14 +97,19 @@ export default function ProductForm({
   const router = useRouter();
   const session = useSession();
   const user = session.data?.user as UserSession;
-  const disabledOnPending = isMutatePending || isQueryPending;
-  const onlySuperAdmin = disabledOnPending || user?.role !== 'SUPER_ADMIN';
 
   const { data, isRefetching } = useGetCategories(
     debouncedInputValue,
     { pageIndex: 0, pageSize: 5 },
     [{ id: 'name', desc: false }],
   );
+
+  const { mutateAsync: mutateDeleteAsync, isPending: isDeletePending } =
+    useDeleteProductImage();
+
+  const disabledOnPending =
+    isMutatePending || isDeletePending || isQueryPending;
+  const onlySuperAdmin = disabledOnPending || user?.role !== 'SUPER_ADMIN';
 
   useEffect(() => {
     if (data?.result) {
@@ -115,7 +120,7 @@ export default function ProductForm({
   useEffect(() => {
     if (category && !options.find((opt) => opt.id === category.id)) {
       setOptions([...options, category]);
-    } else {
+    } else if (options.length) {
       setOptions(options);
     }
   }, [category, options]);
@@ -144,7 +149,6 @@ export default function ProductForm({
     errorFetcherNotification(errorQuery);
   }
 
-  const { mutateAsync: mutateDeleteAsync } = useDeleteProductImage();
   const handleDeleteFile = async (imageId: number) => {
     if (id) await mutateDeleteAsync(`${imageId}`);
 

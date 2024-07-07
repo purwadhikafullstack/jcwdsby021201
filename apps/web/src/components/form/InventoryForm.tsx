@@ -35,7 +35,10 @@ import {
   useGetUserWarehouse,
   useGetWarehouses,
 } from '@/features/admin/warehouses/warehousesQueries';
-import { useCreateInventory } from '@/features/admin/inventories/inventoriesMutations';
+import {
+  useCreateInventory,
+  useUpdateInventory,
+} from '@/features/admin/inventories/inventoriesMutations';
 import { useGetInventory } from '@/features/admin/inventories/inventoriesQueries';
 import { useGetProducts } from '@/features/admin/products/productsQueries';
 
@@ -116,6 +119,12 @@ export default function InventoryForm({
   const { data: warehouse, isRefetching: isWarehouseRefetching } =
     useGetUserWarehouse(user?.role === 'ADMIN');
 
+  const { data: products, isRefetching: isProductRefetching } = useGetProducts(
+    debouncedInputProduct,
+    { pageIndex: 0, pageSize: 5 },
+    [{ id: 'name', desc: false }],
+  );
+
   useEffect(() => {
     if (warehouse?.result) {
       setOptionsWarehouse([warehouse.result]);
@@ -127,12 +136,6 @@ export default function InventoryForm({
       setOptionsWarehouse(warehouses.result);
     }
   }, [warehouses?.result]);
-
-  const { data: products, isRefetching: isProductRefetching } = useGetProducts(
-    debouncedInputProduct,
-    { pageIndex: 0, pageSize: 5 },
-    [{ id: 'name', desc: false }],
-  );
 
   useEffect(() => {
     if (products?.result) {
@@ -146,7 +149,7 @@ export default function InventoryForm({
       !optionsProduct.find((opt) => opt.id === selectedProduct.id)
     ) {
       setOptionsProduct([...optionsProduct, selectedProduct]);
-    } else {
+    } else if (optionsProduct.length) {
       setOptionsProduct(optionsProduct);
     }
   }, [selectedProduct, optionsProduct]);
@@ -157,7 +160,7 @@ export default function InventoryForm({
       !optionsWarehouse.find((opt) => opt.id === selectedWarehouse.id)
     ) {
       setOptionsWarehouse([...optionsWarehouse, selectedWarehouse]);
-    } else {
+    } else if (optionsWarehouse.length) {
       setOptionsWarehouse(optionsWarehouse);
     }
   }, [selectedWarehouse, optionsWarehouse]);
@@ -165,7 +168,7 @@ export default function InventoryForm({
   useEffect(() => {
     if (queryData?.success === false && id) {
       errorNotification(queryData?.message || 'Page not found');
-      router.push(dashboardAdminPages.iventory.path);
+      router.push(dashboardAdminPages.inventory.path);
     }
   }, [queryData, router, id]);
 
@@ -193,7 +196,7 @@ export default function InventoryForm({
     };
 
     if (queryData) {
-      await mutateAsync({ ...payload, id: queryData?.result?.id });
+      await mutateAsync({ stock: payload.stock, id: queryData?.result?.id });
     } else {
       await mutateAsync(payload);
       reset(defaultValues);
@@ -357,7 +360,7 @@ export function InventoryFormUpdate() {
   const params = useParams();
   const id = params.id as string;
 
-  const { mutateAsync, isPending: isMutatePending } = useCreateInventory();
+  const { mutateAsync, isPending: isMutatePending } = useUpdateInventory();
   const {
     data,
     error: errorQuery,

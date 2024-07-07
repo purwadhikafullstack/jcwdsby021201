@@ -249,7 +249,6 @@ model Mutation {
   journalMutation      JournalMutation[]
   product              Product           @relation(fields: [productId], references: [id])
 
-
   @@map("mutations")
 }
 
@@ -278,9 +277,9 @@ enum TransactionType {
 
 enum MutationStatus {
   PENDING
+  CANCELED
   APPROVED
   REJECTED
-  COMPLETED
 }
 
 model Province {

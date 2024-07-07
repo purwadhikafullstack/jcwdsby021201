@@ -1,10 +1,10 @@
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  createInventory,
-  deleteInventory,
-  updateInventory,
-} from '@/features/admin/inventories/inventoriesFetchers';
+  createMutation,
+  updateMutationToApprove,
+  updateMutationToCancel,
+} from '@/features/admin/mutations/mutationsFetchers';
 import {
   errorFetcherNotification,
   errorNotification,
@@ -12,17 +12,17 @@ import {
 } from '@/utils/notifications';
 import { dashboardAdminPages } from '@/utils/routes';
 
-export const useCreateInventory = () => {
+export const useCreateMutation = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: createInventory,
+    mutationFn: createMutation,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['inventories'] });
+        queryClient.invalidateQueries({ queryKey: ['mutations'] });
         successNotification(data.message);
-        router.push(dashboardAdminPages.inventory.path);
+        router.push(dashboardAdminPages.mutation.path);
       } else {
         errorNotification(data.message);
       }
@@ -33,15 +33,17 @@ export const useCreateInventory = () => {
   });
 };
 
-export const useDeleteInventory = () => {
+export const useUpdateMutationToCancel = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
-    mutationFn: deleteInventory,
+    mutationFn: updateMutationToCancel,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['inventories'] });
+        queryClient.invalidateQueries({ queryKey: ['mutations'] });
         successNotification(data.message);
+        router.push(dashboardAdminPages.mutation.path);
       } else {
         errorNotification(data.message);
       }
@@ -52,17 +54,17 @@ export const useDeleteInventory = () => {
   });
 };
 
-export const useUpdateInventory = () => {
+export const useUpdateMutationToApprove = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
 
   return useMutation({
-    mutationFn: updateInventory,
+    mutationFn: updateMutationToApprove,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['inventories'] });
+        queryClient.invalidateQueries({ queryKey: ['mutations'] });
         successNotification(data.message);
-        router.push(dashboardAdminPages.inventory.path);
+        router.push(dashboardAdminPages.mutation.path);
       } else {
         errorNotification(data.message);
       }

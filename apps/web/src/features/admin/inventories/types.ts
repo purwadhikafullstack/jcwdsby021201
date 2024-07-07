@@ -1,4 +1,4 @@
-import { OptionLabel, UserOption } from '@/features/types';
+import { OptionLabel } from '@/features/types';
 
 export type InventoryBody = {
   stock: number;
@@ -11,10 +11,13 @@ export type InventoryResponse = InventoryBody & {
   deleted: boolean;
   createdAt: string;
   updatedAt: string;
-  warehouse: OptionLabel & {
-    user: UserOption | null;
-  };
+  warehouse: OptionLabel;
   product: OptionLabel & {
     price: number;
   };
+};
+
+export type InventoryUpdate = {
+  id: string;
+  stock: number;
 };

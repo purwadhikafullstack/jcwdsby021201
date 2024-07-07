@@ -20,26 +20,19 @@ import Box from '@mui/material/Box';
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
 import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 
 // React Query
-import { useGetInventories } from '@/features/admin/inventories/inventoriesQueries';
-import { InventoryResponse } from '@/features/admin/inventories/types';
+import { useGetMutations } from '@/features/admin/mutations/mutationsQueries';
+import { MutationResponse } from '@/features/admin/mutations/types';
 import { dashboardAdminPages } from '@/utils/routes';
-import { useDeleteInventory } from '@/features/admin/inventories/inventoriesMutations';
 
 // Utils
 import { toThousandFlag } from '@/utils/formatter';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
-import ConfirmationDialog, {
-  SelectedRow,
-} from '@/components/dialog/ConfirmationDialog';
 
 export default function InventoryTable() {
-  const [open, setOpen] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
@@ -48,28 +41,23 @@ export default function InventoryTable() {
   });
 
   const router = useRouter();
-
-  const { mutateAsync, isPending: isMutatePending } = useDeleteInventory();
-  const { data, isError, isRefetching, isLoading, refetch } = useGetInventories(
+  const { data, isError, isRefetching, isLoading, refetch } = useGetMutations(
     globalFilter,
     pagination,
     sorting,
   );
 
-  const handleClickOpen = (row: InventoryResponse) => {
-    setOpen(true);
-    setSelectedRow({ id: row.id, name: row.product.name });
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const columns = useMemo<MRT_ColumnDef<InventoryResponse>[]>(
+  const columns = useMemo<MRT_ColumnDef<MutationResponse>[]>(
     () => [
       {
-        accessorKey: 'warehouse.name',
-        header: 'Warehouse',
+        accessorKey: 'sourceWarehouse.name',
+        header: 'Warehouse Source',
+        enableColumnActions: false,
+        enableSorting: false,
+      },
+      {
+        accessorKey: 'destinationWarehouse.name',
+        header: 'Warehouse Destination',
         enableColumnActions: false,
         enableSorting: false,
       },
@@ -80,19 +68,27 @@ export default function InventoryTable() {
         enableSorting: false,
       },
       {
-        accessorKey: 'stock',
-        header: 'Stock',
+        accessorKey: 'stockRequest',
+        header: 'Stock Request',
         enableColumnActions: false,
         enableFilterMatchHighlighting: false,
         Cell: ({ cell }) => toThousandFlag(cell.getValue() as number),
       },
       {
-        accessorKey: 'product.price',
-        header: 'Price',
+        accessorKey: 'stockProcess',
+        header: 'Stock Process',
+        enableColumnActions: false,
+        enableFilterMatchHighlighting: false,
+        Cell: ({ cell }) =>
+          (cell.getValue() as number | null)
+            ? toThousandFlag(cell.getValue() as number)
+            : '-',
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
         enableColumnActions: false,
         enableSorting: false,
-        enableFilterMatchHighlighting: false,
-        Cell: ({ cell }) => toThousandFlag(cell.getValue() as number),
       },
     ],
     [],
@@ -140,7 +136,7 @@ export default function InventoryTable() {
     displayColumnDefOptions: {
       'mrt-row-actions': {
         header: '',
-        size: 120,
+        size: 60,
         grow: false,
       },
     },
@@ -158,21 +154,12 @@ export default function InventoryTable() {
             size="small"
             onClick={() => {
               router.push(
-                dashboardAdminPages.inventory.path +
+                dashboardAdminPages.mutation.path +
                   `/update/${row.original.id}`,
               );
             }}
           >
             <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton
-            size="small"
-            color="error"
-            onClick={() => handleClickOpen(row.original)}
-          >
-            <DeleteIcon />
           </IconButton>
         </Tooltip>
       </Box>
@@ -182,21 +169,14 @@ export default function InventoryTable() {
   return (
     <>
       <LinkButton
-        href={dashboardAdminPages.inventory.path + '/create'}
+        href={dashboardAdminPages.mutation.path + '/create'}
         variant="create"
       >
-        Inventory
+        Mutation
       </LinkButton>
       <Box sx={{ maxWidth: '100%', mt: 2 }}>
         <MaterialReactTable table={table} />
       </Box>
-      <ConfirmationDialog
-        open={open}
-        onClose={handleClose}
-        selectedRow={selectedRow}
-        mutateAsync={mutateAsync}
-        isMutatePending={isMutatePending}
-      />
     </>
   );
 }

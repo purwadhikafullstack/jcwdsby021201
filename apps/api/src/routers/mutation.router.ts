@@ -1,13 +1,13 @@
-import { InventoryController } from '@/controllers/inventory.controller';
+import { MutationController } from '@/controllers/mutation.controller';
 import { adminGuard, verifyToken } from '@/middlewares/auth.middleware';
 import { Router } from 'express';
 
-export class InventoryRouter {
+export class MutationRouter {
   private router: Router;
-  private inventoryController: InventoryController;
+  private mutationController: MutationController;
 
   constructor() {
-    this.inventoryController = new InventoryController();
+    this.mutationController = new MutationController();
     this.router = Router();
     this.initializeRoutes();
   }
@@ -17,35 +17,35 @@ export class InventoryRouter {
       '/',
       verifyToken,
       adminGuard,
-      this.inventoryController.createInventory,
+      this.mutationController.createMutation,
     );
 
     this.router.get(
       '/',
       verifyToken,
       adminGuard,
-      this.inventoryController.getInventories,
+      this.mutationController.getMutations,
     );
 
-    this.router.delete(
-      '/:id',
+    this.router.patch(
+      '/to-cancel/:id',
       verifyToken,
       adminGuard,
-      this.inventoryController.deleteInventory,
+      this.mutationController.updateMutationToCancel,
+    );
+
+    this.router.patch(
+      '/to-approve/:id',
+      verifyToken,
+      adminGuard,
+      this.mutationController.updateMutationToApprove,
     );
 
     this.router.get(
       '/:id',
       verifyToken,
       adminGuard,
-      this.inventoryController.getInventory,
-    );
-
-    this.router.patch(
-      '/:id',
-      verifyToken,
-      adminGuard,
-      this.inventoryController.updateInventory,
+      this.mutationController.getMutation,
     );
   }
 

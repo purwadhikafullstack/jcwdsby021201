@@ -43,4 +43,36 @@ export class WarehouseValidation {
       invalid_type_error: 'Longitude must be a number!',
     }),
   });
+
+  static QUERY = z
+    .object({
+      page: z.coerce
+        .number({ invalid_type_error: 'Page must be a number!' })
+        .int({ message: 'Page must be an integer!' })
+        .positive({ message: 'Page must be a positive number!' })
+        .optional(),
+      limit: z.coerce
+        .number({ invalid_type_error: 'Limit must be a number!' })
+        .int({ message: 'Limit must be an integer!' })
+        .positive({ message: 'Limit must be a positive number!' })
+        .optional(),
+      filter: z
+        .union([
+          z.string({ invalid_type_error: 'Filter must be a string!' }),
+          z.coerce.number({ invalid_type_error: 'Filter must be a number!' }),
+        ])
+        .optional(),
+      sortBy: z
+        .string({ invalid_type_error: 'Sorting must be a string!' })
+        .optional(),
+      orderBy: z
+        .string({ invalid_type_error: 'Ordering must be a string!' })
+        .optional(),
+      excludeId: z.coerce
+        .number({ invalid_type_error: 'ExcludeId must be a number!' })
+        .int({ message: 'ExcludeId must be an integer!' })
+        .positive({ message: 'ExcludeId must be a positive number!' })
+        .optional(),
+    })
+    .optional();
 }

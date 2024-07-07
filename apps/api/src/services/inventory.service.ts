@@ -1,22 +1,23 @@
-import prisma from '@/prisma';
-import { InventoryRepository } from '@/repositories/inventory.repository';
 import { ProductRepository } from '@/repositories/product.repository';
 import { ProductWarehouseRepository } from '@/repositories/productWarehouse.repository';
-import { UserRepository } from '@/repositories/user.repository';
 import { WarehouseRepository } from '@/repositories/warehouse.repository';
 import { UserDecoded } from '@/types/auth.type';
-import { InventoryBody, InventoryQuery } from '@/types/inventory.type';
+import {
+  ProductWarehouseBody,
+  ProductWarehouseQuery,
+  ProductWarehouseUpdate,
+} from '@/types/productWarehouse.type';
 import {
   responseDataWithPagination,
   responseWithData,
   responseWithoutData,
 } from '@/utils/response';
-import { InventoryValidation } from '@/validators/inventory.validation';
+import { ProductWarehouseValidation } from '@/validators/productWarehouse.validation';
 import { Validation } from '@/validators/validation';
 
 export class InventoryService {
-  static async createInventory(user: UserDecoded, body: InventoryBody) {
-    const data = Validation.validate(InventoryValidation.BODY, body);
+  static async createInventory(user: UserDecoded, body: ProductWarehouseBody) {
+    const data = Validation.validate(ProductWarehouseValidation.BODY, body);
 
     const warehouse = await WarehouseRepository.findWarehouseById(
       data.warehouseId,
@@ -40,16 +41,13 @@ export class InventoryService {
         data.warehouseId,
       );
 
-    return await InventoryRepository.createInventory(
+    return await ProductWarehouseRepository.createProductWarehouse(
       data,
-      warehouse,
-      product,
-      user,
       productWarehouse,
     );
   }
 
-  static async getInventories(user: UserDecoded, query: InventoryQuery) {
+  static async getInventories(user: UserDecoded, query: ProductWarehouseQuery) {
     const { filter, limit, page, sortBy, orderBy } = Validation.validate(
       Validation.QUERY,
       query,
@@ -96,39 +94,82 @@ export class InventoryService {
   static async deleteInventory(user: UserDecoded, id: string) {
     const newId = Validation.validate(Validation.INT_ID, id);
 
-    const checkId = await ProductWarehouseRepository.findProductWarehouseById(
-      Number(newId),
-    );
-    if (!checkId) {
+    const productWarehouse =
+      await ProductWarehouseRepository.findProductWarehouseById(Number(newId));
+    if (!productWarehouse) {
       return responseWithoutData(404, false, 'Inventory Not Found');
     }
 
-    if (checkId.warehouse.user?.id !== user.id && user.role !== 'SUPER_ADMIN') {
+    if (
+      productWarehouse.warehouse.user?.id !== user.id &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
       return responseWithoutData(403, false, 'User Not Allowed');
     }
 
-    return await InventoryRepository.deleteInventory(
-      checkId,
-      checkId.warehouse,
-      checkId.product,
-      user,
-    );
+    await ProductWarehouseRepository.deleteProductWarehouse(productWarehouse);
+
+    return responseWithoutData(200, true, 'Success Delete Inventory');
   }
 
   static async getInventory(user: UserDecoded, id: string) {
     const newId = Validation.validate(Validation.INT_ID, id);
-    const checkId = await ProductWarehouseRepository.findProductWarehouseById(
-      Number(newId),
-    );
+    const productWarehouse =
+      await ProductWarehouseRepository.findProductWarehouseById(Number(newId));
 
-    if (!checkId) {
+    if (!productWarehouse) {
       return responseWithoutData(404, false, 'Inventory Not Found');
     }
 
-    if (checkId.warehouse.user?.id !== user.id && user.role !== 'SUPER_ADMIN') {
+    if (
+      productWarehouse.warehouse.user?.id !== user.id &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
       return responseWithoutData(403, false, 'User Not Allowed');
     }
 
-    return responseWithData(200, 'Success Get Inventory', checkId);
+    const newResponse = {
+      ...productWarehouse,
+      warehouse: {
+        id: productWarehouse.warehouse.id,
+        name: productWarehouse.warehouse.name,
+      },
+    };
+
+    return responseWithData(200, 'Success Get Inventory', newResponse);
+  }
+
+  static async updateInventory(
+    user: UserDecoded,
+    id: string,
+    body: ProductWarehouseUpdate,
+  ) {
+    const newId = Validation.validate(Validation.INT_ID, id);
+    const { stock } = Validation.validate(
+      ProductWarehouseValidation.UPDATE,
+      body,
+    );
+
+    const productWarehouse =
+      await ProductWarehouseRepository.findProductWarehouseById(Number(newId));
+
+    if (!productWarehouse) {
+      return responseWithoutData(404, false, 'Inventory Not Found');
+    }
+
+    if (
+      productWarehouse.warehouse.user?.id !== user.id &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
+      return responseWithoutData(403, false, 'User Not Allowed');
+    }
+
+    await ProductWarehouseRepository.updateProductWarehouse(
+      Number(newId),
+      stock,
+      productWarehouse,
+    );
+
+    return responseWithoutData(200, true, 'Success Update Inventory');
   }
 }

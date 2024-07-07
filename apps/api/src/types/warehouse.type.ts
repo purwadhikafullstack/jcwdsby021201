@@ -16,6 +16,7 @@ export type WarehouseQuery = {
   filter?: string;
   sortBy?: string;
   orderBy?: string;
+  excludeId?: number;
 };
 
 export type WarehouseResponse = Prisma.WarehouseGetPayload<{

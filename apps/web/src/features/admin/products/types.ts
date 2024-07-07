@@ -22,6 +22,7 @@ export type Pictures = {
 };
 
 export type ProductResponse = ProductBody & {
+  description: string | null;
   id: number;
   slug: string;
   createdAt: string;

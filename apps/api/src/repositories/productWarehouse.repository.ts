@@ -1,14 +1,121 @@
 import prisma from '@/prisma';
 import { UserDecoded } from '@/types/auth.type';
-import { ProductWarehouseQueryRequired } from '@/types/productWarehouse.type';
+import { ProductWarehouseBody } from '@/types/productWarehouse.type';
+import {
+  ProductWarehouseQueryRequired,
+  ProductWarehouseResponse,
+} from '@/types/productWarehouse.type';
+import { responseWithoutData } from '@/utils/response';
 
 export class ProductWarehouseRepository {
+  static async createProductWarehouse(
+    data: ProductWarehouseBody,
+    productWarehouse: ProductWarehouseResponse | null,
+  ) {
+    const { warehouseId, productId, stock } = data;
+    return await prisma.$transaction(async (tx) => {
+      if (productWarehouse) {
+        const {
+          id,
+          stock: productStock,
+          warehouse,
+          product,
+        } = productWarehouse;
+
+        const diff = stock - productStock;
+        if (diff < 0) {
+          await tx.journalMutation.create({
+            data: {
+              transactionType: 'OUT',
+              quantity: Math.abs(diff),
+              productWarehouse: { connect: { id } },
+              description: `Stock Out ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user?.username : 'Unknown'} qty: ${Math.abs(diff)}`,
+            },
+          });
+
+          await tx.productWarehouse.update({
+            where: { id },
+            data: { stock, deleted: false },
+          });
+        } else if (diff > 0) {
+          await tx.journalMutation.create({
+            data: {
+              transactionType: 'IN',
+              quantity: diff,
+              productWarehouse: { connect: { id } },
+              description: `Stock In ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${diff}`,
+            },
+          });
+
+          await tx.productWarehouse.update({
+            where: { id },
+            data: { stock, deleted: false },
+          });
+        } else {
+          await tx.productWarehouse.update({
+            where: { id },
+            data: { stock, deleted: false },
+          });
+        }
+
+        return responseWithoutData(
+          200,
+          true,
+          "Success Update Product Warehouse's Stock",
+        );
+      } else {
+        const { product, warehouse, id } = await tx.productWarehouse.create({
+          data: {
+            warehouse: { connect: { id: warehouseId } },
+            product: { connect: { id: productId } },
+            stock,
+          },
+          include: {
+            warehouse: {
+              select: {
+                id: true,
+                name: true,
+                user: { select: { id: true, username: true } },
+              },
+            },
+            product: { select: { id: true, name: true } },
+          },
+        });
+
+        await tx.journalMutation.create({
+          data: {
+            transactionType: 'IN',
+            quantity: stock,
+            productWarehouse: { connect: { id } },
+            description: `Stock In ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${stock}`,
+          },
+        });
+
+        return responseWithoutData(
+          201,
+          true,
+          "Success Add Product Warehouse's Stock",
+        );
+      }
+    });
+  }
+
   static async findProductWarehouseByProductIdAndWarehouseId(
     productId: number,
     warehouseId: number,
   ) {
     return await prisma.productWarehouse.findUnique({
       where: { productId_warehouseId: { productId, warehouseId } },
+      include: {
+        warehouse: {
+          select: {
+            id: true,
+            name: true,
+            user: { select: { id: true, username: true } },
+          },
+        },
+        product: { select: { id: true, name: true } },
+      },
     });
   }
 
@@ -87,6 +194,72 @@ export class ProductWarehouseRepository {
           },
         },
       },
+    });
+  }
+
+  static async deleteProductWarehouse(
+    productWarehouse: ProductWarehouseResponse,
+  ) {
+    const { warehouse, product } = productWarehouse;
+    return await prisma.$transaction(async (tx) => {
+      await tx.journalMutation.create({
+        data: {
+          transactionType: 'OUT',
+          quantity: productWarehouse.stock,
+          productWarehouse: { connect: { id: productWarehouse.id } },
+          description: `Stock Out ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${productWarehouse.stock}`,
+        },
+      });
+
+      await tx.productWarehouse.delete({
+        where: { id: productWarehouse.id },
+      });
+    });
+  }
+
+  static async updateProductWarehouse(
+    id: number,
+    stock: number,
+    productWarehouse: ProductWarehouseResponse,
+  ) {
+    return await prisma.$transaction(async (tx) => {
+      const { id, stock: productStock, warehouse, product } = productWarehouse;
+      const diff = stock - productStock;
+
+      if (diff < 0) {
+        await tx.journalMutation.create({
+          data: {
+            transactionType: 'OUT',
+            quantity: Math.abs(diff),
+            productWarehouse: { connect: { id } },
+            description: `Stock Out ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
+          },
+        });
+
+        await tx.productWarehouse.update({
+          where: { id },
+          data: { stock, deleted: false },
+        });
+      } else if (diff > 0) {
+        await tx.journalMutation.create({
+          data: {
+            transactionType: 'IN',
+            quantity: diff,
+            productWarehouse: { connect: { id } },
+            description: `Stock In ${product.name} to ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${diff}`,
+          },
+        });
+
+        await tx.productWarehouse.update({
+          where: { id },
+          data: { stock, deleted: false },
+        });
+      } else {
+        await tx.productWarehouse.update({
+          where: { id },
+          data: { stock, deleted: false },
+        });
+      }
     });
   }
 }

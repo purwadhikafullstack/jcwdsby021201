@@ -5,7 +5,7 @@ import {
   ResponseWithoutData,
 } from '@/features/types';
 import { createAxiosInstance } from '@/utils/axiosInstance';
-import { InventoryBody, InventoryResponse } from './types';
+import { InventoryBody, InventoryResponse, InventoryUpdate } from './types';
 
 export const createInventory = async (data: InventoryBody) => {
   const instance = await createAxiosInstance();
@@ -35,6 +35,16 @@ export const getInventory = async (id: string) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseWithData<InventoryResponse>>(
     `/inventories/${id}`,
+  );
+
+  return res.data;
+};
+
+export const updateInventory = async ({ id, ...data }: InventoryUpdate) => {
+  const instance = await createAxiosInstance();
+  const res = await instance.patch<ResponseWithoutData>(
+    `/inventories/${id}`,
+    data,
   );
 
   return res.data;

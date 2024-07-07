@@ -2,6 +2,7 @@ import SellOutlinedIcon from '@mui/icons-material/SellOutlined';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 
 export type Route = {
   path: string;
@@ -49,6 +50,11 @@ export const dashboardAdminPages: Record<string, Route> = {
     path: '/dashboard/admin/inventories',
     label: 'Inventory',
     Icon: InventoryOutlinedIcon,
+  },
+  mutation: {
+    path: '/dashboard/admin/mutations',
+    label: 'Mutation',
+    Icon: LocalShippingOutlinedIcon,
   },
 };
 

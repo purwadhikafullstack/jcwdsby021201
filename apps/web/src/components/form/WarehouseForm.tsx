@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormHelperText from '@mui/material/FormHelperText';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -105,11 +106,17 @@ export default function WarehouseForm({
   const [optionsCity, setOptionsCity] = useState<
     CityResponse[] | OptionLabel[]
   >([]);
-  const { handleSubmit, control, reset, watch, setValue } =
-    useForm<WarehouseFormData>({
-      resolver: zodResolver(warehouseSchema),
-      defaultValues,
-    });
+  const {
+    handleSubmit,
+    control,
+    reset,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<WarehouseFormData>({
+    resolver: zodResolver(warehouseSchema),
+    defaultValues,
+  });
 
   const selectedProvince = watch('provinceId') || 0;
 
@@ -143,7 +150,7 @@ export default function WarehouseForm({
   useEffect(() => {
     if (province && !optionsProvince.find((opt) => opt.id === province.id)) {
       setOptionsProvince([...optionsProvince, province]);
-    } else {
+    } else if (optionsProvince.length) {
       setOptionsProvince(optionsProvince);
     }
   }, [province, optionsProvince]);
@@ -163,7 +170,7 @@ export default function WarehouseForm({
   useEffect(() => {
     if (city && !optionsCity.find((opt) => opt.id === city.id)) {
       setOptionsCity([...optionsCity, city]);
-    } else {
+    } else if (optionsCity.length) {
       setOptionsCity(optionsCity);
     }
   }, [city, optionsCity]);
@@ -205,6 +212,12 @@ export default function WarehouseForm({
       reset(defaultValues);
     }
   };
+
+  if (errors.latitude || errors.longitude) {
+    errorNotification(
+      'Please click on the map and select the exact location of the warehouse',
+    );
+  }
 
   return (
     <Box component="main" sx={adminFormContainerStyles}>

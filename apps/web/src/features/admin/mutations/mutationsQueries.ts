@@ -1,28 +1,22 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
-  getUserWarehouse,
-  getWarehouse,
-  getWarehouses,
-} from '@/features/admin/warehouses/warehousesFetchers';
+  getMutation,
+  getMutations,
+} from '@/features/admin/mutations/mutationsFetchers';
 import { MRT_PaginationState, MRT_SortingState } from 'material-react-table';
-import { UserSession } from '@/features/types';
-import { WarehouseResponse } from '@/features/admin/warehouses/types';
 
-export const useGetWarehouses = (
+export const useGetMutations = (
   globalFilter: string,
   pagination: MRT_PaginationState,
   sorting: MRT_SortingState,
-  enabled: boolean = true,
-  excludeId?: number,
 ) => {
   return useQuery({
     queryKey: [
-      'warehouses',
+      'mutations',
       globalFilter,
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
-      excludeId,
     ],
     queryFn: async () => {
       let sortBy = 'id';
@@ -38,37 +32,25 @@ export const useGetWarehouses = (
         !isNaN(Number(globalFilter)) && (newFilter = Number(newFilter));
       }
 
-      const res = await getWarehouses({
+      const res = await getMutations({
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize,
         filter: newFilter,
         sortBy,
         orderBy,
-        excludeId,
       });
 
       return res;
     },
     placeholderData: keepPreviousData,
-    enabled,
   });
 };
 
-export const useGetWarehouse = (id: string) => {
+export const useGetMutation = (id: string) => {
   return useQuery({
-    queryKey: ['warehouse', id],
+    queryKey: ['mutation', id],
     queryFn: async () => {
-      return await getWarehouse(id);
+      return await getMutation(id);
     },
-  });
-};
-
-export const useGetUserWarehouse = (enabled: boolean = true) => {
-  return useQuery({
-    queryKey: ['user-warehouse'],
-    queryFn: async () => {
-      return await getUserWarehouse();
-    },
-    enabled,
   });
 };

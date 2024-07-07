@@ -51,12 +51,14 @@ const menuSuperAdmin = [
   dashboardAdminPages.category,
   dashboardAdminPages.product,
   dashboardAdminPages.inventory,
+  dashboardAdminPages.mutation,
 ];
 
 const menuWarehouseAdmin = [
   dashboardAdminPages.category,
   dashboardAdminPages.product,
   dashboardAdminPages.inventory,
+  dashboardAdminPages.mutation,
 ];
 
 type Props = {

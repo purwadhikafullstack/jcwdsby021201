@@ -13,5 +13,5 @@ export const toThousandFlag = (
 };
 
 export const toNumberFromThousandFlag = (num: string) => {
-  return parseFloat(num.replace(/,/g, ''));
+  return parseFloat(num?.replace(/,/g, ''));
 };

@@ -1,5 +1,6 @@
 import { WarehouseController } from '@/controllers/warehouse.controller';
 import {
+  adminGuard,
   adminWarehouseGuard,
   superAdminGuard,
   verifyToken,
@@ -27,7 +28,7 @@ export class WarehouseRouter {
     this.router.get(
       '/',
       verifyToken,
-      superAdminGuard,
+      adminGuard,
       this.warehouseController.getWarehouses,
     );
 

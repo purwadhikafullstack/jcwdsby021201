@@ -43,10 +43,8 @@ export class WarehouseService {
   }
 
   static async getWarehouses(query: WarehouseQuery) {
-    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
-      Validation.QUERY,
-      query,
-    );
+    const { filter, limit, page, sortBy, orderBy, excludeId } =
+      Validation.validate(WarehouseValidation.QUERY, query);
 
     const queryPage = page || 1;
     const queryLimit = limit || 10;
@@ -67,6 +65,16 @@ export class WarehouseService {
     }
 
     const total = await WarehouseRepository.countWarehouses(queryFilter);
+    if (excludeId) {
+      const responseData = response.filter((item) => item.id !== excludeId);
+      return responseDataWithPagination(
+        200,
+        'Success Get Warehouses',
+        responseData,
+        { page: queryPage, limit: queryLimit, total: total - 1 },
+      );
+    }
+
     return responseDataWithPagination(200, 'Success Get Warehouses', response, {
       page: queryPage,
       limit: queryLimit,
