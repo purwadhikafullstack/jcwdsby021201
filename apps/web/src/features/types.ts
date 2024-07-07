@@ -57,3 +57,8 @@ export type UserOption = {
   id: number;
   username: string | null;
 };
+
+export type AdminOption = {
+  id: number;
+  username: string;
+};

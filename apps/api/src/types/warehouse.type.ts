@@ -1,6 +1,7 @@
 import { Prisma } from '@prisma/client';
 
 export type WarehouseBody = {
+  userId: number | null;
   name: string;
   address: string;
   provinceId: number;

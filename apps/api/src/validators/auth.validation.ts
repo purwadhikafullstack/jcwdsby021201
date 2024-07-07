@@ -3,7 +3,10 @@ import { z } from 'zod';
 export class AuthValidation {
   static ONLY_EMAIL = z.object({
     email: z
-      .string({ message: 'Email is required!' })
+      .string({
+        message: 'Email is required!',
+        invalid_type_error: 'Email must be a string!',
+      })
       .email({ message: 'Email is invalid!' }),
   });
 
@@ -18,7 +21,10 @@ export class AuthValidation {
 
   static LOGIN = z.object({
     email: z
-      .string({ message: 'Email is required!' })
+      .string({
+        message: 'Email is required!',
+        invalid_type_error: 'Email must be a string!',
+      })
       .email({ message: 'Email is invalid!' }),
     password: z
       .string({ message: 'Password is required!' })
@@ -27,7 +33,10 @@ export class AuthValidation {
 
   static OAUTH = z.object({
     email: z
-      .string({ message: 'Email is required!' })
+      .string({
+        message: 'Email is required!',
+        invalid_type_error: 'Email must be a string!',
+      })
       .email({ message: 'Email is invalid!' }),
     image: z
       .string({ message: 'Image is required!' })

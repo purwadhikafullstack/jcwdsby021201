@@ -16,6 +16,7 @@ export class WarehouseRepository {
     return await prisma.warehouse.findMany({
       where: {
         OR: [
+          { user: { username: { contains: filter } } },
           { name: { contains: filter } },
           { address: { contains: filter } },
           { postalCode: { contains: filter } },
@@ -38,6 +39,7 @@ export class WarehouseRepository {
     return await prisma.warehouse.count({
       where: {
         OR: [
+          { user: { username: { contains: filter } } },
           { name: { contains: filter } },
           { address: { contains: filter } },
           { postalCode: { contains: filter } },

@@ -10,7 +10,6 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
-import FormHelperText from '@mui/material/FormHelperText';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,9 +26,10 @@ import {
 } from '@/styles/adminFormStyles';
 
 // Types
-import { OptionLabel, ResponseWithData, UserSession } from '@/features/types';
+import { AdminOption, OptionLabel, ResponseWithData } from '@/features/types';
 import { CityResponse, ProvinceResponse } from '@/features/user/location/type';
 import { WarehouseResponse } from '@/features/admin/warehouses/types';
+import { AdminResponse } from '@/features/admin/users/types';
 
 // TanStack
 import {
@@ -41,6 +41,7 @@ import {
   useGetCitiesPagination,
   useGetProvincesPagination,
 } from '@/features/user/location/locationQueries';
+import { useGetWarehouseAdmins } from '@/features/admin/users/usersQueries';
 
 // Utils
 import {
@@ -53,9 +54,6 @@ import { useDebounce } from 'use-debounce';
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
 
-// NextAuth
-import { useSession } from 'next-auth/react';
-
 // Map
 import { LatLngExpression } from 'leaflet';
 
@@ -65,6 +63,7 @@ const WarehouseMap = dynamic(
 );
 
 const defaultValues: WarehouseFormData = {
+  userId: null,
   name: '',
   address: '',
   provinceId: null,
@@ -97,15 +96,22 @@ export default function WarehouseForm({
   const [debouncedInputProvince] = useDebounce(inputProvince, 300);
   const [inputCity, setInputCity] = useState('');
   const [debouncedInputCity] = useDebounce(inputCity, 300);
+  const [inputAdmin, setInputAdmin] = useState('');
+  const [debouncedInputAdmin] = useDebounce(inputAdmin, 300);
   const [location, setLocation] = useState<LatLngExpression | null>(null);
   const [province, setProvince] = useState<OptionLabel | null>(null);
   const [city, setCity] = useState<OptionLabel | null>(null);
+  const [admin, setAdmin] = useState<AdminOption | null>(null);
   const [optionsProvince, setOptionsProvince] = useState<
     ProvinceResponse[] | OptionLabel[]
   >([]);
   const [optionsCity, setOptionsCity] = useState<
     CityResponse[] | OptionLabel[]
   >([]);
+  const [optionsAdmin, setOptionsAdmin] = useState<
+    AdminResponse[] | AdminOption[]
+  >([]);
+
   const {
     handleSubmit,
     control,
@@ -121,10 +127,7 @@ export default function WarehouseForm({
   const selectedProvince = watch('provinceId') || 0;
 
   const router = useRouter();
-  const session = useSession();
-  const user = session.data?.user as UserSession;
   const disabledOnPending = isMutatePending || isQueryPending;
-  const onlySuperAdmin = disabledOnPending || user?.role !== 'SUPER_ADMIN';
 
   const { data: provinces, isRefetching: isProvinceRefetching } =
     useGetProvincesPagination(
@@ -140,6 +143,11 @@ export default function WarehouseForm({
       { pageIndex: 0, pageSize: 5 },
       [{ id: 'name', desc: false }],
     );
+
+  const { data: admins, isRefetching: isAdminRefetching } =
+    useGetWarehouseAdmins(debouncedInputAdmin, { pageIndex: 0, pageSize: 5 }, [
+      { id: 'username', desc: false },
+    ]);
 
   useEffect(() => {
     if (provinces?.result) {
@@ -174,6 +182,20 @@ export default function WarehouseForm({
       setOptionsCity(optionsCity);
     }
   }, [city, optionsCity]);
+
+  useEffect(() => {
+    if (admins?.result) {
+      setOptionsAdmin(admins.result);
+    }
+  }, [admins?.result]);
+
+  useEffect(() => {
+    if (admin && !optionsAdmin.find((opt) => opt.id === admin.id)) {
+      setOptionsAdmin([...optionsAdmin, admin]);
+    } else if (optionsAdmin.length) {
+      setOptionsAdmin(optionsAdmin);
+    }
+  }, [admin, optionsAdmin]);
 
   useEffect(() => {
     if (queryData?.success === false && id) {
@@ -230,6 +252,53 @@ export default function WarehouseForm({
       >
         <Controller
           control={control}
+          name="userId"
+          render={({ field: { value, onChange }, fieldState: { error } }) => (
+            <Autocomplete
+              openOnFocus
+              disabled={disabledOnPending}
+              options={optionsAdmin}
+              getOptionLabel={(option) => option.username}
+              onChange={(_, value) => {
+                onChange(value?.id ?? null);
+              }}
+              value={
+                value ? optionsAdmin.find((opt) => opt.id === value) : null
+              }
+              onInputChange={(_, newInputValue) => {
+                setInputAdmin(newInputValue);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  fullWidth
+                  size="small"
+                  label="Admin Warehouse"
+                  variant="outlined"
+                  placeholder="Choose Admin Warehouse"
+                  disabled={disabledOnPending}
+                  helperText={error?.message}
+                  error={Boolean(error)}
+                  InputLabelProps={{ shrink: true }}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {isAdminRefetching ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+            />
+          )}
+        />
+
+        <Controller
+          control={control}
           name="name"
           render={({ field, fieldState: { error } }) => (
             <TextField
@@ -239,7 +308,7 @@ export default function WarehouseForm({
               label="Name"
               variant="outlined"
               placeholder="Warehouse Name"
-              disabled={onlySuperAdmin}
+              disabled={disabledOnPending}
               {...field}
               helperText={error?.message}
               error={Boolean(error)}
@@ -261,7 +330,7 @@ export default function WarehouseForm({
               label="Address"
               variant="outlined"
               placeholder="Warehouse Address"
-              disabled={onlySuperAdmin}
+              disabled={disabledOnPending}
               {...field}
               helperText={error?.message}
               error={Boolean(error)}
@@ -276,7 +345,7 @@ export default function WarehouseForm({
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
               openOnFocus
-              disabled={onlySuperAdmin}
+              disabled={disabledOnPending}
               options={optionsProvince}
               getOptionLabel={(option) => option.name}
               onChange={(_, value) => {
@@ -296,7 +365,7 @@ export default function WarehouseForm({
                   label="Province"
                   variant="outlined"
                   placeholder="Choose Province"
-                  disabled={onlySuperAdmin}
+                  disabled={disabledOnPending}
                   helperText={error?.message}
                   error={Boolean(error)}
                   InputLabelProps={{ shrink: true, required: true }}
@@ -323,7 +392,7 @@ export default function WarehouseForm({
           render={({ field: { value, onChange }, fieldState: { error } }) => (
             <Autocomplete
               openOnFocus
-              disabled={!selectedProvince || onlySuperAdmin}
+              disabled={!selectedProvince || disabledOnPending}
               options={optionsCity}
               getOptionLabel={(option) => option.name}
               onChange={(_, value) => {
@@ -341,7 +410,7 @@ export default function WarehouseForm({
                   label="City"
                   variant="outlined"
                   placeholder="Choose City"
-                  disabled={!selectedProvince || onlySuperAdmin}
+                  disabled={!selectedProvince || disabledOnPending}
                   helperText={error?.message}
                   error={Boolean(error)}
                   InputLabelProps={{ shrink: true, required: true }}
@@ -373,7 +442,7 @@ export default function WarehouseForm({
               label="Postal Code"
               variant="outlined"
               placeholder="Warehouse Postal Code"
-              disabled={onlySuperAdmin}
+              disabled={disabledOnPending}
               {...field}
               helperText={error?.message}
               error={Boolean(error)}
@@ -387,16 +456,14 @@ export default function WarehouseForm({
         </Box>
 
         <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
-          {user?.role === 'SUPER_ADMIN' && (
-            <Button
-              type="submit"
-              variant="contained"
-              color="info"
-              disabled={disabledOnPending}
-            >
-              Submit
-            </Button>
-          )}
+          <Button
+            type="submit"
+            variant="contained"
+            color="info"
+            disabled={disabledOnPending}
+          >
+            Submit
+          </Button>
           <LinkButton
             href={dashboardAdminPages.warehouse.path}
             variant="back"

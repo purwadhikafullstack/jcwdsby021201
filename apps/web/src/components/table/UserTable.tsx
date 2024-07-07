@@ -21,11 +21,14 @@ import Box from '@mui/material/Box';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import LockIcon from '@mui/icons-material/Lock';
 
 // React Query
-import { WarehouseResponse } from '@/features/admin/warehouses/types';
-import { useGetWarehouses } from '@/features/admin/warehouses/warehousesQueries';
-import { useDeleteWarehouse } from '@/features/admin/warehouses/warehousesMutations';
+import { useGetUsers } from '@/features/admin/users/usersQueries';
+import { UserResponse } from '@/features/admin/users/types';
+import { useDeleteUser } from '@/features/admin/users/usersMutations';
+
+// Utils
 import { dashboardAdminPages } from '@/utils/routes';
 
 // Custom Components
@@ -34,7 +37,7 @@ import ConfirmationDialog, {
   SelectedRow,
 } from '@/components/dialog/ConfirmationDialog';
 
-export default function WarehouseTable() {
+export default function UserTable() {
   const [open, setOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -46,56 +49,52 @@ export default function WarehouseTable() {
 
   const router = useRouter();
 
-  const { mutateAsync, isPending: isMutatePending } = useDeleteWarehouse();
-  const { data, isError, isRefetching, isLoading, refetch } = useGetWarehouses(
+  const { mutateAsync, isPending: isMutatePending } = useDeleteUser();
+  const { data, isError, isRefetching, isLoading, refetch } = useGetUsers(
     globalFilter,
     pagination,
     sorting,
   );
 
-  const handleClickOpen = (row: WarehouseResponse) => {
+  const handleClickOpen = (row: UserResponse) => {
     setOpen(true);
-    setSelectedRow({ id: row.id, name: row.name });
+    setSelectedRow({ id: row.id, name: row.email });
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const columns = useMemo<MRT_ColumnDef<WarehouseResponse>[]>(
+  const columns = useMemo<MRT_ColumnDef<UserResponse>[]>(
     () => [
       {
-        accessorKey: 'name',
-        header: 'Name',
+        accessorKey: 'email',
+        header: 'Email',
         enableColumnActions: false,
       },
       {
-        accessorKey: 'address',
-        header: 'Address',
+        accessorKey: 'username',
+        header: 'Username',
         enableColumnActions: false,
       },
       {
-        accessorKey: 'province.name',
-        header: 'Province',
+        accessorKey: 'role',
+        header: 'Role',
         enableColumnActions: false,
-        enableSorting: false,
+        enableFilterMatchHighlighting: false,
       },
       {
-        accessorKey: 'city.name',
-        header: 'City',
+        accessorKey: 'isVerified',
+        header: 'Verified',
         enableColumnActions: false,
-        enableSorting: false,
+        enableFilterMatchHighlighting: false,
+        Cell: ({ cell }) => (cell.getValue() ? 'Yes' : 'No'),
       },
       {
-        accessorKey: 'postalCode',
-        header: 'Postal Code',
+        accessorKey: 'provider',
+        header: 'Provider',
         enableColumnActions: false,
-      },
-      {
-        accessorKey: 'user.username',
-        header: 'Admin',
-        enableColumnActions: false,
-        enableSorting: false,
+        enableFilterMatchHighlighting: false,
       },
     ],
     [],
@@ -152,32 +151,42 @@ export default function WarehouseTable() {
         sx={{
           display: 'flex',
           gap: '.5rem',
-          justifyContent: 'center',
           width: '100%',
+          justifyContent: 'end',
         }}
       >
-        <Tooltip title="Edit">
-          <IconButton
-            size="small"
-            onClick={() => {
-              router.push(
-                dashboardAdminPages.warehouse.path +
-                  `/update/${row.original.id}`,
-              );
-            }}
-          >
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete">
-          <IconButton
-            size="small"
-            color="error"
-            onClick={() => handleClickOpen(row.original)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        {row.getValue('role') === 'ADMIN' ? (
+          <>
+            <Tooltip title="Edit">
+              <IconButton
+                size="small"
+                onClick={() => {
+                  router.push(
+                    dashboardAdminPages.user.path +
+                      `/update/${row.original.id}`,
+                  );
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton
+                size="small"
+                color="error"
+                onClick={() => handleClickOpen(row.original)}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </>
+        ) : (
+          <Tooltip title="Lock">
+            <IconButton size="small" color="warning">
+              <LockIcon />
+            </IconButton>
+          </Tooltip>
+        )}
       </Box>
     ),
   });
@@ -185,10 +194,10 @@ export default function WarehouseTable() {
   return (
     <>
       <LinkButton
-        href={dashboardAdminPages.warehouse.path + '/create'}
+        href={dashboardAdminPages.user.path + '/create'}
         variant="create"
       >
-        Warehouse
+        User
       </LinkButton>
       <Box sx={{ maxWidth: '100%', mt: 2 }}>
         <MaterialReactTable table={table} />

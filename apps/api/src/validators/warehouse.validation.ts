@@ -2,6 +2,11 @@ import { z } from 'zod';
 
 export class WarehouseValidation {
   static BODY = z.object({
+    userId: z
+      .number({ invalid_type_error: 'User Id must be a number!' })
+      .int({ message: 'User Id must be a number!' })
+      .positive({ message: 'User Id must be greater than 0!' })
+      .nullable(),
     name: z
       .string({
         message: 'Name is required!',

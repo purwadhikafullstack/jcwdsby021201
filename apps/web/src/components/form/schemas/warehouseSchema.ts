@@ -1,6 +1,7 @@
 import { number, z } from 'zod';
 
 export const warehouseSchema = z.object({
+  userId: z.number().nullable(),
   name: z.string().min(1, { message: 'Name is required' }),
   address: z
     .string()
@@ -20,6 +21,7 @@ export const warehouseSchema = z.object({
 });
 
 export type WarehouseFormData = {
+  userId: number | null;
   name: string;
   address: string;
   provinceId: number | null;

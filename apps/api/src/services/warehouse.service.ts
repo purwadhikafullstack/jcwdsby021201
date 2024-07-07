@@ -1,4 +1,5 @@
 import { LocationRepository } from '@/repositories/location.repository';
+import { UserRepository } from '@/repositories/user.repository';
 import { WarehouseRepository } from '@/repositories/warehouse.repository';
 import { UserDecoded } from '@/types/auth.type';
 import { WarehouseBody, WarehouseQuery } from '@/types/warehouse.type';
@@ -28,6 +29,38 @@ export class WarehouseService {
 
     if (checkCity.provinceId !== checkProvince.id) {
       return responseWithoutData(400, false, 'City Not In Province');
+    }
+
+    if (data.userId) {
+      const checkUser = await UserRepository.getUserById(data.userId);
+      if (!checkUser) {
+        return responseWithoutData(400, false, 'User Not Found');
+      }
+
+      if (checkUser.role !== 'ADMIN') {
+        return responseWithoutData(400, false, 'User Not Admin');
+      }
+
+      if (checkUser.warehouse) {
+        return responseWithoutData(400, false, 'User Already Have Warehouse');
+      }
+
+      await WarehouseRepository.createWarehouse({
+        name: data.name,
+        address: data.address,
+        province: { connect: { id: data.provinceId } },
+        city: { connect: { id: data.cityId } },
+        postalCode: data.postalCode,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        user: { connect: { id: data.userId } },
+      });
+
+      return responseWithoutData(
+        201,
+        true,
+        'Success Create Warehouse and Place Admin In This Warehouse',
+      );
     }
 
     await WarehouseRepository.createWarehouse({
@@ -135,6 +168,34 @@ export class WarehouseService {
       return responseWithoutData(400, false, 'City Not In Province');
     }
 
+    if (data.userId) {
+      const checkUser = await UserRepository.getUserById(data.userId);
+      if (!checkUser) {
+        return responseWithoutData(400, false, 'User Not Found');
+      }
+
+      if (checkUser.role !== 'ADMIN') {
+        return responseWithoutData(400, false, 'User Not Admin');
+      }
+
+      if (checkUser.warehouse && checkUser.warehouse.id !== Number(newId)) {
+        return responseWithoutData(400, false, 'User Already Have Warehouse');
+      }
+
+      await WarehouseRepository.updateWarehouseById(Number(newId), {
+        name: data.name,
+        address: data.address,
+        province: { connect: { id: data.provinceId } },
+        city: { connect: { id: data.cityId } },
+        postalCode: data.postalCode,
+        latitude: data.latitude,
+        longitude: data.longitude,
+        user: { connect: { id: data.userId } },
+      });
+
+      return responseWithoutData(200, true, 'Success Update Warehouse');
+    }
+
     await WarehouseRepository.updateWarehouseById(Number(newId), {
       name: data.name,
       address: data.address,
@@ -143,6 +204,7 @@ export class WarehouseService {
       postalCode: data.postalCode,
       latitude: data.latitude,
       longitude: data.longitude,
+      user: { disconnect: true },
     });
 
     return responseWithoutData(200, true, 'Success Update Warehouse');
@@ -154,8 +216,6 @@ export class WarehouseService {
   }
 
   static async getUserWarehouse(user: UserDecoded) {
-    console.log(user);
-
     const response = await WarehouseRepository.findWarehouseByUserId(user.id);
     if (!response) {
       return responseWithoutData(404, false, 'Warehouse Not Found');

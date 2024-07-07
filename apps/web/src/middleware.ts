@@ -17,6 +17,10 @@ export const middleware = async (req: NextRequest) => {
   const dashboardAdminPath = '/dashboard/admin';
   const dashboardUserPath = '/dashboard/user';
   const singInSignUpPath = [authPages.login.path, authPages.register.path];
+  const onlySuperAdminPath = [
+    dashboardAdminPages.user.path,
+    dashboardAdminPages.warehouse.path,
+  ];
 
   if (!session && currentPath.startsWith(dashboardPath)) {
     if (currentPath === dashboardUserPages.profile.path) {
@@ -37,7 +41,7 @@ export const middleware = async (req: NextRequest) => {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   } else if (
     user?.role === 'ADMIN' &&
-    currentPath.startsWith(dashboardAdminPages.warehouse.path)
+    onlySuperAdminPath.includes(currentPath)
   ) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   }

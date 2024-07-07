@@ -7,6 +7,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import StoreIcon from '@mui/icons-material/Store';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InboxIcon from '@mui/icons-material/Inbox';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
+
 export type Route = {
   path: string;
   label?: string;
@@ -50,6 +52,11 @@ export const dashboardUserPages: Record<string, Route> = {
 };
 
 export const dashboardAdminPages: Record<string, Route> = {
+  user: {
+    path: '/dashboard/admin/users',
+    label: 'User',
+    Icon: ManageAccountsOutlinedIcon,
+  },
   warehouse: {
     path: '/dashboard/admin/warehouses',
     label: 'Warehouse',

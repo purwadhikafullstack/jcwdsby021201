@@ -18,8 +18,6 @@ export class ProductRouter {
   }
 
   private initializeRoutes(): void {
-    this.router.get('/display', this.productController.getProductForUser);
-
     this.router.post(
       '/',
       verifyToken,
@@ -34,6 +32,8 @@ export class ProductRouter {
       adminGuard,
       this.productController.getProducts,
     );
+
+    this.router.get('/display', this.productController.getProductForUser);
 
     this.router.delete(
       '/upload/:imageId',

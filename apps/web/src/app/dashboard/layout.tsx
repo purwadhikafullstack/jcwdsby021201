@@ -51,6 +51,7 @@ const stickyBox: SxProps = {
 const settings = ['Profile', 'Account', 'Dashboard'];
 
 const menuSuperAdmin = [
+  dashboardAdminPages.user,
   dashboardAdminPages.warehouse,
   dashboardAdminPages.category,
   dashboardAdminPages.product,

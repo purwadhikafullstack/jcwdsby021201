@@ -5,8 +5,6 @@ import {
   getWarehouses,
 } from '@/features/admin/warehouses/warehousesFetchers';
 import { MRT_PaginationState, MRT_SortingState } from 'material-react-table';
-import { UserSession } from '@/features/types';
-import { WarehouseResponse } from '@/features/admin/warehouses/types';
 
 export const useGetWarehouses = (
   globalFilter: string,
