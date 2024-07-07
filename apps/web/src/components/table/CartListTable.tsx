@@ -15,6 +15,7 @@ import {
 import { ProductBody } from '@/features/user/cart/type';
 import Image from 'next/image';
 import StyledButton from '../button/StyledButton';
+import { useRouter } from 'next/navigation';
 interface ITableCartProps {
   product: ProductBody[] | undefined;
   updateQuantity: (productId: number, newQuantity: number) => void;
@@ -28,6 +29,7 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
   deleteProduct,
   getMaxQuantity,
 }) => {
+  const router = useRouter();
   const handleQuantityChange = (item: ProductBody, newValue: string) => {
     const newQuantity = parseInt(newValue, 10);
     if (
@@ -52,7 +54,9 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
         <Typography variant="h6" align="center">
           Cart is Empty
         </Typography>
-        <StyledButton>Let's Explore Product</StyledButton>
+        <StyledButton onClick={() => router.push('/products')}>
+          Let's Explore Product
+        </StyledButton>
       </Box>
     );
   }

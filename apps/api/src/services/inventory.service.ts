@@ -44,6 +44,7 @@ export class InventoryService {
     return await ProductWarehouseRepository.createProductWarehouse(
       data,
       productWarehouse,
+      user,
     );
   }
 
@@ -107,7 +108,10 @@ export class InventoryService {
       return responseWithoutData(403, false, 'User Not Allowed');
     }
 
-    await ProductWarehouseRepository.deleteProductWarehouse(productWarehouse);
+    await ProductWarehouseRepository.deleteProductWarehouse(
+      productWarehouse,
+      user,
+    );
 
     return responseWithoutData(200, true, 'Success Delete Inventory');
   }
@@ -168,6 +172,7 @@ export class InventoryService {
       Number(newId),
       stock,
       productWarehouse,
+      user,
     );
 
     return responseWithoutData(200, true, 'Success Update Inventory');

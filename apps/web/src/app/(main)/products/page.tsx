@@ -7,10 +7,7 @@ import {
   CardContent,
   CardMedia,
   CardActions,
-  Button,
-  Divider,
   Box,
-  IconButton,
 } from '@mui/material';
 import * as React from 'react';
 import axios from 'axios';
@@ -23,7 +20,6 @@ import {
   errorNotification,
 } from '@/utils/notifications';
 import { useRouter } from 'next/navigation';
-import { styled } from '@mui/material/styles';
 import StyledButton from '@/components/button/StyledButton';
 interface IProductProps {}
 

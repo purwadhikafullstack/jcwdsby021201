@@ -31,9 +31,14 @@ export class MutationRepository {
   static async getMutations(user: UserDecoded, query: MutationQueryRequired) {
     const whereClause: any = {};
 
-    if (user.role !== 'SUPER_ADMIN') {
-      whereClause.sourceWarehouse = { user: { id: user.id } };
-    }
+    // if (user.role !== 'SUPER_ADMIN') {
+    //   whereClause.sourceWarehouse = { user: { id: user.id } };
+    // }
+    whereClause.user = {
+      user: {
+        id: user.id,
+      },
+    };
 
     if (typeof query.filter === 'string' && query.filter.trim() !== '') {
       whereClause.OR = [
@@ -51,7 +56,13 @@ export class MutationRepository {
     }
 
     return await prisma.mutation.findMany({
-      where: Object.keys(whereClause).length ? whereClause : undefined,
+      where: {
+        OR: [
+          { destinationWarehouse: { user: { id: user.id } } },
+          { sourceWarehouse: { user: { id: user.id } } },
+        ],
+      },
+      // where: Object.keys(whereClause).length ? whereClause : undefined,
       include: {
         sourceWarehouse: { select: { id: true, name: true } },
         destinationWarehouse: { select: { id: true, name: true } },
@@ -121,6 +132,7 @@ export class MutationRepository {
     stockProcess: number,
     mutation: MutationResponse,
     productWarehouse: ProductWarehouseResponse,
+    user: UserDecoded,
   ) {
     await prisma.$transaction(async (tx) => {
       const {
@@ -150,7 +162,7 @@ export class MutationRepository {
           transactionType: 'OUT',
           productWarehouse: { connect: { id: productWarehouseId } },
           quantity: stockProcess,
-          description: `Stock Out ${product.name} from ${sourceWarehouse.name} to ${destinationWarehouse.name} by ${sourceWarehouse.user?.username ? sourceWarehouse.user.username : 'Unknown'} qty: ${diff}`,
+          description: `Stock Out ${product.name} from ${sourceWarehouse.name} to ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
           warehouse: { connect: { id: destinationWarehouse.id } },
           refMutation: { connect: { id: mutationId } },
         },
@@ -162,7 +174,7 @@ export class MutationRepository {
           transactionType: 'IN',
           productWarehouse: { connect: { id: productWarehouseId } },
           quantity: stockProcess,
-          description: `Stock In ${product.name} from ${sourceWarehouse.name} to ${destinationWarehouse.name} by ${sourceWarehouse.user?.username ? sourceWarehouse.user.username : 'Unknown'} qty: ${stockProcess}`,
+          description: `Stock In ${product.name} from ${sourceWarehouse.name} to ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
           warehouse: { connect: { id: sourceWarehouse.id } },
           refMutation: { connect: { id: mutationId } },
         },

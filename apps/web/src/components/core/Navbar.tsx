@@ -77,6 +77,7 @@ export default function Navbar() {
   const session = useSession();
   const user = session.data?.user as UserSession;
   const token = user?.token;
+
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -113,8 +114,12 @@ export default function Navbar() {
         <ListItem button component={Link} href="/about">
           <ListItemText primary="About" />
         </ListItem>
-        <ListItem button>
-          <ListItemText primary="Sign Up" />
+        <ListItem
+          button
+          component={Link}
+          href={token ? '/dashboard/user/profile' : '/auth/login'}
+        >
+          <ListItemText primary={token ? 'My Account' : 'Sign Up'} />
         </ListItem>
         <ListItem button>
           <FavoriteIcon />
@@ -175,9 +180,14 @@ export default function Navbar() {
                 About
               </Button>
             </Link>
-            <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
-              Sign Up
-            </Button>
+            <Link
+              href={token ? '/dashboard/user/profile' : '/auth/login'}
+              passHref
+            >
+              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+                {token ? 'My Account' : 'Sign Up'}
+              </Button>
+            </Link>
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <SearchContainer>

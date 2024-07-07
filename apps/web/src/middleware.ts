@@ -21,27 +21,30 @@ export const middleware = async (req: NextRequest) => {
     dashboardAdminPages.user.path,
     dashboardAdminPages.warehouse.path,
   ];
+  const onlyUserIsVerified = ['/cart', '/checkout'];
 
   if (!session && currentPath.startsWith(dashboardPath)) {
-    if (currentPath === dashboardUserPages.profile.path) {
-      return NextResponse.next();
-    }
     return NextResponse.rewrite(new URL(authPages.login.path, req.url));
   } else if (session && singInSignUpPath.includes(currentPath)) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   } else if (
-    user?.role === 'USER' &&
+    (user?.role === 'USER' || !user?.isVerified) &&
     currentPath.startsWith(dashboardAdminPath)
   ) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   } else if (
-    user?.role !== 'USER' &&
+    (user?.role !== 'USER' || !user?.isVerified) &&
     currentPath.startsWith(dashboardUserPath)
   ) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   } else if (
-    user?.role === 'ADMIN' &&
+    (user?.role === 'ADMIN' || !user?.isVerified) &&
     onlySuperAdminPath.includes(currentPath)
+  ) {
+    return NextResponse.redirect(new URL(mainPages.home.path, req.url));
+  } else if (
+    (user?.role !== 'USER' || !user?.isVerified) &&
+    onlyUserIsVerified.includes(currentPath)
   ) {
     return NextResponse.redirect(new URL(mainPages.home.path, req.url));
   }

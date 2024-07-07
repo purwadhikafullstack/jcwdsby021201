@@ -197,6 +197,7 @@ export class MutationService {
       stockProcess,
       mutation,
       inventory,
+      user,
     );
 
     return responseWithoutData(200, true, 'Success Approve Mutation');

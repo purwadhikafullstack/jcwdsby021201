@@ -17,14 +17,5 @@ export class AdminValidation {
     password: z
       .string({ message: 'Password is required!' })
       .min(8, { message: 'Password must be at least 8 characters!' }),
-    warehouseId: z
-      .number({
-        invalid_type_error: 'Warehouse Id must be a number!',
-      })
-      .int({ message: 'Warehouse Id must be a number!' })
-      .positive({
-        message: 'Warehouse Id must be greater than 0!',
-      })
-      .nullable(),
   });
 }

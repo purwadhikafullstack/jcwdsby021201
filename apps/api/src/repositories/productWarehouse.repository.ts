@@ -11,6 +11,7 @@ export class ProductWarehouseRepository {
   static async createProductWarehouse(
     data: ProductWarehouseBody,
     productWarehouse: ProductWarehouseResponse | null,
+    user: UserDecoded,
   ) {
     const { warehouseId, productId, stock } = data;
     return await prisma.$transaction(async (tx) => {
@@ -29,7 +30,7 @@ export class ProductWarehouseRepository {
               transactionType: 'OUT',
               quantity: Math.abs(diff),
               productWarehouse: { connect: { id } },
-              description: `Stock Out ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user?.username : 'Unknown'} qty: ${Math.abs(diff)}`,
+              description: `Stock Out ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
             },
           });
 
@@ -43,7 +44,7 @@ export class ProductWarehouseRepository {
               transactionType: 'IN',
               quantity: diff,
               productWarehouse: { connect: { id } },
-              description: `Stock In ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${diff}`,
+              description: `Stock In ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
             },
           });
 
@@ -87,7 +88,7 @@ export class ProductWarehouseRepository {
             transactionType: 'IN',
             quantity: stock,
             productWarehouse: { connect: { id } },
-            description: `Stock In ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${stock}`,
+            description: `Stock In ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stock}`,
           },
         });
 
@@ -199,6 +200,7 @@ export class ProductWarehouseRepository {
 
   static async deleteProductWarehouse(
     productWarehouse: ProductWarehouseResponse,
+    user: UserDecoded,
   ) {
     const { warehouse, product } = productWarehouse;
     return await prisma.$transaction(async (tx) => {
@@ -207,7 +209,7 @@ export class ProductWarehouseRepository {
           transactionType: 'OUT',
           quantity: productWarehouse.stock,
           productWarehouse: { connect: { id: productWarehouse.id } },
-          description: `Stock Out ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${productWarehouse.stock}`,
+          description: `Stock Out ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${productWarehouse.stock}`,
         },
       });
 
@@ -221,6 +223,7 @@ export class ProductWarehouseRepository {
     id: number,
     stock: number,
     productWarehouse: ProductWarehouseResponse,
+    user: UserDecoded,
   ) {
     return await prisma.$transaction(async (tx) => {
       const { id, stock: productStock, warehouse, product } = productWarehouse;
@@ -232,7 +235,7 @@ export class ProductWarehouseRepository {
             transactionType: 'OUT',
             quantity: Math.abs(diff),
             productWarehouse: { connect: { id } },
-            description: `Stock Out ${product.name} from ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
+            description: `Stock Out ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
           },
         });
 
@@ -246,7 +249,7 @@ export class ProductWarehouseRepository {
             transactionType: 'IN',
             quantity: diff,
             productWarehouse: { connect: { id } },
-            description: `Stock In ${product.name} to ${warehouse.name} by ${warehouse.user?.username ? warehouse.user.username : 'Unknown'} qty: ${diff}`,
+            description: `Stock In ${product.name} to ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
           },
         });
 

@@ -88,9 +88,7 @@ export default function CategoryForm({
   }, [queryData, router, id]);
 
   useEffect(() => {
-    if (queryData?.result && id) {
-      reset(queryData.result);
-    }
+    reset(queryData?.result);
   }, [queryData?.result, reset, id]);
 
   if (isErrorQuery) {

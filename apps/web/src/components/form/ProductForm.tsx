@@ -153,6 +153,8 @@ export default function ProductForm({
     if (id) await mutateDeleteAsync(`${imageId}`);
 
     const index = files.findIndex((file) => file.id === imageId);
+    files.splice(index, 1);
+
     if (index !== -1) {
       setFiles([...files]);
     } else {

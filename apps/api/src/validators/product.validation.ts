@@ -19,7 +19,7 @@ export class ProductValidation {
       .positive({ message: 'Price must be greater than 0!' }),
     description: z
       .string({ invalid_type_error: 'Description must be a string!' })
-      .optional(),
+      .nullable(),
     categoryId: z
       .number({
         message: 'Category Id is required!',
