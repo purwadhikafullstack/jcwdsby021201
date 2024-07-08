@@ -27,6 +27,20 @@ export class InventoryRouter {
       this.inventoryController.getInventories,
     );
 
+    this.router.get(
+      '/history',
+      verifyToken,
+      adminGuard,
+      this.inventoryController.getInventoryHistory,
+    );
+
+    this.router.get(
+      '/history/:id',
+      verifyToken,
+      adminGuard,
+      this.inventoryController.getInventoryHistoryById,
+    );
+
     this.router.delete(
       '/:id',
       verifyToken,

@@ -1,4 +1,5 @@
 import {
+  HistoryResponse,
   QueryPagination,
   ResponseDataPagination,
   ResponseWithData,
@@ -45,6 +46,29 @@ export const updateInventory = async ({ id, ...data }: InventoryUpdate) => {
   const res = await instance.patch<ResponseWithoutData>(
     `/inventories/${id}`,
     data,
+  );
+
+  return res.data;
+};
+
+export const getInventoryHistory = async (params: QueryPagination) => {
+  const instance = await createAxiosInstance();
+  const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
+    '/inventories/history',
+    { params },
+  );
+
+  return res.data;
+};
+
+export const getInventoryHistoryById = async (
+  id: string,
+  params: QueryPagination,
+) => {
+  const instance = await createAxiosInstance();
+  const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
+    `/inventories/history/${id}`,
+    { params },
   );
 
   return res.data;

@@ -1,7 +1,9 @@
+import { JournalMutationRepository } from '@/repositories/journalMutation.repository';
 import { ProductRepository } from '@/repositories/product.repository';
 import { ProductWarehouseRepository } from '@/repositories/productWarehouse.repository';
 import { WarehouseRepository } from '@/repositories/warehouse.repository';
 import { UserDecoded } from '@/types/auth.type';
+import { JournalMutationQuery } from '@/types/journalMutation.type';
 import {
   ProductWarehouseBody,
   ProductWarehouseQuery,
@@ -169,12 +171,116 @@ export class InventoryService {
     }
 
     await ProductWarehouseRepository.updateProductWarehouse(
-      Number(newId),
       stock,
       productWarehouse,
       user,
     );
 
     return responseWithoutData(200, true, 'Success Update Inventory');
+  }
+
+  static async getInventoryHistory(
+    user: UserDecoded,
+    query: JournalMutationQuery,
+  ) {
+    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const querySortBy = sortBy || 'id';
+    const queryOrderBy = orderBy || 'asc';
+    let queryFilter = filter || '';
+
+    if (queryFilter !== '') {
+      !isNaN(Number(queryFilter)) && (queryFilter = Number(queryFilter));
+    }
+
+    const response = await JournalMutationRepository.getInventoryHistory(user, {
+      page: queryPage,
+      limit: queryLimit,
+      filter: queryFilter,
+      sortBy: querySortBy,
+      orderBy: queryOrderBy,
+    });
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await JournalMutationRepository.countInventoryHistory(
+      user,
+      queryFilter,
+    );
+
+    return responseDataWithPagination(200, 'Success Get History', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
+  }
+
+  static async getInventoryHistoryById(
+    id: string,
+    user: UserDecoded,
+    query: JournalMutationQuery,
+  ) {
+    const newId = Validation.validate(Validation.INT_ID, id);
+    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const checkId = await ProductWarehouseRepository.findProductWarehouseById(
+      Number(newId),
+    );
+
+    if (!checkId) {
+      return responseWithoutData(404, false, 'Inventory Not Found');
+    }
+
+    if (checkId.warehouse.user?.id !== user.id && user.role !== 'SUPER_ADMIN') {
+      return responseWithoutData(403, false, 'User Not Allowed');
+    }
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const querySortBy = sortBy || 'id';
+    const queryOrderBy = orderBy || 'asc';
+    let queryFilter = filter || '';
+
+    if (queryFilter !== '') {
+      !isNaN(Number(queryFilter)) && (queryFilter = Number(queryFilter));
+    }
+
+    const response = await JournalMutationRepository.getInventoryHistoryById(
+      Number(newId),
+      user,
+      {
+        page: queryPage,
+        limit: queryLimit,
+        filter: queryFilter,
+        sortBy: querySortBy,
+        orderBy: queryOrderBy,
+      },
+    );
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await JournalMutationRepository.countInventoryHistoryById(
+      Number(newId),
+      user,
+      queryFilter,
+    );
+
+    return responseDataWithPagination(200, 'Success Get History', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
   }
 }

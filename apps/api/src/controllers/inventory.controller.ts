@@ -6,6 +6,7 @@ import {
   ProductWarehouseUpdate,
 } from '@/types/productWarehouse.type';
 import { UserDecoded } from '@/types/auth.type';
+import { JournalMutationQuery } from '@/types/journalMutation.type';
 
 export class InventoryController {
   async createInventory(req: Request, res: Response, next: NextFunction) {
@@ -58,6 +59,37 @@ export class InventoryController {
       const { id } = req.params;
       const body = req.body as ProductWarehouseUpdate;
       const response = await InventoryService.updateInventory(user, id, body);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getInventoryHistory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = res.locals.decoded as UserDecoded;
+      const query = req.query as JournalMutationQuery;
+      const response = await InventoryService.getInventoryHistory(user, query);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getInventoryHistoryById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const user = res.locals.decoded as UserDecoded;
+      const { id } = req.params;
+      const query = req.query as JournalMutationQuery;
+      const response = await InventoryService.getInventoryHistoryById(
+        id,
+        user,
+        query,
+      );
       return res.status(200).json(response);
     } catch (error) {
       next(error);

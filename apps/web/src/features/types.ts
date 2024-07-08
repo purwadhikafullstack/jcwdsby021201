@@ -62,3 +62,15 @@ export type AdminOption = {
   id: number;
   username: string;
 };
+
+export type HistoryResponse = {
+  id: number;
+  quantity: number;
+  transactionType: 'IN' | 'OUT';
+  description: string;
+  productWarehouseId: number;
+  warehouseId: number | null;
+  refMutationId: number | null;
+  createdAt: string;
+  updatedAt: string;
+};

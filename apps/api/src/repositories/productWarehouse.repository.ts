@@ -220,7 +220,6 @@ export class ProductWarehouseRepository {
   }
 
   static async updateProductWarehouse(
-    id: number,
     stock: number,
     productWarehouse: ProductWarehouseResponse,
     user: UserDecoded,
