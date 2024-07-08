@@ -229,7 +229,7 @@ export default function MutationForm({
   useEffect(() => {
     if (queryData?.success === false && id) {
       errorNotification(queryData?.message || 'Page not found');
-      router.push(dashboardAdminPages.inventory.path);
+      router.push(dashboardAdminPages.mutation.path);
     }
   }, [queryData, router, id]);
 
@@ -480,7 +480,7 @@ export default function MutationForm({
                   variant="outlined"
                   placeholder="Stock Process"
                   disabled={
-                    (id && queryData?.result.status !== 'PENDING') ||
+                    (id && queryData?.result?.status !== 'PENDING') ||
                     disabledOnPending
                   }
                   {...field}
@@ -519,7 +519,7 @@ export default function MutationForm({
               variant="contained"
               color="info"
               disabled={
-                (id && queryData?.result.status !== 'PENDING') ||
+                (id && queryData?.result?.status !== 'PENDING') ||
                 disabledOnPending
               }
             >
@@ -532,7 +532,7 @@ export default function MutationForm({
                 color="error"
                 onClick={handleOpenDialog}
                 disabled={
-                  (id && queryData?.result.status !== 'PENDING') ||
+                  (id && queryData?.result?.status !== 'PENDING') ||
                   disabledOnPending
                 }
               >

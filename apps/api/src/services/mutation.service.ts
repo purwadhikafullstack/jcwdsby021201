@@ -93,6 +93,7 @@ export class MutationService {
 
     if (
       mutation.sourceWarehouse.user?.id !== user.id &&
+      mutation.destinationWarehouse.user?.id !== user.id &&
       user.role !== 'SUPER_ADMIN'
     ) {
       return responseWithoutData(403, false, 'User Not Allowed');
@@ -103,6 +104,10 @@ export class MutationService {
       sourceWarehouse: {
         id: mutation.sourceWarehouse.id,
         name: mutation.sourceWarehouse.name,
+      },
+      destinationWarehouse: {
+        id: mutation.destinationWarehouse.id,
+        name: mutation.destinationWarehouse.name,
       },
     };
 
@@ -118,7 +123,7 @@ export class MutationService {
     }
 
     if (
-      mutation.sourceWarehouse.user?.id !== user.id &&
+      mutation.destinationWarehouse.user?.id !== user.id &&
       user.role !== 'SUPER_ADMIN'
     ) {
       return responseWithoutData(403, false, 'User Not Allowed');
@@ -153,7 +158,7 @@ export class MutationService {
     }
 
     if (
-      mutation.sourceWarehouse.user?.id !== user.id &&
+      mutation.destinationWarehouse.user?.id !== user.id &&
       user.role !== 'SUPER_ADMIN'
     ) {
       return responseWithoutData(403, false, 'User Not Allowed');
@@ -163,13 +168,13 @@ export class MutationService {
       return responseWithoutData(400, false, 'Mutation Already Processed');
     }
 
-    const inventory =
+    const inventoryDestination =
       await ProductWarehouseRepository.findProductWarehouseByProductIdAndWarehouseId(
         mutation.productId,
         mutation.destinationWarehouseId,
       );
 
-    if (!inventory) {
+    if (!inventoryDestination) {
       return responseWithoutData(
         400,
         false,
@@ -177,7 +182,7 @@ export class MutationService {
       );
     }
 
-    if (stockProcess > inventory.stock) {
+    if (stockProcess > inventoryDestination.stock) {
       return responseWithoutData(
         400,
         false,
@@ -193,10 +198,19 @@ export class MutationService {
       );
     }
 
+    const inventorySource =
+      await ProductWarehouseRepository.findProductWarehouseByProductIdAndWarehouseId(
+        mutation.productId,
+        mutation.sourceWarehouseId,
+      );
+
     await MutationRepository.updateMutationToApprove(
       stockProcess,
       mutation,
-      inventory,
+      {
+        inventorySourceId: inventorySource!.id,
+        inventoryDestinationId: inventoryDestination!.id,
+      },
       user,
     );
 

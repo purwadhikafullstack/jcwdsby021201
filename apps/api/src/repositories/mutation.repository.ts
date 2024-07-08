@@ -31,38 +31,42 @@ export class MutationRepository {
   static async getMutations(user: UserDecoded, query: MutationQueryRequired) {
     const whereClause: any = {};
 
-    // if (user.role !== 'SUPER_ADMIN') {
-    //   whereClause.sourceWarehouse = { user: { id: user.id } };
-    // }
-    whereClause.user = {
-      user: {
-        id: user.id,
-      },
-    };
+    if (user.role !== 'SUPER_ADMIN') {
+      whereClause.OR = [
+        { sourceWarehouse: { user: { id: user.id } } },
+        { destinationWarehouse: { user: { id: user.id } } },
+      ];
+    }
 
     if (typeof query.filter === 'string' && query.filter.trim() !== '') {
-      whereClause.OR = [
+      const stringFilters = [
         { sourceWarehouse: { name: { contains: query.filter } } },
         { destinationWarehouse: { name: { contains: query.filter } } },
         { product: { name: { contains: query.filter } } },
         { note: { contains: query.filter } },
         { status: { contains: query.filter } },
       ];
+
+      if (whereClause.OR) {
+        whereClause.OR.concat(stringFilters);
+      } else {
+        whereClause.OR = stringFilters;
+      }
     } else if (typeof query.filter === 'number') {
-      whereClause.OR = [
+      const numberFilters = [
         { stockRequest: { gte: query.filter } },
         { stockProcess: { gte: query.filter } },
       ];
+
+      if (whereClause.OR) {
+        whereClause.OR.concat(numberFilters);
+      } else {
+        whereClause.OR = numberFilters;
+      }
     }
 
     return await prisma.mutation.findMany({
-      where: {
-        OR: [
-          { destinationWarehouse: { user: { id: user.id } } },
-          { sourceWarehouse: { user: { id: user.id } } },
-        ],
-      },
-      // where: Object.keys(whereClause).length ? whereClause : undefined,
+      where: Object.keys(whereClause).length ? whereClause : undefined,
       include: {
         sourceWarehouse: { select: { id: true, name: true } },
         destinationWarehouse: { select: { id: true, name: true } },
@@ -78,22 +82,37 @@ export class MutationRepository {
     const whereClause: any = {};
 
     if (user.role !== 'SUPER_ADMIN') {
-      whereClause.sourceWarehouse = { user: { id: user.id } };
+      whereClause.OR = [
+        { sourceWarehouse: { user: { id: user.id } } },
+        { destinationWarehouse: { user: { id: user.id } } },
+      ];
     }
 
     if (typeof filter === 'string' && filter.trim() !== '') {
-      whereClause.OR = [
+      const stringFilters = [
         { sourceWarehouse: { name: { contains: filter } } },
         { destinationWarehouse: { name: { contains: filter } } },
         { product: { name: { contains: filter } } },
         { note: { contains: filter } },
         { status: { contains: filter } },
       ];
+
+      if (whereClause.OR) {
+        whereClause.OR.concat(stringFilters);
+      } else {
+        whereClause.OR = stringFilters;
+      }
     } else if (typeof filter === 'number') {
-      whereClause.OR = [
+      const numberFilters = [
         { stockRequest: { gte: filter } },
         { stockProcess: { gte: filter } },
       ];
+
+      if (whereClause.OR) {
+        whereClause.OR.concat(numberFilters);
+      } else {
+        whereClause.OR = numberFilters;
+      }
     }
 
     return await prisma.mutation.count({
@@ -112,7 +131,13 @@ export class MutationRepository {
             user: { select: { id: true, username: true } },
           },
         },
-        destinationWarehouse: { select: { id: true, name: true } },
+        destinationWarehouse: {
+          select: {
+            id: true,
+            name: true,
+            user: { select: { id: true, username: true } },
+          },
+        },
         product: { select: { id: true, name: true } },
       },
     });
@@ -131,7 +156,10 @@ export class MutationRepository {
   static async updateMutationToApprove(
     stockProcess: number,
     mutation: MutationResponse,
-    productWarehouse: ProductWarehouseResponse,
+    {
+      inventorySourceId,
+      inventoryDestinationId,
+    }: { inventorySourceId: number; inventoryDestinationId: number },
     user: UserDecoded,
   ) {
     await prisma.$transaction(async (tx) => {
@@ -141,13 +169,17 @@ export class MutationRepository {
         sourceWarehouse,
         destinationWarehouse,
       } = mutation;
-      const { stock, id: productWarehouseId } = productWarehouse;
-      const diff = stock - stockProcess;
 
-      // update stock
+      // update stock on warehouse destination
       await tx.productWarehouse.update({
-        where: { id: productWarehouseId },
-        data: { stock: diff },
+        where: { id: inventoryDestinationId },
+        data: { stock: { decrement: stockProcess } },
+      });
+
+      // update stock on warehouse source
+      await tx.productWarehouse.update({
+        where: { id: inventorySourceId },
+        data: { stock: { increment: stockProcess } },
       });
 
       // update mutation
@@ -160,9 +192,9 @@ export class MutationRepository {
       await tx.journalMutation.create({
         data: {
           transactionType: 'OUT',
-          productWarehouse: { connect: { id: productWarehouseId } },
+          productWarehouse: { connect: { id: inventoryDestinationId } },
           quantity: stockProcess,
-          description: `Stock Out ${product.name} from ${sourceWarehouse.name} to ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
+          description: `Stock Out ${product.name} from ${destinationWarehouse.name} to ${sourceWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
           warehouse: { connect: { id: destinationWarehouse.id } },
           refMutation: { connect: { id: mutationId } },
         },
@@ -172,9 +204,9 @@ export class MutationRepository {
       await tx.journalMutation.create({
         data: {
           transactionType: 'IN',
-          productWarehouse: { connect: { id: productWarehouseId } },
+          productWarehouse: { connect: { id: inventorySourceId } },
           quantity: stockProcess,
-          description: `Stock In ${product.name} from ${sourceWarehouse.name} to ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
+          description: `Stock In ${product.name} into ${sourceWarehouse.name} from ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
           warehouse: { connect: { id: sourceWarehouse.id } },
           refMutation: { connect: { id: mutationId } },
         },
