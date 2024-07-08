@@ -35,10 +35,14 @@ export class OrderService {
   static async checkAndMutateStock(
     warehouseId: number,
     products: Array<{ productId: number; quantity: number }>,
+    latitude: number,
+    longitude: number,
   ) {
     const response = await OrderRepository.checkAndMutateStock(
       warehouseId,
       products,
+      latitude,
+      longitude,
     );
 
     return responseWithData(200, 'Success check and mutate', {

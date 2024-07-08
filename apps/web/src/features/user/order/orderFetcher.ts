@@ -70,6 +70,8 @@ export const fetchWarehouseNearest = async ({
 export const checkAndMutateStock = async ({
   warehouseId,
   products,
+  latitude,
+  longitude,
 }: CheckMutateOtomaticOrder) => {
   const res = await axiosInstance.post('/orders/check-mutate', {
     warehouseId,
@@ -77,6 +79,8 @@ export const checkAndMutateStock = async ({
       productId: item.productId,
       quantity: item.quantity,
     })),
+    latitude,  
+    longitude, 
   });
   return res.data.result.response;
 };

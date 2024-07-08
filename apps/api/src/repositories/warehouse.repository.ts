@@ -145,6 +145,8 @@ export class WarehouseRepository {
       name: nearestWarehouse.name,
       distance: shortestDistance,
       city: nearestWarehouse.city,
+      latitude: nearestWarehouse.latitude,
+      longitude: nearestWarehouse.longitude,
     };
   }
 

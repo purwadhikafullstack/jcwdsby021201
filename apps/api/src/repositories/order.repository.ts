@@ -17,7 +17,7 @@ export class OrderRepository {
       longitude,
     } = body;
 
-    const expirePayment = new Date(Date.now() + 60 * 60 * 1000); //di 5 menit dulu
+    const expirePayment = new Date(Date.now() + 2 * 60 * 1000); //di 2 menit dulu
 
     return await prisma.$transaction(async (tx) => {
       //cari tahu nama gudangnya:
@@ -244,9 +244,13 @@ export class OrderRepository {
   static async checkAndMutateStock(
     warehouseId: number,
     products: Array<{ productId: number; quantity: number }>,
+    latitude: number,
+    longitude: number,
   ) {
     const result = await prisma.$transaction(async (tx) => {
+      //mapping permintaan produknya apa saja :
       for (const product of products) {
+        // data gudang yang didapatkan untuk gudang terdekat
         let stockInWarehouse = await tx.productWarehouse.findFirst({
           where: { productId: product.productId, warehouseId: warehouseId },
           include: {
@@ -255,94 +259,147 @@ export class OrderRepository {
           },
         });
 
-        if (!stockInWarehouse || stockInWarehouse.stock < product.quantity) {
-          // cari gudang lain
-          const warehouseWithStock = await tx.productWarehouse.findFirst({
+        // jumlah permintaan
+        let remainingQuantity = product.quantity;
+        // stock yang ada di gudang sekarang
+        const availableStock = stockInWarehouse ? stockInWarehouse.stock : 0;
+        // kurangin dulu
+        const deficitQuantity = remainingQuantity - availableStock;
+
+        // kalo kurang stock digudang yang terdekat, maka lakukan mutasi :
+        if (!stockInWarehouse || stockInWarehouse.stock < remainingQuantity) {
+          //cari gudang yang memiliki stock untuk produk tertentu
+          const warehousesWithStock = await tx.productWarehouse.findMany({
             where: {
               productId: product.productId,
-              stock: { gte: product.quantity },
+              stock: { gt: 0 },
               NOT: { warehouseId: warehouseId },
             },
             include: {
               product: true,
               warehouse: true,
             },
-            orderBy: { stock: 'desc' },
           });
 
-          //belum diganti namanya jadi product.name
-          if (!warehouseWithStock) {
+          // setelah itu dapet gudang yang memiliki stock, maka urutkan dari gudang terdekat
+          const sortedWarehouses = warehousesWithStock.sort((a, b) => {
+            const distanceA = this.getDistance(
+              latitude,
+              longitude,
+              a.warehouse.latitude,
+              a.warehouse.longitude,
+            );
+            const distanceB = this.getDistance(
+              latitude,
+              longitude,
+              b.warehouse.latitude,
+              b.warehouse.longitude,
+            );
+            return distanceA - distanceB;
+          });
+
+          // buatin mutasi dan jurnal keluar masuk untuk setiap gudang
+          for (const warehouseWithStock of sortedWarehouses) {
+            if (remainingQuantity <= 0) break;
+
+            //cari jumlah yang di tranfer
+            const transferQuantity = Math.min(
+              warehouseWithStock.stock,
+              deficitQuantity,
+            );
+
+            // buatin jurnal mutasi
+            const mutation = await tx.mutation.create({
+              data: {
+                stockRequest: transferQuantity,
+                stockProcess: transferQuantity,
+                sourceWarehouseId: warehouseWithStock.warehouseId,
+                destinationWarehouseId: warehouseId,
+                status: 'APPROVED',
+                note: `Stock transfer for order fulfillment`,
+                productId: product.productId,
+              },
+            });
+
+            await tx.journalMutation.create({
+              data: {
+                quantity: transferQuantity,
+                transactionType: 'OUT',
+                description: `Stock OUT ${warehouseWithStock.product.name} from ${warehouseWithStock.warehouse.name} to ${stockInWarehouse?.warehouse.name || 'destination warehouse'}, qty : ${transferQuantity} for ORDER.`, // UPDATED
+                productWarehouseId: warehouseWithStock.id,
+                warehouseId: warehouseWithStock.warehouseId,
+                refMutationId: mutation.id,
+              },
+            });
+
+            // terus update ke warehouse terdekat
+            await tx.productWarehouse.update({
+              where: { id: warehouseWithStock.id },
+              data: { stock: { decrement: transferQuantity } },
+            });
+
+            if (stockInWarehouse) {
+              await tx.productWarehouse.update({
+                where: { id: stockInWarehouse.id },
+                data: { stock: { increment: transferQuantity } },
+              });
+            } else {
+              stockInWarehouse = await tx.productWarehouse.create({
+                data: {
+                  stock: transferQuantity,
+                  productId: product.productId,
+                  warehouseId: warehouseId,
+                },
+                include: {
+                  product: true,
+                  warehouse: true,
+                },
+              });
+            }
+
+            // jurnal produk
+            await tx.journalMutation.create({
+              data: {
+                quantity: transferQuantity,
+                transactionType: 'IN',
+                description: `Stock IN ${stockInWarehouse.product.name} FROM ${warehouseWithStock.warehouse.name}, qty : ${transferQuantity} for ORDER.`, // UPDATED
+                productWarehouseId: stockInWarehouse.id,
+                warehouseId: warehouseId,
+                refMutationId: mutation.id,
+              },
+            });
+
+            //setelah setiap proses pencatatan jurnal, kurangin --
+            remainingQuantity -= transferQuantity;
+          }
+
+          // jika ga cukup :
+          if (remainingQuantity > 0) {
             throw new Error(
               `Not enough stock for product ${product.productId}`,
             );
           }
-
-          // buatin jurnal mutasi
-          const mutation = await tx.mutation.create({
-            data: {
-              stockRequest: product.quantity,
-              stockProcess: product.quantity,
-              sourceWarehouseId: warehouseWithStock.warehouseId,
-              destinationWarehouseId: warehouseId,
-              status: 'APPROVED',
-              note: `Stock transfer for order fulfillment`,
-              productId: product.productId,
-            },
-          });
-
-          await tx.journalMutation.create({
-            data: {
-              quantity: product.quantity,
-              transactionType: 'OUT',
-              description: `Stock OUT ${stockInWarehouse?.product.name} from ${warehouseWithStock.warehouse.name} to ${stockInWarehouse?.warehouse.name}, qty : ${product.quantity} for ORDER.`,
-              productWarehouseId: warehouseWithStock.id,
-              warehouseId: warehouseWithStock.warehouseId,
-              refMutationId: mutation.id,
-            },
-          });
-
-          // terus update ke warehouse terdekat
-          await tx.productWarehouse.update({
-            where: { id: warehouseWithStock.id },
-            data: { stock: { decrement: product.quantity } },
-          });
-
-          if (stockInWarehouse) {
-            await tx.productWarehouse.update({
-              where: { id: stockInWarehouse.id },
-              data: { stock: { increment: product.quantity } },
-            });
-          } else {
-            stockInWarehouse = await tx.productWarehouse.create({
-              data: {
-                stock: product.quantity,
-                productId: product.productId,
-                warehouseId: warehouseId,
-              },
-              include: {
-                product: true,
-                warehouse: true,
-              },
-            });
-          }
-
-          // jurnal produk
-          await tx.journalMutation.create({
-            data: {
-              quantity: product.quantity,
-              transactionType: 'IN',
-              description: `Stock IN ${stockInWarehouse?.product.name} FROM ${warehouseWithStock.warehouse.name}, qty : ${product.quantity} for ORDER.`,
-              productWarehouseId: stockInWarehouse?.id,
-              warehouseId: warehouseId,
-              refMutationId: mutation.id,
-            },
-          });
         }
       }
       return true;
     });
-
     return result;
+  }
+
+  static getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    if (lat2 === null || lon2 === null) return Infinity;
+
+    const R = 6371; // Radius bumi dalam km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Jarak dalam km
   }
 
   static async receivedOrder(id: number, orderId: number) {

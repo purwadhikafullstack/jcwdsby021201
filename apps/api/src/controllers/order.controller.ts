@@ -18,7 +18,6 @@ export class OrderController {
     }
   }
 
-
   public async uploadPaymentProof(
     req: Request,
     res: Response,
@@ -41,10 +40,12 @@ export class OrderController {
     next: NextFunction,
   ) {
     try {
-      const { warehouseId, products } = req.body;
+      const { warehouseId, products, latitude, longitude } = req.body;
       const response = await OrderService.checkAndMutateStock(
         warehouseId,
         products,
+        latitude,
+        longitude,
       );
       return res.status(200).send(response);
     } catch (error) {
@@ -62,7 +63,6 @@ export class OrderController {
       next(error);
     }
   }
-
 
   public async receivedOrder(req: Request, res: Response, next: NextFunction) {
     try {
@@ -97,8 +97,7 @@ export class OrderController {
     }
   }
 
-
-  public async getToReceive(req: Request, res: Response, next: NextFunction){
+  public async getToReceive(req: Request, res: Response, next: NextFunction) {
     try {
       const id = res.locals.decoded.id;
       const query = req.query as OrderQuery;

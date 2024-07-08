@@ -24,6 +24,8 @@ export function useCheckoutLogic() {
   const [courier, setCourier] = React.useState('jne');
   const [warehouse, setWarehouse] = React.useState('');
   const [warehouseCity, setWarehouseCity] = React.useState('');
+  const [warehouseLatitude, setWarehouseLatitude] = React.useState(0);
+  const [warehouseLongitude, setWarehouseLongitude] = React.useState(0);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   //New Address In Checkout Page
@@ -90,6 +92,8 @@ export function useCheckoutLogic() {
           });
           setWarehouse(warehousePick.warehouseId);
           setWarehouseCity(String(warehousePick.city.id));
+          setWarehouseLatitude(warehousePick.latitude);
+          setWarehouseLongitude(warehousePick.longitude);
 
           // warehouse :
           await calculateShippingCost(
@@ -134,8 +138,6 @@ export function useCheckoutLogic() {
 
         setWarehouse(warehousePick.warehouseId);
         setWarehouseCity(warehousePick.city.id);
-        console.log('Log alamat id', selectedAddress.cityId);
-        console.log('LOG :', warehousePick.city.id);
 
         await calculateShippingCost(
           String(selectedAddress.cityId),
@@ -183,6 +185,8 @@ export function useCheckoutLogic() {
       await checkAndMutateStock({
         warehouseId: warehouse,
         products: product,
+        latitude: warehouseLatitude,
+        longitude: warehouseLongitude,
       });
 
       const total = (calculateTotal() || 0) + shippingCost;

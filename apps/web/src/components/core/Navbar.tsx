@@ -25,10 +25,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import Logo from '@/components/core/Logo';
 import Link from 'next/link';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useGetCountProductCart } from '@/features/user/cart/cartQueries';
 import { useRouter } from 'next/navigation';
+import { authPages } from '@/utils/routes';
 
 const LanguageSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -77,11 +78,11 @@ export default function Navbar() {
   const session = useSession();
   const user = session.data?.user as UserSession;
   const token = user?.token;
+  const role = user?.role;
 
   const theme = useTheme();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(0);
   const router = useRouter();
 
   const { data } = useGetCountProductCart(token || '');
@@ -114,13 +115,31 @@ export default function Navbar() {
         <ListItem button component={Link} href="/about">
           <ListItemText primary="About" />
         </ListItem>
-        <ListItem
-          button
-          component={Link}
-          href={token ? '/dashboard/user/profile' : '/auth/login'}
-        >
-          <ListItemText primary={token ? 'My Account' : 'Sign Up'} />
-        </ListItem>
+        {token ? (
+          <>
+            <ListItem
+              button
+              component={Link}
+              href={
+                role === 'USER'
+                  ? '/dashboard/user/profile'
+                  : '/dashboard/admin/warehouses'
+              }
+            >
+              <ListItemText primary="My Account" />
+            </ListItem>
+            <ListItem
+              button
+              onClick={() => signOut({ callbackUrl: authPages.login.path })}
+            >
+              <ListItemText primary="Logout" />
+            </ListItem>
+          </>
+        ) : (
+          <ListItem button component={Link} href="/auth/login">
+            <ListItemText primary="Sign Up" />
+          </ListItem>
+        )}
         <ListItem button>
           <FavoriteIcon />
         </ListItem>
@@ -180,14 +199,34 @@ export default function Navbar() {
                 About
               </Button>
             </Link>
-            <Link
-              href={token ? '/dashboard/user/profile' : '/auth/login'}
-              passHref
-            >
-              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
-                {token ? 'My Account' : 'Sign Up'}
-              </Button>
-            </Link>
+            {token ? (
+              <>
+                <Link
+                  href={
+                    role === 'USER'
+                      ? '/dashboard/user/profile'
+                      : '/dashboard/admin/warehouses'
+                  }
+                  passHref
+                >
+                  <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+                    My Account
+                  </Button>
+                </Link>
+                <Button
+                  onClick={() => signOut({ callbackUrl: authPages.login.path })}
+                  sx={{ textTransform: 'capitalize', color: 'black' }}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Link href="/auth/login" passHref>
+                <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
+                  Sign Up
+                </Button>
+              </Link>
+            )}
           </div>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <SearchContainer>

@@ -1,27 +1,10 @@
 import {
-  getOrders,
-  getShippedOrders,
   getToReceiveOrder,
   getToShipOrder,
   getUnpaidOrder,
 } from './orderFetcher';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { MRT_PaginationState, MRT_SortingState } from 'material-react-table';
-export const useGetOrders = (token: string) => {
-  return useQuery({
-    queryKey: ['list-orders', token],
-    queryFn: () => getOrders(token!),
-    enabled: !!token,
-  });
-};
-
-export const useGetShippedOrders = (token: string) => {
-  return useQuery({
-    queryKey: ['list-orders-shipped', token],
-    queryFn: () => getShippedOrders(token!),
-    enabled: !!token,
-  });
-};
 
 //COBA
 export const useGetUnpaidOrder = (

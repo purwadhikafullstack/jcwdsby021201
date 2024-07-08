@@ -38,6 +38,8 @@ export type Products = {
 export type CheckMutateOtomaticOrder = {
   products: Products[];
   warehouseId: string;
+  latitude: number;
+  longitude: number;
 };
 
 export type OrderProduct = {
