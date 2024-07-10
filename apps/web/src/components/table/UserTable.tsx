@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 // MRT
@@ -16,9 +16,11 @@ import {
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 // MUI Icons
-import RefreshIcon from '@mui/icons-material/Refresh';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LockIcon from '@mui/icons-material/Lock';
@@ -37,8 +39,11 @@ import ConfirmationDialog, {
   SelectedRow,
 } from '@/components/dialog/ConfirmationDialog';
 
+type Role = 'ADMIN' | 'USER';
+
 export default function UserTable() {
   const [open, setOpen] = useState(false);
+  const [role, setRole] = useState<Role>('ADMIN');
   const [selectedRow, setSelectedRow] = useState<SelectedRow | null>(null);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
@@ -50,10 +55,11 @@ export default function UserTable() {
   const router = useRouter();
 
   const { mutateAsync, isPending: isMutatePending } = useDeleteUser();
-  const { data, isError, isRefetching, isLoading, refetch } = useGetUsers(
+  const { data, isError, isRefetching, isLoading } = useGetUsers(
     globalFilter,
     pagination,
     sorting,
+    role,
   );
 
   const handleClickOpen = (row: UserResponse) => {
@@ -63,6 +69,10 @@ export default function UserTable() {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleChangeRole = (e: SelectChangeEvent<Role>) => {
+    setRole(e.target.value as Role);
   };
 
   const columns = useMemo<MRT_ColumnDef<UserResponse>[]>(
@@ -117,11 +127,17 @@ export default function UserTable() {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     renderTopToolbarCustomActions: () => (
-      <Tooltip arrow title="Refresh Data">
-        <IconButton onClick={() => refetch()}>
-          <RefreshIcon />
-        </IconButton>
-      </Tooltip>
+      <FormControl size="small" sx={{ minWidth: 100 }}>
+        <Select
+          value={role}
+          onChange={handleChangeRole}
+          displayEmpty
+          inputProps={{ 'aria-label': 'Without label' }}
+        >
+          <MenuItem value="USER">User</MenuItem>
+          <MenuItem value="ADMIN">Admin</MenuItem>
+        </Select>
+      </FormControl>
     ),
     rowCount: data?.pagination?.total ?? 0,
     state: {

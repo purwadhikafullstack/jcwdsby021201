@@ -122,10 +122,12 @@ export class UserRepository {
     filter: string,
     sortBy: string,
     orderBy: string,
+    role: 'ADMIN' | 'USER',
   ) {
     return await prisma.user.findMany({
       where: {
-        role: { not: 'SUPER_ADMIN' },
+        role,
+        NOT: { role: 'SUPER_ADMIN' },
         OR: [
           { username: { contains: filter } },
           { email: { contains: filter } },
@@ -137,10 +139,14 @@ export class UserRepository {
     });
   }
 
-  static async countUsersWithoutSuperAdmin(filter: string) {
+  static async countUsersWithoutSuperAdmin(
+    role: 'ADMIN' | 'USER',
+    filter: string,
+  ) {
     return await prisma.user.count({
       where: {
-        role: { not: 'SUPER_ADMIN' },
+        role,
+        NOT: { role: 'SUPER_ADMIN' },
         OR: [
           { username: { contains: filter } },
           { email: { contains: filter } },

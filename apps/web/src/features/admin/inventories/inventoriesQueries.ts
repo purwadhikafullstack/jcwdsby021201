@@ -71,11 +71,11 @@ export const useGetInventoryHistory = (
       sorting,
     ],
     queryFn: async () => {
-      let sortBy = 'id';
+      let sortBy = 'createdAt';
       let orderBy = 'asc';
 
       sorting.forEach((s) => {
-        s.id ? (sortBy = s.id) : 'id';
+        s.id ? (sortBy = s.id) : 'createdAt';
         s.desc ? (orderBy = 'desc') : 'asc';
       });
 
@@ -114,11 +114,11 @@ export const useGetInventoryHistoryById = (
       sorting,
     ],
     queryFn: async () => {
-      let sortBy = 'id';
+      let sortBy = 'createdAt';
       let orderBy = 'asc';
 
       sorting.forEach((s) => {
-        s.id ? (sortBy = s.id) : 'id';
+        s.id ? (sortBy = s.id) : 'createdAt';
         s.desc ? (orderBy = 'desc') : 'asc';
       });
 

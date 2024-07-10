@@ -1,4 +1,4 @@
-import { OptionLabel } from '@/features/types';
+import { OptionLabel, QueryPagination } from '@/features/types';
 
 export type UserBody = {
   username: string;
@@ -30,4 +30,8 @@ export type AdminResponse = Response & {
   username: string;
   role: 'ADMIN';
   warehouse: OptionLabel | null;
+};
+
+export type UserQueryPagination = QueryPagination & {
+  role?: 'ADMIN' | 'USER';
 };

@@ -46,6 +46,7 @@ export const useGetUsers = (
   globalFilter: string,
   pagination: MRT_PaginationState,
   sorting: MRT_SortingState,
+  role?: 'ADMIN' | 'USER',
 ) => {
   return useQuery({
     queryKey: [
@@ -54,6 +55,7 @@ export const useGetUsers = (
       pagination.pageIndex,
       pagination.pageSize,
       sorting,
+      role,
     ],
     queryFn: async () => {
       let sortBy = 'email';
@@ -70,6 +72,7 @@ export const useGetUsers = (
         filter: globalFilter,
         sortBy,
         orderBy,
+        role,
       });
 
       return res;

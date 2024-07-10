@@ -10,4 +10,5 @@ export type UserQuery = {
   filter?: string;
   sortBy?: string;
   orderBy?: string;
+  role?: 'ADMIN' | 'USER';
 };

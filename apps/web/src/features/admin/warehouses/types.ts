@@ -1,4 +1,4 @@
-import { OptionLabel } from '@/features/types';
+import { OptionLabel, QueryPagination } from '@/features/types';
 
 export type WarehouseBody = {
   name: string;
@@ -24,3 +24,7 @@ export type WarehouseResponse = WarehouseBody & {
 };
 
 export type WarehouseUpdate = WarehouseBody & { id: number };
+
+export type WarehouseQueryPagination = QueryPagination & {
+  excludeId?: number;
+};

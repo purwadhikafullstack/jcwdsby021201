@@ -1,11 +1,15 @@
 import {
-  QueryPagination,
   ResponseDataPagination,
   ResponseWithData,
   ResponseWithoutData,
 } from '@/features/types';
 import { createAxiosInstance } from '@/utils/axiosInstance';
-import { WarehouseBody, WarehouseResponse, WarehouseUpdate } from './types';
+import {
+  WarehouseBody,
+  WarehouseQueryPagination,
+  WarehouseResponse,
+  WarehouseUpdate,
+} from './types';
 
 export const createWarehouse = async (data: WarehouseBody) => {
   const instance = await createAxiosInstance();
@@ -14,7 +18,7 @@ export const createWarehouse = async (data: WarehouseBody) => {
   return res.data;
 };
 
-export const getWarehouses = async (params: QueryPagination) => {
+export const getWarehouses = async (params: WarehouseQueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<WarehouseResponse[]>>(
     '/warehouses',

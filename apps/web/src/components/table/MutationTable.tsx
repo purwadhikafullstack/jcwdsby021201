@@ -32,7 +32,7 @@ import { toThousandFlag } from '@/utils/formatter';
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
 
-export default function InventoryTable() {
+export default function MutationTable() {
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({

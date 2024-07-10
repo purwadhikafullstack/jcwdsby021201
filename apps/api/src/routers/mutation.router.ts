@@ -27,6 +27,20 @@ export class MutationRouter {
       this.mutationController.getMutations,
     );
 
+    this.router.get(
+      '/history',
+      verifyToken,
+      adminGuard,
+      this.mutationController.getMutationHistory,
+    );
+
+    this.router.get(
+      '/history/:id',
+      verifyToken,
+      adminGuard,
+      this.mutationController.getMutationHistoryById,
+    );
+
     this.router.patch(
       '/to-cancel/:id',
       verifyToken,

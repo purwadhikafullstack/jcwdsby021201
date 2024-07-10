@@ -1,5 +1,4 @@
 import { UserRepository } from '@/repositories/user.repository';
-import { WarehouseRepository } from '@/repositories/warehouse.repository';
 import { UserBody, UserQuery } from '@/types/admin.type';
 import { hashPassword } from '@/utils/hash';
 import {
@@ -79,8 +78,8 @@ export class AdminService {
   }
 
   static async getUsersWithoutSuperAdmin(query: UserQuery) {
-    const { page, limit, filter, sortBy, orderBy } = Validation.validate(
-      Validation.QUERY,
+    const { page, limit, filter, sortBy, orderBy, role } = Validation.validate(
+      AdminValidation.QUERY,
       query,
     );
 
@@ -89,6 +88,7 @@ export class AdminService {
     const queryFilter = filter || '';
     const querySortBy = sortBy || 'email';
     const queryOrderBy = orderBy || 'asc';
+    const queryRole = role || 'ADMIN';
 
     const response = await UserRepository.getUsersWithoutSuperAdmin(
       queryPage,
@@ -96,6 +96,7 @@ export class AdminService {
       queryFilter,
       querySortBy,
       queryOrderBy,
+      queryRole,
     );
 
     if (!response.length) {
@@ -107,7 +108,10 @@ export class AdminService {
       return res;
     });
 
-    const total = await UserRepository.countUsersWithoutSuperAdmin(queryFilter);
+    const total = await UserRepository.countUsersWithoutSuperAdmin(
+      queryRole,
+      queryFilter,
+    );
     return responseDataWithPagination(200, 'Success Get Users', newResponse, {
       page: queryPage,
       limit: queryLimit,

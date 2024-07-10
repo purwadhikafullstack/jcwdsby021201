@@ -190,7 +190,7 @@ export class InventoryService {
 
     const queryPage = page || 1;
     const queryLimit = limit || 10;
-    const querySortBy = sortBy || 'id';
+    const querySortBy = sortBy || 'createdAt';
     const queryOrderBy = orderBy || 'asc';
     let queryFilter = filter || '';
 
@@ -247,7 +247,7 @@ export class InventoryService {
 
     const queryPage = page || 1;
     const queryLimit = limit || 10;
-    const querySortBy = sortBy || 'id';
+    const querySortBy = sortBy || 'createdAt';
     const queryOrderBy = orderBy || 'asc';
     let queryFilter = filter || '';
 

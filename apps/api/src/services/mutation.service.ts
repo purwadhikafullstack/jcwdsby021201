@@ -1,8 +1,10 @@
+import { JournalMutationRepository } from '@/repositories/journalMutation.repository';
 import { MutationRepository } from '@/repositories/mutation.repository';
 import { ProductRepository } from '@/repositories/product.repository';
 import { ProductWarehouseRepository } from '@/repositories/productWarehouse.repository';
 import { WarehouseRepository } from '@/repositories/warehouse.repository';
 import { UserDecoded } from '@/types/auth.type';
+import { JournalMutationQuery } from '@/types/journalMutation.type';
 import {
   MutationBody,
   MutationQuery,
@@ -215,5 +217,111 @@ export class MutationService {
     );
 
     return responseWithoutData(200, true, 'Success Approve Mutation');
+  }
+
+  static async getMutationHistory(
+    user: UserDecoded,
+    query: JournalMutationQuery,
+  ) {
+    const { page, limit, filter, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const querySortBy = sortBy || 'createdAt';
+    const queryOrderBy = orderBy || 'asc';
+    let queryFilter = filter || '';
+
+    if (queryFilter !== '') {
+      !isNaN(Number(queryFilter)) && (queryFilter = Number(queryFilter));
+    }
+
+    const response = await JournalMutationRepository.getMutationHistory(user, {
+      page: queryPage,
+      limit: queryLimit,
+      filter: queryFilter,
+      sortBy: querySortBy,
+      orderBy: queryOrderBy,
+    });
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await JournalMutationRepository.countMutationHistory(
+      user,
+      queryFilter,
+    );
+
+    return responseDataWithPagination(200, 'Success Get History', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
+  }
+
+  static async getMutationHistoryById(
+    id: string,
+    user: UserDecoded,
+    query: JournalMutationQuery,
+  ) {
+    const newId = Validation.validate(Validation.INT_ID, id);
+    const { page, limit, filter, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const checkId = await MutationRepository.findMutationById(Number(newId));
+    if (!checkId) {
+      return responseWithoutData(404, false, 'Mutation Not Found');
+    }
+
+    if (
+      checkId.sourceWarehouse.user?.id !== user.id &&
+      checkId.destinationWarehouse.user?.id !== user.id &&
+      user.role !== 'SUPER_ADMIN'
+    ) {
+      return responseWithoutData(403, false, 'User Not Allowed');
+    }
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const querySortBy = sortBy || 'createdAt';
+    const queryOrderBy = orderBy || 'asc';
+    let queryFilter = filter || '';
+
+    if (queryFilter !== '') {
+      isNaN(Number(queryFilter)) && (queryFilter = Number(queryFilter));
+    }
+
+    const response = await JournalMutationRepository.getMutationHistoryById(
+      Number(newId),
+      user,
+      {
+        page: queryPage,
+        limit: queryLimit,
+        filter: queryFilter,
+        sortBy: querySortBy,
+        orderBy: queryOrderBy,
+      },
+    );
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await JournalMutationRepository.countInventoryHistoryById(
+      Number(newId),
+      user,
+      queryFilter,
+    );
+
+    return responseDataWithPagination(200, 'Success Get History', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
   }
 }

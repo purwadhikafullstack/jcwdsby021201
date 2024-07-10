@@ -5,7 +5,13 @@ import {
   ResponseWithoutData,
 } from '@/features/types';
 import { createAxiosInstance } from '@/utils/axiosInstance';
-import { AdminResponse, UserBody, UserResponse, UserUpdate } from './types';
+import {
+  AdminResponse,
+  UserBody,
+  UserQueryPagination,
+  UserResponse,
+  UserUpdate,
+} from './types';
 
 export const getWarehouseAdmins = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
@@ -24,7 +30,7 @@ export const createUser = async (data: UserBody) => {
   return res.data;
 };
 
-export const getUsers = async (params: QueryPagination) => {
+export const getUsers = async (params: UserQueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<UserResponse[]>>(
     `/admin/users`,

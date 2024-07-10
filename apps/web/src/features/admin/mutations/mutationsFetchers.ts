@@ -1,4 +1,5 @@
 import {
+  HistoryResponse,
   QueryPagination,
   ResponseDataPagination,
   ResponseWithData,
@@ -50,6 +51,29 @@ export const updateMutationToApprove = async ({
   const res = await instance.patch<ResponseWithoutData>(
     `/mutations/to-approve/${id}`,
     data,
+  );
+
+  return res.data;
+};
+
+export const getMutationHistory = async (params: QueryPagination) => {
+  const instance = await createAxiosInstance();
+  const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
+    '/mutations/history',
+    { params },
+  );
+
+  return res.data;
+};
+
+export const getMutationHistoryById = async (
+  id: string,
+  params: QueryPagination,
+) => {
+  const instance = await createAxiosInstance();
+  const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
+    `/mutations/history/${id}`,
+    { params },
   );
 
   return res.data;
