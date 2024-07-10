@@ -12,6 +12,8 @@ import { UserSession } from '@/features/types';
 import { useChangeProfilePicture } from '@/features/user/profile/profileMutation';
 import { useUploadPaymmentProof } from '@/features/user/order/orderMutation';
 import StyledButton from '../button/StyledButton';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface UploadPictureFormProps {
   handleClose: () => void;
@@ -33,9 +35,13 @@ export default function UploadPictureForm({
     resolver: zodResolver(uploadPictureSchema),
   });
 
+  //ROTER
+  const router = useRouter();
+
   //STATE UNTUK FILENYA
   const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
   const [errorMessage, setErrorMessage] = React.useState('');
+  const [previewURL, setPreviewURL] = React.useState<string | null>(null);
 
   //TOKEN
   const session = useSession();
@@ -94,6 +100,7 @@ export default function UploadPictureForm({
               orderId,
               data: formData,
             });
+            router.push('/dashboard/user/order/to-ship');
           }
         }
       }
@@ -126,6 +133,7 @@ export default function UploadPictureForm({
                 const file = e.target.files?.[0];
                 if (file) {
                   setSelectedFile(file);
+                  setPreviewURL(URL.createObjectURL(file));
                   field.onChange(file);
                 }
               }}
@@ -133,6 +141,17 @@ export default function UploadPictureForm({
               variant="outlined"
               InputLabelProps={{ shrink: true }}
             />
+            {previewURL && (
+              <Box mt={2}>
+                <Image
+                  width={1000}
+                  height={1000}
+                  src={previewURL}
+                  alt="Preview"
+                  style={{ maxWidth: '100%', maxHeight: '200px' }}
+                />
+              </Box>
+            )}
           </>
         )}
       />

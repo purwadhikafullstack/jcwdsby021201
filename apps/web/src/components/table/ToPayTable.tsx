@@ -1,4 +1,7 @@
 'use client';
+import Image from 'next/image';
+import { Button } from '@mui/material';
+import { toThousandFlag } from '@/utils/formatter';
 
 import { useMemo, useState } from 'react';
 
@@ -31,9 +34,8 @@ import ConfirmationCancel from '../dialog/ConfirmationCancel';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import PaymentProofModal from '../modal/PaymentProofModal';
-import Image from 'next/image';
-import StyledButton from '../button/StyledButton';
-import { Button } from '@mui/material';
+import DetailOrderModal from '../modal/DetailOrderModal';
+import { useRouter } from 'next/navigation';
 
 export default function ToPayTable() {
   const [globalFilter, setGlobalFilter] = useState('');
@@ -47,9 +49,22 @@ export default function ToPayTable() {
   const user = session.data?.user as UserSession;
   const token = user?.token;
 
+  const router = useRouter();
+
   const [openCancelDialog, setOpenCancelDialog] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [paymentProofModal, setPaymentProofModal] = useState(false);
+
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+
+  const handleOpenDetailModal = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setDetailModalOpen(true);
+  };
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedOrderId(null);
+  };
 
   const handleOpenPaymentProofModal = (orderId: any) => {
     setSelectedOrderId(orderId);
@@ -85,7 +100,7 @@ export default function ToPayTable() {
 
   //ubah Rupiah
   const formatRupiah = (tot: number) => {
-    return `IDR ${tot.toLocaleString()}`;
+    return `Rp. ${toThousandFlag(tot)}`;
   };
 
   //gambar
@@ -98,6 +113,11 @@ export default function ToPayTable() {
         height={50}
       />
     );
+  };
+
+  // tanggal
+  const formatDate = (date: string) => {
+    return date.split('T')[0];
   };
   const columns = useMemo<MRT_ColumnDef<CobaResponse>[]>(
     () => [
@@ -115,7 +135,7 @@ export default function ToPayTable() {
         accessorKey: 'name',
         header: 'Name',
         enableColumnActions: false,
-        size: 200,
+        size: 150,
       },
       {
         accessorKey: 'product',
@@ -125,7 +145,7 @@ export default function ToPayTable() {
         Cell: ({ cell }) => (
           <span>{(cell.getValue() as string[]).join(', ')}</span>
         ),
-        size: 200,
+        size: 100,
       },
       {
         accessorKey: 'total',
@@ -135,7 +155,17 @@ export default function ToPayTable() {
           const total = cell.getValue() as number;
           return formatRupiah(total);
         },
-        size: 200,
+        size: 100,
+      },
+      {
+        accessorKey: 'createdAt',
+        header: 'Order Date',
+        enableColumnActions: false,
+        Cell: ({ cell }) => {
+          const date = cell.getValue() as string;
+          return formatDate(date);
+        },
+        size: 100,
       },
     ],
     [],
@@ -213,11 +243,15 @@ export default function ToPayTable() {
                     backgroundColor: '#333333',
                   },
                 }}
-                onClick={() =>
-                  handleOpenPaymentProofModal(row.original.id.toString())
-                }
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(
+                    `/transfer/${row.original.name}${row.original.id}`,
+                  );
+                  // handleOpenPaymentProofModal(row.original.id.toString());
+                }}
               >
-                PaymentProof
+                Payment
               </Button>
             </Tooltip>
             <Tooltip title="Cancel Order">
@@ -230,7 +264,10 @@ export default function ToPayTable() {
                     backgroundColor: '#333333',
                   },
                 }}
-                onClick={() => handleCancelClick(row.original.id.toString())}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleCancelClick(row.original.id.toString());
+                }}
               >
                 Cancel Order
               </Button>
@@ -240,6 +277,12 @@ export default function ToPayTable() {
       </Box>
     ),
     positionActionsColumn: 'last',
+    muiTableBodyRowProps: ({ row }) => ({
+      onClick: () => handleOpenDetailModal(row.original.id.toString()),
+      sx: {
+        cursor: 'pointer',
+      },
+    }),
   });
 
   return (
@@ -258,6 +301,12 @@ export default function ToPayTable() {
         handleClose={handleClosePaymentProofModal}
         open={paymentProofModal}
         orderId={Number(selectedOrderId) || 0}
+      />
+      <DetailOrderModal
+        open={detailModalOpen}
+        handleClose={handleCloseDetailModal}
+        orderId={selectedOrderId || ''}
+        token={token || ''}
       />
     </>
   );

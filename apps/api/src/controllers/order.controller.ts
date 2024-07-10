@@ -107,4 +107,19 @@ export class OrderController {
       next(error);
     }
   }
+
+  public async getOrderDetailByOrderId(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const id = res.locals.decoded.id;
+      const orderId = Number(req.params.orderId);
+      const response = await OrderService.getOrderDetailByOrderId(id, orderId);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

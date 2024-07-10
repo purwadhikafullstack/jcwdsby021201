@@ -158,4 +158,27 @@ export class OrderService {
       total,
     });
   }
+
+  static async getOrderDetailByOrderId(id: number, orderId: number) {
+    const response = await OrderRepository.getOrderDetailByOrderId(id, orderId);
+    if (response === null) {
+      return responseWithoutData(404, false, 'Order not found');
+    }
+    const newResponse = {
+      name: response.name,
+      shippingCost: response.shippingCost,
+      total: response.total,
+      shippingAddress: response.address.address,
+      username: response.cart.user.username,
+      orderProducts: response.orderProducts.map((prod) => ({
+        name: prod.product.name,
+        price: prod.price,
+        total: prod.total,
+        quantity: prod.quantity,
+        imageUrl: prod.product.pictures[0]?.url || null,
+      })),
+    };
+
+    return responseWithData(200, 'Success Get Order Detail ', newResponse);
+  }
 }

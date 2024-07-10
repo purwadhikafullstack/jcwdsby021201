@@ -1,31 +1,14 @@
 'use client';
 import CheckoutTable from '@/components/table/CheckoutTable';
-import { UserSession } from '@/features/types';
-import { useGetAddressById } from '@/features/user/address/addressQueries';
-import { useGetProductCart } from '@/features/user/cart/cartQueries';
-import {
-  checkAndMutateStock,
-  createOrder,
-  fetchShippingCost,
-  fetchWarehouseNearest,
-} from '@/features/user/order/orderFetcher';
 import AddressAndPaymentSelection from '@/views/checkout/AddressAndPaymentSelection';
 import CourierSelection from '@/views/checkout/CourierSelection';
 import OrderSummary from '@/views/checkout/OrderSummary';
 import {
-  Button,
   Container,
-  Divider,
   Grid,
-  MenuItem,
-  Paper,
-  Select,
   Typography,
-  SelectChangeEvent,
   Alert,
 } from '@mui/material';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useCheckoutLogic } from './useCheckoutLogic';
 
@@ -57,7 +40,11 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
           {errorMessage}
         </Alert>
       )}
-      <Typography variant="h4" gutterBottom sx={{ textTransform: 'uppercase' }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}
+      >
         Checkout
       </Typography>
       <Grid container spacing={3}>

@@ -18,6 +18,11 @@ export type ReceiveOrder = {
   orderId: string;
 };
 
+export type DetailOrder = {
+  token: string;
+  orderId: string;
+};
+
 export type ShippingCostParams = {
   courier: string;
   destination: string;
@@ -62,6 +67,28 @@ export type OrderData = {
   latitude: number;
   longitude: number;
   orderProducts: OrderProduct[];
+};
+
+export type OrderDetail = {
+  name: string;
+  price: number;
+  total: number;
+  quantity: number;
+  imageUrl: string;
+};
+
+export type OrderDetailResponse = {
+  name: string;
+  shippingCost: number;
+  total: number;
+  paymentMethod: string;
+  username: string;
+  shippingAddress: string;
+  orderProducts: OrderDetail[];
+};
+
+export type OrderDetailResponseWrapper = {
+  result: OrderDetailResponse;
 };
 
 export type OrderDataBody = {

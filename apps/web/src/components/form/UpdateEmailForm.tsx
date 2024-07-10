@@ -81,16 +81,15 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
         maxWidth: '400px',
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        Change Email
-      </Typography>
-
       <Typography
-        sx={{ textAlign: 'left', fontSize: '14px' }}
-        variant="inherit"
+        variant="h6"
         gutterBottom
+        sx={{
+          textTransform: 'uppercase',
+          fontWeight: 'bold',
+        }}
       >
-        If you change your email address, you'll need to verify it again.
+        Change Email
       </Typography>
 
       <Controller
@@ -108,6 +107,9 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
           />
         )}
       />
+      <Typography variant="overline" gutterBottom sx={{ lineHeight: '16px' }}>
+        If you change your email address, you'll need to verify it again.
+      </Typography>
 
       <StyledButton type="submit" variant="contained" startIcon={<SendIcon />}>
         Submit

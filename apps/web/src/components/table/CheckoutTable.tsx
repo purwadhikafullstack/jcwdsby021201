@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { ProductBody } from '@/features/user/cart/type';
 import Image from 'next/image';
+import { toThousandFlag } from '@/utils/formatter';
 interface ICheckoutTableProps {
   product: ProductBody[] | undefined;
 }
@@ -23,7 +24,7 @@ const CheckoutTable: React.FunctionComponent<ICheckoutTableProps> = ({
   product,
 }) => {
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
       <Table>
         <TableHead>
           <TableRow>
@@ -58,9 +59,9 @@ const CheckoutTable: React.FunctionComponent<ICheckoutTableProps> = ({
                 </Box>
               </TableCell>
               <TableCell>{item.quantity}</TableCell>
-              <TableCell>Rp {item.price.toLocaleString()}</TableCell>
+              <TableCell>Rp. {toThousandFlag(item.price)}</TableCell>
               <TableCell>
-                Rp {(item.quantity * item.price).toLocaleString()}
+                Rp. {toThousandFlag(item.quantity * item.price)}
               </TableCell>
             </TableRow>
           ))}

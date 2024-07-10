@@ -1,4 +1,5 @@
 import {
+  getDetailOrder,
   getToReceiveOrder,
   getToShipOrder,
   getUnpaidOrder,
@@ -6,7 +7,6 @@ import {
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { MRT_PaginationState, MRT_SortingState } from 'material-react-table';
 
-//COBA
 export const useGetUnpaidOrder = (
   globalFilter: string,
   pagination: MRT_PaginationState,
@@ -130,5 +130,13 @@ export const useGetToReceiveOrder = (
     },
     placeholderData: keepPreviousData,
     enabled: !!token,
+  });
+};
+
+export const useGetDetailOrder = (token: string, orderId: string) => {
+  return useQuery({
+    queryKey: ['order-detail', orderId, token],
+    queryFn: () => getDetailOrder({ token, orderId }),
+    enabled: !!token && !!orderId,
   });
 };

@@ -1,7 +1,7 @@
 'use client';
-
+import Image from 'next/image';
+import { toThousandFlag } from '@/utils/formatter';
 import { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 // MRT
 import {
@@ -22,21 +22,13 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 
 // React Query
-import {
-  useGetToReceiveOrder,
-  useGetToShipOrder,
-  useGetUnpaidOrder,
-} from '@/features/user/order/orderQueries';
+import { useGetToReceiveOrder } from '@/features/user/order/orderQueries';
 import { CobaResponse } from '@/features/user/order/type';
-import {
-  useCancelOrder,
-  useReceiveOrder,
-} from '@/features/user/order/orderMutation';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import Image from 'next/image';
+import DetailOrderModal from '../modal/DetailOrderModal';
 
 export default function ToReceiveTable() {
   const [globalFilter, setGlobalFilter] = useState('');
@@ -50,12 +42,24 @@ export default function ToReceiveTable() {
   const user = session.data?.user as UserSession;
   const token = user?.token;
 
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+
+  const handleOpenDetailModal = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setDetailModalOpen(true);
+  };
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedOrderId(null);
+  };
+
   const { data, isError, isPending, isRefetching, isLoading, refetch } =
     useGetToReceiveOrder(globalFilter, pagination, sorting, token || '');
 
   //ubah Rupiah
   const formatRupiah = (tot: number) => {
-    return `IDR ${tot.toLocaleString()}`;
+    return `Rp. ${toThousandFlag(tot)}`;
   };
 
   //gambar
@@ -150,6 +154,12 @@ export default function ToReceiveTable() {
     layoutMode: 'grid',
     enableRowActions: false,
     positionActionsColumn: 'last',
+    muiTableBodyRowProps: ({ row }) => ({
+      onClick: () => handleOpenDetailModal(row.original.id.toString()),
+      sx: {
+        cursor: 'pointer',
+      },
+    }),
   });
 
   return (
@@ -157,6 +167,12 @@ export default function ToReceiveTable() {
       <Box sx={{ maxWidth: '100%', mt: 2 }}>
         <MaterialReactTable table={table} />
       </Box>
+      <DetailOrderModal
+        open={detailModalOpen}
+        handleClose={handleCloseDetailModal}
+        orderId={selectedOrderId || ''}
+        token={token || ''}
+      />
     </>
   );
 }

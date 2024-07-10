@@ -1,7 +1,9 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Button } from '@mui/material';
+import Image from 'next/image';
+import { toThousandFlag } from '@/utils/formatter';
 
 // MRT
 import {
@@ -19,29 +21,19 @@ import Box from '@mui/material/Box';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 
 // React Query
-import {
-  useGetToShipOrder,
-  useGetUnpaidOrder,
-} from '@/features/user/order/orderQueries';
+import { useGetToShipOrder } from '@/features/user/order/orderQueries';
 import { CobaResponse } from '@/features/user/order/type';
-import {
-  useCancelOrder,
-  useReceiveOrder,
-} from '@/features/user/order/orderMutation';
+import { useReceiveOrder } from '@/features/user/order/orderMutation';
 
 // Custom Components
-import ConfirmationCancel from '../dialog/ConfirmationCancel';
+import ConfirmationReceived from '../dialog/ConfirmationReceived';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import PaymentProofModal from '../modal/PaymentProofModal';
-import { Button } from '@mui/material';
-import ConfirmationReceived from '../dialog/ConfirmationReceived';
-import Image from 'next/image';
+import DetailOrderModal from '../modal/DetailOrderModal';
 
 export default function ToShipTable() {
   const [globalFilter, setGlobalFilter] = useState('');
@@ -58,6 +50,16 @@ export default function ToShipTable() {
   const [openReceivedDialog, setOpenReceivedDialog] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
+
+  const handleOpenDetailModal = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setDetailModalOpen(true);
+  };
+  const handleCloseDetailModal = () => {
+    setDetailModalOpen(false);
+    setSelectedOrderId(null);
+  };
   const handleReceivedClick = (orderId: string) => {
     setSelectedOrderId(orderId);
     setOpenReceivedDialog(true);
@@ -82,7 +84,7 @@ export default function ToShipTable() {
 
   //ubah Rupiah
   const formatRupiah = (tot: number) => {
-    return `IDR ${tot.toLocaleString()}`;
+    return `Rp. ${toThousandFlag(tot)}`;
   };
 
   //gambar
@@ -209,7 +211,10 @@ export default function ToShipTable() {
                     backgroundColor: '#333333',
                   },
                 }}
-                onClick={() => handleReceivedClick(row.original.id.toString())}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleReceivedClick(row.original.id.toString());
+                }}
               >
                 Received
               </Button>
@@ -219,6 +224,12 @@ export default function ToShipTable() {
       </Box>
     ),
     positionActionsColumn: 'last',
+    muiTableBodyRowProps: ({ row }) => ({
+      onClick: () => handleOpenDetailModal(row.original.id.toString()),
+      sx: {
+        cursor: 'pointer',
+      },
+    }),
   });
 
   return (
@@ -232,6 +243,12 @@ export default function ToShipTable() {
         mutation={receiveOrder}
         isPending={isPending}
         orderId={selectedOrderId || ''}
+      />
+      <DetailOrderModal
+        open={detailModalOpen}
+        handleClose={handleCloseDetailModal}
+        orderId={selectedOrderId || ''}
+        token={token || ''}
       />
     </>
   );

@@ -41,7 +41,10 @@ const AddressList: React.FunctionComponent<IAddressListProps> = (props) => {
           variant="h4"
           gutterBottom
           fontWeight={500}
-          sx={{ fontSize: '20px' }}
+          sx={{
+            fontWeight: 'bold ',
+            textTransform: 'uppercase',
+          }}
         >
           Address List
         </Typography>
@@ -84,14 +87,15 @@ const AddressCard = ({ address }: { address: any }) => {
           router.push(`/dashboard/user/profile/update-address/${address.id}`)
         }
         sx={{
+          backgroundColor: '#EEE',
           width: 345,
           cursor: 'pointer',
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          border: '1px solid #e0e0e0',
-          boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+          border: 'none',
+          boxShadow: 'none',
           transition: 'transform 0.2s ease-in-out',
           '&:hover': {
             transform: 'scale(1.02)',
@@ -101,41 +105,54 @@ const AddressCard = ({ address }: { address: any }) => {
         <CardContent>
           <Typography
             gutterBottom
-            variant="h5"
+            variant="body1"
             component="div"
-            sx={{ textDecoration: 'none' }}
+            sx={{
+              textDecoration: 'none',
+              textTransform: 'uppercase',
+              fontWeight: 'bold',
+            }}
           >
             {address.name}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {address.address}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
+
+          <Typography variant="body1">
             Province:{' '}
             {isProvinceLoading
               ? 'Loading...'
               : provinceName?.name || address.provinceId}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1">
             City:{' '}
             {isCityLoading
               ? 'Loading...'
               : cityName?.[0]?.name || address.cityId}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body1">
             Postal Code: {address.postalCode}
           </Typography>
-          {address.isPrimary && (
+          <Typography variant="body1">
+            <Typography component="span" sx={{ fontWeight: 'bold' }}>
+              Full Address :{' '}
+            </Typography>{' '}
+            {address.address}
+          </Typography>
+        </CardContent>
+        {address.isPrimary && (
+          <Box p={2} display="flex" flexDirection="column" alignItems="center">
             <Typography
-              variant="body2"
-              color="primary"
-              sx={{ fontWeight: 'bold', marginTop: 1 }}
+              variant="body1"
+              sx={{
+                fontWeight: 'bold',
+                color: 'black',
+                textTransform: 'uppercase',
+              }}
             >
               Primary Address
             </Typography>
-          )}
-        </CardContent>
-        <Box p={2} textAlign="center">
+          </Box>
+        )}
+        <Box textAlign="center">
           <StyledButton
             variant="outlined"
             color="primary"

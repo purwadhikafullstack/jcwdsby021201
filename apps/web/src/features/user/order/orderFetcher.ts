@@ -8,7 +8,10 @@ import {
   CancelOrder,
   CheckMutateOtomaticOrder,
   CobaResponse,
+  DetailOrder,
   OrderDataBody,
+  OrderDetailResponse,
+  OrderDetailResponseWrapper,
   QueryPagination,
   ReceiveOrder,
   ShippingCostParams,
@@ -79,8 +82,8 @@ export const checkAndMutateStock = async ({
       productId: item.productId,
       quantity: item.quantity,
     })),
-    latitude,  
-    longitude, 
+    latitude,
+    longitude,
   });
   return res.data.result.response;
 };
@@ -164,4 +167,17 @@ export const getToReceiveOrder = async ({
   );
 
   return res.data;
+};
+
+export const getDetailOrder = async ({ token, orderId }: DetailOrder) => {
+  const res = await axiosInstance.get<OrderDetailResponseWrapper>(
+    `orders/detail/${orderId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return res.data.result;
 };

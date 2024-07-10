@@ -47,6 +47,7 @@ import {
 } from '@/features/user/address/addressMutations';
 import Map from '@/components/map/Map';
 import { errorNotification } from '@/utils/notifications';
+import { ConfirmationDeleteAddress } from '@/components/dialog/ConfirmationDeleteAddress';
 
 // Penampung
 const defaultValues: AddressSchema = {
@@ -99,6 +100,16 @@ const UpdateAddress: React.FunctionComponent = () => {
     lat: number;
     lon: number;
   } | null>(null);
+
+  //handle dialog:
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const handleDelete = () => {
+    setOpenDialog(true);
+  };
+
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
 
   React.useEffect(() => {
     if (data && data.provinceId) {
@@ -158,7 +169,7 @@ const UpdateAddress: React.FunctionComponent = () => {
     }
   };
 
-  const handleDelete = async () => {
+  const handleConfirmDelete = async () => {
     try {
       if (token) {
         await deleteAddressMutateAsync({
@@ -191,17 +202,14 @@ const UpdateAddress: React.FunctionComponent = () => {
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        gap: 2,
+        gap: '10px',
         maxWidth: '800px',
-        padding: 3,
-        borderRadius: 2,
-        boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-        backgroundColor: 'background.paper',
         margin: 'auto',
-        marginTop: '20px',
+        mt: '50px',
+        p: '20px',
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ textTransform: 'uppercase' }}>
         Update Address
       </Typography>
 
@@ -219,6 +227,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               placeholder="Input Name"
               size="small"
               variant="outlined"
+              sx={{ backgroundColor: 'white' }}
             />
           </FormControl>
         )}
@@ -238,6 +247,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               placeholder="Input Address"
               size="small"
               variant="outlined"
+              sx={{ backgroundColor: 'white' }}
             />
           </FormControl>
         )}
@@ -257,6 +267,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               id="provinceId"
               labelId="province-label"
               onChange={handleProvinceChange}
+              sx={{ backgroundColor: 'white' }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -290,6 +301,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               id="cityId"
               labelId="city-label"
               onChange={handleCityChange}
+              sx={{ backgroundColor: 'white' }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -323,6 +335,7 @@ const UpdateAddress: React.FunctionComponent = () => {
               placeholder="Input Postal Code"
               size="small"
               variant="outlined"
+              sx={{ backgroundColor: 'white' }}
             />
           </FormControl>
         )}
@@ -340,11 +353,22 @@ const UpdateAddress: React.FunctionComponent = () => {
                 color="primary"
               />
             }
-            label="Menjadikan Alamat Utama"
+            label="Main Address"
+            sx={{
+              '& .MuiSwitch-switchBase': {
+                color: '#000',
+                '&.Mui-checked': {
+                  color: '#000',
+                  '& + .MuiSwitch-track': {
+                    backgroundColor: '#000',
+                  },
+                },
+              },
+            }}
           />
         )}
       />
-      <Typography color="primary">
+      <Typography color="primary" sx={{ color: 'black', fontStyle: 'italic' }}>
         Please mark your address again, to help us find your address more easily
       </Typography>
 
@@ -362,16 +386,42 @@ const UpdateAddress: React.FunctionComponent = () => {
       <Box display="flex" justifyContent="space-between">
         <Button
           onClick={handleDelete}
-          color="secondary"
-          variant="contained"
+          variant="outlined"
           endIcon={<DeleteIcon />}
+          sx={{
+            borderColor: 'black',
+            color: 'black',
+            borderRadius: '0px',
+            '&:hover': {
+              backgroundColor: '#fff',
+            },
+          }}
         >
           Delete
         </Button>
-        <Button type="submit" variant="contained" startIcon={<AddIcon />}>
+        <Button
+          type="submit"
+          variant="contained"
+          startIcon={<AddIcon />}
+          sx={{
+            color: 'white',
+            backgroundColor: 'black',
+            borderRadius: '0px',
+            '&:hover': {
+              backgroundColor: '#333333',
+            },
+          }}
+        >
           Update
         </Button>
       </Box>
+      <ConfirmationDeleteAddress
+        open={openDialog}
+        onClose={handleDialogClose}
+        mutation={handleConfirmDelete}
+        isPending={isDeletePending}
+        addressId={String(addressId)}
+      />
     </Box>
   );
 };

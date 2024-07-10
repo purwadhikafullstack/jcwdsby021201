@@ -66,6 +66,13 @@ export class OrderRouter {
       userGuard,
       this.orderController.receivedOrder,
     );
+
+    this.router.get(
+      '/detail/:orderId',
+      verifyToken,
+      userGuard,
+      this.orderController.getOrderDetailByOrderId,
+    );
   }
 
   getRouter(): Router {

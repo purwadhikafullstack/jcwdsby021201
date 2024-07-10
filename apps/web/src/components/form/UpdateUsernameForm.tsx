@@ -66,7 +66,14 @@ export default function ChangeUsernameForm({
         maxWidth: '400px',
       }}
     >
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{
+          textTransform: 'uppercase',
+          fontWeight: 'bold',
+        }}
+      >
         Change Username
       </Typography>
 

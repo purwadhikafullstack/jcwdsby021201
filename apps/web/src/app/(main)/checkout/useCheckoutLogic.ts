@@ -221,7 +221,7 @@ export function useCheckoutLogic() {
 
       if (token) {
         await createOrder({ token, orderData });
-        router.push('/transfer');
+        router.push('/dashboard/user/order/to-pay');
       } else {
         setErrorMessage('User token is not available. Please log in again.');
       }

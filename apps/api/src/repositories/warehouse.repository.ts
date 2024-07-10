@@ -76,26 +76,6 @@ export class WarehouseRepository {
     const { latitude, longitude } = body;
 
     // Fungsi untuk menghitung jarak menggunakan formula Haversine
-    function getDistance(
-      lat1: number,
-      lon1: number,
-      lat2: number,
-      lon2: number,
-    ) {
-      if (lat2 === null || lon2 === null) return Infinity;
-
-      const R = 6371; // Radius bumi dalam km
-      const dLat = ((lat2 - lat1) * Math.PI) / 180;
-      const dLon = ((lon2 - lon1) * Math.PI) / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos((lat1 * Math.PI) / 180) *
-          Math.cos((lat2 * Math.PI) / 180) *
-          Math.sin(dLon / 2) *
-          Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c; // Jarak dalam km
-    }
 
     const warehouses = await prisma.warehouse.findMany({
       select: {
@@ -120,7 +100,7 @@ export class WarehouseRepository {
     }
 
     let nearestWarehouse = validWarehouses[0];
-    let shortestDistance = getDistance(
+    let shortestDistance = WarehouseRepository.getDistance(
       latitude,
       longitude,
       nearestWarehouse.latitude,
@@ -128,7 +108,7 @@ export class WarehouseRepository {
     );
 
     for (let i = 1; i < validWarehouses.length; i++) {
-      const distance = getDistance(
+      const distance = WarehouseRepository.getDistance(
         latitude,
         longitude,
         validWarehouses[i].latitude,
@@ -159,5 +139,21 @@ export class WarehouseRepository {
         user: { select: { id: true, username: true } },
       },
     });
+  }
+
+  static getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+    if (lat2 === null || lon2 === null) return Infinity;
+
+    const R = 6371; // Radius bumi dalam km
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLon = ((lon2 - lon1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c; // Jarak dalam km
   }
 }

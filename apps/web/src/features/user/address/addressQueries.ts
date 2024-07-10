@@ -11,8 +11,8 @@ export const useGetAddressById = (token: string) => {
 
 export const useGetAddressByAddressId = (token: string, addressId: string) => {
   return useQuery({
-    queryKey: ['address', addressId, token], // Menggunakan addressId dan token sebagai queryKey
+    queryKey: ['address', addressId, token],
     queryFn: () => getAddressByAddressId(token, addressId),
-    enabled: !!token && !!addressId, // Memastikan token dan addressId tersedia
+    enabled: !!token && !!addressId,
   });
 };

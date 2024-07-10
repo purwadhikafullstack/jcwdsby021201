@@ -16,6 +16,8 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import SendIcon from '@mui/icons-material/Send';
 import Logo from '@/components/core/Logo';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+import { UserSession } from '@/features/types';
 
 const FooterContainer = styled(Box)(({ theme }) => ({
   backgroundColor: '#d9d9d9',
@@ -73,6 +75,11 @@ const InputEmail = styled(TextField)(({ theme }) => ({
 }));
 
 export default function Footer() {
+  const session = useSession();
+  const user = session.data?.user as UserSession;
+  const token = user?.token;
+  const role = user?.role;
+
   return (
     <FooterContainer>
       <Container maxWidth="lg">
@@ -126,19 +133,30 @@ export default function Footer() {
               Account
             </Typography>
             <Typography variant="body2">
-              <FooterLink href="#">My Account</FooterLink>
+              <FooterLink
+                href={
+                  token
+                    ? role === 'USER'
+                      ? '/dashboard/user/profile'
+                      : '/dashboard/admin/warehouses'
+                    : '/'
+                }
+              >
+                My Account
+              </FooterLink>
+            </Typography>
+            {token ? (
+              ''
+            ) : (
+              <Typography variant="body2">
+                <FooterLink href="#">Login / Register</FooterLink>
+              </Typography>
+            )}
+            <Typography variant="body2">
+              <FooterLink href="/cart">Cart</FooterLink>
             </Typography>
             <Typography variant="body2">
-              <FooterLink href="#">Login / Register</FooterLink>
-            </Typography>
-            <Typography variant="body2">
-              <FooterLink href="#">Cart</FooterLink>
-            </Typography>
-            <Typography variant="body2">
-              <FooterLink href="#">Wishlist</FooterLink>
-            </Typography>
-            <Typography variant="body2">
-              <FooterLink href="#">Shop</FooterLink>
+              <FooterLink href="/products">Shop</FooterLink>
             </Typography>
           </FooterColumn>
           <FooterColumn item xs={12} sm={6} md={2}>
@@ -146,16 +164,10 @@ export default function Footer() {
               Quick Link
             </Typography>
             <Typography variant="body2">
-              <FooterLink href="#">Privacy Policy</FooterLink>
+              <FooterLink href="/about">About</FooterLink>
             </Typography>
             <Typography variant="body2">
-              <FooterLink href="#">Terms of Use</FooterLink>
-            </Typography>
-            <Typography variant="body2">
-              <FooterLink href="#">FAQ</FooterLink>
-            </Typography>
-            <Typography variant="body2">
-              <FooterLink href="#">Contact</FooterLink>
+              <FooterLink href="/contact">Contact</FooterLink>
             </Typography>
           </FooterColumn>
           <FooterColumn
@@ -177,7 +189,11 @@ export default function Footer() {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: { xs: 'center', sm: 'center', md: 'flex-start' },
+                justifyContent: {
+                  xs: 'center',
+                  sm: 'center',
+                  md: 'flex-start',
+                },
                 mb: 2,
                 width: '100%',
               }}
@@ -232,8 +248,12 @@ export default function Footer() {
             <Box
               sx={{
                 display: 'flex',
-                justifyContent: { xs: 'center', sm: 'center', md: 'flex-start' },
-                ml: { sm: 2, md: 0 }, // Menambahkan margin kiri untuk selaraskan dengan QR code dan gambar store
+                justifyContent: {
+                  xs: 'center',
+                  sm: 'center',
+                  md: 'flex-start',
+                },
+                ml: { sm: 2, md: 0 },
               }}
             >
               <SocialIcon href="#">

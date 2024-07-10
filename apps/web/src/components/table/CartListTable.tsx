@@ -7,15 +7,16 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Typography,
   Box,
   TextField,
+  Button,
 } from '@mui/material';
 import { ProductBody } from '@/features/user/cart/type';
 import Image from 'next/image';
 import StyledButton from '../button/StyledButton';
 import { useRouter } from 'next/navigation';
+import { toThousandFlag } from '@/utils/formatter';
 interface ITableCartProps {
   product: ProductBody[] | undefined;
   updateQuantity: (productId: number, newQuantity: number) => void;
@@ -49,28 +50,40 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
           flexDirection: 'column',
           alignItems: 'center',
           m: '40px',
+          gap: '20px',
         }}
       >
-        <Typography variant="h6" align="center">
+        <Typography
+          variant="caption"
+          align="center"
+          sx={{ textTransform: 'uppercase', fontSize: '14px' }}
+        >
           Cart is Empty
         </Typography>
-        <StyledButton onClick={() => router.push('/products')}>
+        <Button
+          variant="contained"
+          onClick={() => router.push('/products')}
+          sx={{
+            backgroundColor: 'black',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: '#333333',
+            },
+          }}
+        >
           Let's Explore Product
-        </StyledButton>
+        </Button>
       </Box>
     );
   }
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ boxShadow: 'none' }}>
       <Table>
         <TableHead>
-          <TableRow>
-            <TableCell>Product</TableCell>
-            <TableCell>Price</TableCell>
-            <TableCell>Quantity</TableCell>
-            <TableCell>Total</TableCell>
-            <TableCell>Actions</TableCell>
-          </TableRow>
+          <TableCell>Product</TableCell>
+          <TableCell>Quantity</TableCell>
+          <TableCell>Total</TableCell>
+          <TableCell></TableCell>
         </TableHead>
         <TableBody>
           {product?.map((item) => (
@@ -96,7 +109,6 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
                   </Typography>
                 </Box>
               </TableCell>
-              <TableCell>IDR. {item.price.toLocaleString()}</TableCell>
               <TableCell>
                 <TextField
                   type="number"
@@ -115,7 +127,7 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
                 </Typography>
               </TableCell>
               <TableCell>
-                IDR.{(item.price * item.quantity).toLocaleString()}
+                Rp.{toThousandFlag(item.price * item.quantity)}
               </TableCell>
               <TableCell>
                 <StyledButton

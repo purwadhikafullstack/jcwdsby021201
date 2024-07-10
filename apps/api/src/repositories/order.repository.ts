@@ -21,7 +21,6 @@ export class OrderRepository {
 
     return await prisma.$transaction(async (tx) => {
       //cari tahu nama gudangnya:
-
       const warehouseName = await WarehouseRepository.findNearestWarehouse({
         latitude,
         longitude,
@@ -236,7 +235,7 @@ export class OrderRepository {
       },
       data: {
         paymentProof: `/assets/payment-proof/${file.filename}`,
-        paymentStatus: 'PAID',
+        paymentStatus: 'SHIPPED',
       },
     });
   }
@@ -258,7 +257,6 @@ export class OrderRepository {
             warehouse: true,
           },
         });
-
         // jumlah permintaan
         let remainingQuantity = product.quantity;
         // stock yang ada di gudang sekarang
@@ -280,16 +278,15 @@ export class OrderRepository {
               warehouse: true,
             },
           });
-
           // setelah itu dapet gudang yang memiliki stock, maka urutkan dari gudang terdekat
           const sortedWarehouses = warehousesWithStock.sort((a, b) => {
-            const distanceA = this.getDistance(
+            const distanceA = WarehouseRepository.getDistance(
               latitude,
               longitude,
               a.warehouse.latitude,
               a.warehouse.longitude,
             );
-            const distanceB = this.getDistance(
+            const distanceB = WarehouseRepository.getDistance(
               latitude,
               longitude,
               b.warehouse.latitude,
@@ -301,13 +298,12 @@ export class OrderRepository {
           // buatin mutasi dan jurnal keluar masuk untuk setiap gudang
           for (const warehouseWithStock of sortedWarehouses) {
             if (remainingQuantity <= 0) break;
-
             //cari jumlah yang di tranfer
             const transferQuantity = Math.min(
               warehouseWithStock.stock,
               deficitQuantity,
+              remainingQuantity,
             );
-
             // buatin jurnal mutasi
             const mutation = await tx.mutation.create({
               data: {
@@ -337,7 +333,6 @@ export class OrderRepository {
               where: { id: warehouseWithStock.id },
               data: { stock: { decrement: transferQuantity } },
             });
-
             if (stockInWarehouse) {
               await tx.productWarehouse.update({
                 where: { id: stockInWarehouse.id },
@@ -384,22 +379,6 @@ export class OrderRepository {
       return true;
     });
     return result;
-  }
-
-  static getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
-    if (lat2 === null || lon2 === null) return Infinity;
-
-    const R = 6371; // Radius bumi dalam km
-    const dLat = ((lat2 - lat1) * Math.PI) / 180;
-    const dLon = ((lon2 - lon1) * Math.PI) / 180;
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos((lat1 * Math.PI) / 180) *
-        Math.cos((lat2 * Math.PI) / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Jarak dalam km
   }
 
   static async receivedOrder(id: number, orderId: number) {
@@ -693,6 +672,50 @@ export class OrderRepository {
             },
           },
         ],
+      },
+    });
+  }
+
+  static async getOrderDetailByOrderId(id: number, orderId: number) {
+    return await prisma.order.findUnique({
+      where: {
+        id: orderId,
+        cart: {
+          userId: id,
+        },
+      },
+      include: {
+        orderProducts: {
+          select: {
+            price: true,
+            total: true,
+            quantity: true,
+            product: {
+              select: {
+                name: true,
+                pictures: {
+                  select: {
+                    url: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        address: {
+          select: {
+            address: true,
+          },
+        },
+        cart: {
+          select: {
+            user: {
+              select: {
+                username: true,
+              },
+            },
+          },
+        },
       },
     });
   }

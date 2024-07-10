@@ -18,7 +18,19 @@ export default function CheckMailActivationPage() {
           Please check your inbox to activate your account.
         </Typography>
         <Link href={mainPages.home.path} passHref>
-          <Button fullWidth size="large" variant="contained">
+          <Button
+            fullWidth
+            size="large"
+            variant="contained"
+            sx={{
+              color: 'white',
+              backgroundColor: 'black',
+              borderRadius: '0px',
+              '&:hover': {
+                backgroundColor: '#333333',
+              },
+            }}
+          >
             Home
           </Button>
         </Link>

@@ -8,7 +8,7 @@ import StoreIcon from '@mui/icons-material/Store';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InboxIcon from '@mui/icons-material/Inbox';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
-
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 export type Route = {
   path: string;
   label?: string;
@@ -49,6 +49,11 @@ export const dashboardUserPages: Record<string, Route> = {
     label: 'Profile',
     Icon: AccountCircleIcon,
   },
+  myAddress :{
+    path: '/dashboard/user/profile/address',
+    label: 'My Address',
+    Icon: MyLocationIcon,
+  }
 };
 
 export const dashboardAdminPages: Record<string, Route> = {

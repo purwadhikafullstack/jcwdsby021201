@@ -25,9 +25,11 @@ export function useCartLogic() {
 
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
-  const { mutateAsync } = useDeleteProduct();
+  const { mutateAsync, isPending: isLoadingDelete } = useDeleteProduct();
   const { mutateAsync: updateQuantityProduct } = useUpdateQuantity();
-  const { data: product } = useGetProductCart(token || '');
+  const { data: product, isLoading: isLoadingCart } = useGetProductCart(
+    token || '',
+  );
 
   //Handle Delete
   const deleteProduct = async (productId: number) => {
@@ -120,6 +122,8 @@ export function useCartLogic() {
       router.push('/checkout');
     }
   };
+
+  const isLoading = isLoadingCart || isLoadingDelete;
   return {
     product,
     errorMessage,
@@ -128,5 +132,6 @@ export function useCartLogic() {
     getMaxQuantity,
     calculateTotal,
     handleCheckout,
+    isLoading,
   };
 }

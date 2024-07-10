@@ -1,20 +1,20 @@
 'use client';
 import React from 'react';
-import { Container, Grid, Typography, Paper, Alert } from '@mui/material';
-import { useSession } from 'next-auth/react';
-import { UserSession } from '@/features/types';
 import {
-  useDeleteProduct,
-  useUpdateQuantity,
-} from '@/features/user/cart/cartMutation';
-import { useGetProductCart } from '@/features/user/cart/cartQueries';
-import { useRouter } from 'next/navigation';
-import { ProductBody } from '@/features/user/cart/type';
+  Container,
+  Grid,
+  Typography,
+  Paper,
+  Alert,
+  Box,
+  Backdrop,
+  CircularProgress,
+  useTheme,
+} from '@mui/material';
 import TableCart from '@/components/table/CartListTable';
-import { checkStock } from '@/features/user/cart/cartFecther';
-import { errorFetcherNotification } from '@/utils/notifications';
 import StyledButton from '@/components/button/StyledButton';
 import { useCartLogic } from './useCartLogic';
+import { toThousandFlag } from '@/utils/formatter';
 
 const Cart = () => {
   const {
@@ -25,11 +25,23 @@ const Cart = () => {
     getMaxQuantity,
     calculateTotal,
     handleCheckout,
+    isLoading,
   } = useCartLogic();
+  const theme = useTheme();
 
   return (
     <Container sx={{ my: '120px' }}>
-      <Typography variant="h4" gutterBottom sx={{ textTransform: 'uppercase' }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}
+      >
         Shopping Cart
       </Typography>
       {errorMessage && (
@@ -47,19 +59,39 @@ const Cart = () => {
           />
         </Grid>
         <Grid item xs={12} md={4}>
-          <Paper style={{ padding: 16 }}>
+          <Paper
+            style={{ padding: 16 }}
+            sx={{
+              boxShadow: 'none',
+              backgroundColor: '#EEE',
+              [theme.breakpoints.down('lg')]: {
+                backgroundColor: '#FFF',
+              },
+            }}
+          >
             <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
               Order Summary
             </Typography>
-            <Typography variant="body1">
-              Total : {calculateTotal()?.toLocaleString()}
-            </Typography>
+            <Box
+              sx={{
+                backgroundColor: '#FFF',
+                p: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '10px',
+              }}
+            >
+              <Typography variant="body1">
+                Total : Rp.
+                {toThousandFlag(calculateTotal() ?? 0)}
+              </Typography>
+            </Box>
             <StyledButton
-              onClick={handleCheckout}
               variant="contained"
-              color="inherit"
+              color="primary"
               fullWidth
               style={{ marginTop: 16 }}
+              onClick={handleCheckout}
             >
               Checkout
             </StyledButton>

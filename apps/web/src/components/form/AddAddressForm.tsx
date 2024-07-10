@@ -159,12 +159,11 @@ export default function AddressForm({
         margin: 'auto',
         mt: '50px',
         p: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
-        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
       }}
     >
-      <Typography variant="h6">Add New Address</Typography>
+      <Typography variant="h6" sx={{ textTransform: 'uppercase' }}>
+        Add New Address
+      </Typography>
 
       <Controller
         control={control}
@@ -179,6 +178,7 @@ export default function AddressForm({
               label="Name"
               placeholder="Input Name"
               size="small"
+              sx={{ backgroundColor: 'white' }}
             />
           </FormControl>
         )}
@@ -197,6 +197,7 @@ export default function AddressForm({
               label="Address"
               placeholder="Input Address"
               size="small"
+              sx={{ backgroundColor: 'white' }}
             />
           </FormControl>
         )}
@@ -216,11 +217,19 @@ export default function AddressForm({
               id="province"
               labelId="province-label"
               onChange={handleProvinceChange}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 200,
+                  },
+                },
+              }}
+              sx={{ backgroundColor: 'white' }}
             >
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              {provinces?.map((province: any) => (
+              {provinces?.slice(0, 34).map((province: any) => (
                 <MenuItem key={province.id} value={Number(province.id)}>
                   {province.name}
                 </MenuItem>
@@ -249,11 +258,19 @@ export default function AddressForm({
               id="city"
               labelId="city-label"
               onChange={handleCityChange}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 200,
+                  },
+                },
+              }}
+              sx={{ backgroundColor: 'white' }}
             >
               <MenuItem value="">
                 <em>None</em>
               </MenuItem>
-              {cities?.map((city: any) => (
+              {cities?.slice(0, 36).map((city: any) => (
                 <MenuItem key={city.id} value={city.id}>
                   {city.name}
                 </MenuItem>
@@ -281,12 +298,13 @@ export default function AddressForm({
               label="Postal Code"
               placeholder="Input Postal Code"
               size="small"
+              sx={{ backgroundColor: 'white' }}
             />
           </FormControl>
         )}
       />
 
-      <Typography color="primary">
+      <Typography sx={{ color: 'black', fontStyle: 'italic' }}>
         Please mark your address, to help us find your address more easily
       </Typography>
       <Box sx={{ height: '400px', width: '100%' }}>

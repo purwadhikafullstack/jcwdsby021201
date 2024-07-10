@@ -82,7 +82,7 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
         </Grid>
 
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" justifyContent="center"></Grid>
+          <Grid item xs={12} display="flex" justifyContent="left"></Grid>
           <Grid item xs={12}>
             <Typography
               variant="inherit"

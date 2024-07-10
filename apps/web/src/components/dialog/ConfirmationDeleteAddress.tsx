@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   Dialog,
   DialogActions,
@@ -8,27 +8,25 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
-
-interface ConfirmationCancelProps {
+export interface IConfirmationDeleteAddressProps {
   open: boolean;
   onClose: () => void;
-  mutation: (orderId: string) => Promise<void>;
+  mutation: (addressId: string) => Promise<void>;
   isPending: boolean;
-  orderId: string;
+  addressId: string;
 }
 
-const ConfirmationCancel: React.FC<ConfirmationCancelProps> = ({
+export function ConfirmationDeleteAddress({
   open,
   onClose,
   mutation,
   isPending,
-  orderId,
-}) => {
+  addressId,
+}: IConfirmationDeleteAddressProps) {
   const handleConfirm = async () => {
-    await mutation(orderId);
+    await mutation(addressId);
     onClose();
   };
-
   return (
     <Dialog
       open={open}
@@ -41,7 +39,7 @@ const ConfirmationCancel: React.FC<ConfirmationCancelProps> = ({
       </DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
-          Are you sure you want to cancel this order?
+          Are you sure you want to delete this Address?
         </DialogContentText>
       </DialogContent>
       <DialogActions>
@@ -72,6 +70,4 @@ const ConfirmationCancel: React.FC<ConfirmationCancelProps> = ({
       </DialogActions>
     </Dialog>
   );
-};
-
-export default ConfirmationCancel;
+}
