@@ -30,7 +30,7 @@ export class ProductWarehouseRepository {
               transactionType: 'OUT',
               quantity: Math.abs(diff),
               productWarehouse: { connect: { id } },
-              description: `Stock Out ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
+              description: `Stock OUT ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
             },
           });
 
@@ -44,7 +44,7 @@ export class ProductWarehouseRepository {
               transactionType: 'IN',
               quantity: diff,
               productWarehouse: { connect: { id } },
-              description: `Stock In ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
+              description: `Stock IN ${product.name} to ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
             },
           });
 
@@ -88,7 +88,7 @@ export class ProductWarehouseRepository {
             transactionType: 'IN',
             quantity: stock,
             productWarehouse: { connect: { id } },
-            description: `Stock In ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stock}`,
+            description: `Stock IN ${product.name} to ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stock}`,
           },
         });
 
@@ -209,7 +209,7 @@ export class ProductWarehouseRepository {
           transactionType: 'OUT',
           quantity: productWarehouse.stock,
           productWarehouse: { connect: { id: productWarehouse.id } },
-          description: `Stock Out ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${productWarehouse.stock}`,
+          description: `Stock OUT ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${productWarehouse.stock}`,
         },
       });
 
@@ -234,7 +234,7 @@ export class ProductWarehouseRepository {
             transactionType: 'OUT',
             quantity: Math.abs(diff),
             productWarehouse: { connect: { id } },
-            description: `Stock Out ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
+            description: `Stock OUT ${product.name} from ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${Math.abs(diff)}`,
           },
         });
 
@@ -248,7 +248,7 @@ export class ProductWarehouseRepository {
             transactionType: 'IN',
             quantity: diff,
             productWarehouse: { connect: { id } },
-            description: `Stock In ${product.name} to ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
+            description: `Stock IN ${product.name} to ${warehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${diff}`,
           },
         });
 

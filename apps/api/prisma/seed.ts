@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { categories } from './data/categories';
+import { products } from './data/products';
 import axios from 'axios';
 import { users } from './data/users';
 import { SALT, RAJAONGKIR_API_KEY, RAJAONGKIR_API_URL } from '../src/config';
@@ -39,12 +40,27 @@ const seedUsers = async () => {
     };
     await prisma.user.create({ data: userData });
   }
+};
 
+const seedCategories = async () => {
   for (const category of categories) {
     const categoryData: Prisma.CategoryCreateInput = {
       ...category,
     };
     await prisma.category.create({ data: categoryData });
+  }
+};
+
+const seedProducts = async () => {
+  for (const product of products) {
+    const productData: Prisma.ProductCreateInput = {
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      price: product.price,
+      category: { connect: { id: product.categoryId } },
+    };
+    await prisma.product.create({ data: productData });
   }
 };
 
@@ -83,6 +99,8 @@ const seed = async () => {
     const cities = await fetchCities();
 
     await seedUsers();
+    await seedCategories();
+    await seedProducts();
     await seedProvinces(provinces);
     await seedCities(cities);
     console.log('Seeding completed.');

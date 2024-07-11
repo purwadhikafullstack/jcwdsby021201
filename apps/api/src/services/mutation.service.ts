@@ -140,7 +140,7 @@ export class MutationService {
       'CANCELED',
     );
 
-    return responseWithoutData(200, true, 'Success Cancel Mutation');
+    return responseWithoutData(200, true, 'Success Reject Mutation');
   }
 
   static async updateMutationToApprove(

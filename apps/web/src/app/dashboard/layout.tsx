@@ -170,7 +170,7 @@ export default function DashboardLayout({ children }: Props) {
     </Box>
   );
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box>
       <AppBar
         position="fixed"
         sx={{

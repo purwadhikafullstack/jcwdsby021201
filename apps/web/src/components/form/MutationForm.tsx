@@ -555,7 +555,7 @@ export default function MutationForm({
         id={id}
         mutateAsync={mutateAsyncToCancel}
         isMutatePending={isToCancelPending}
-        action="cancel"
+        action="reject"
       />
     </>
   );

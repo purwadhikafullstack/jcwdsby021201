@@ -5,7 +5,6 @@ import {
   MutationQueryRequired,
   MutationResponse,
 } from '@/types/mutation.type';
-import { ProductWarehouseResponse } from '@/types/productWarehouse.type';
 
 export class MutationRepository {
   static async createMutation(data: MutationBody) {
@@ -194,7 +193,7 @@ export class MutationRepository {
           transactionType: 'OUT',
           productWarehouse: { connect: { id: inventoryDestinationId } },
           quantity: stockProcess,
-          description: `Stock Out ${product.name} from ${destinationWarehouse.name} to ${sourceWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
+          description: `Stock OUT ${product.name} from ${destinationWarehouse.name} to ${sourceWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
           warehouse: { connect: { id: destinationWarehouse.id } },
           refMutation: { connect: { id: mutationId } },
         },
@@ -206,8 +205,19 @@ export class MutationRepository {
           transactionType: 'IN',
           productWarehouse: { connect: { id: inventorySourceId } },
           quantity: stockProcess,
-          description: `Stock In ${product.name} into ${sourceWarehouse.name} from ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
+          description: `Stock IN ${product.name} to ${sourceWarehouse.name} from ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
           warehouse: { connect: { id: sourceWarehouse.id } },
+          refMutation: { connect: { id: mutationId } },
+        },
+      });
+
+      // create journal in for inventory
+      await tx.journalMutation.create({
+        data: {
+          transactionType: 'IN',
+          productWarehouse: { connect: { id: inventorySourceId } },
+          quantity: stockProcess,
+          description: `Stock IN ${product.name} to ${sourceWarehouse.name} from ${destinationWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
           refMutation: { connect: { id: mutationId } },
         },
       });

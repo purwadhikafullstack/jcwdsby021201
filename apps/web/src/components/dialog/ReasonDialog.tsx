@@ -14,7 +14,7 @@ type Props = {
   mutateAsync: (data: any) => Promise<any>;
   isMutatePending: boolean;
   id?: string;
-  action: 'cancel';
+  action: 'reject';
 };
 
 export default function ReasonDialog({
@@ -79,7 +79,7 @@ export default function ReasonDialog({
           onClick={handleDelete}
           disabled={isMutatePending}
         >
-          yes
+          {action}
         </Button>
       </DialogActions>
     </Dialog>
