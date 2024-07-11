@@ -1,8 +1,9 @@
 import prisma from '@/prisma';
 import { WarehouseRepository } from './warehouse.repository';
+import { CheckoutBody } from '@/types/order.type';
 
 export class OrderRepository {
-  static async handleCheckout(id: number, body: any) {
+  static async handleCheckout(id: number, body: CheckoutBody) {
     const {
       name,
       paymentStatus,
@@ -90,9 +91,8 @@ export class OrderRepository {
             data: {
               quantity: product.quantity,
               transactionType: 'OUT',
-              description: `Stock out ${productInfo?.name} from ${warehouseName?.name} by ${usernameForDesc?.username ? usernameForDesc.username : 'Unknown'}, qty : ${product.quantity}`,
+              description: `Stock OUT ${productInfo?.name} from ${warehouseName?.name} by ${usernameForDesc?.username ? usernameForDesc.username : 'Unknown'}, qty : ${product.quantity}`,
               productWarehouseId: productWarehouse.id,
-              warehouseId,
             },
           });
         }
@@ -109,7 +109,6 @@ export class OrderRepository {
 
   static async cancelExpiredOrders() {
     const now = new Date();
-
     return await prisma.$transaction(async (tx) => {
       const expiredOrders = await tx.order.findMany({
         where: {
@@ -200,7 +199,6 @@ export class OrderRepository {
             transactionType: 'IN',
             description: 'Stock returned due to order cancellation',
             productWarehouseId: productWarehouse.id,
-            warehouseId: updatedOrder.warehouseId,
           },
         });
       }
@@ -214,6 +212,8 @@ export class OrderRepository {
     orderId: number,
     file: Express.Multer.File,
   ) {
+    const now = new Date();
+    const shippedAtLimit = new Date(Date.now() + 2 * 60 * 1000); //di 2 menit dulu
     //cari order yang sesuai
     const order = await prisma.order.findFirst({
       where: {
@@ -236,6 +236,7 @@ export class OrderRepository {
       data: {
         paymentProof: `/assets/payment-proof/${file.filename}`,
         paymentStatus: 'SHIPPED',
+        shippedAt: shippedAtLimit,
       },
     });
   }
@@ -259,13 +260,14 @@ export class OrderRepository {
         });
         // jumlah permintaan
         let remainingQuantity = product.quantity;
+
         // stock yang ada di gudang sekarang
         const availableStock = stockInWarehouse ? stockInWarehouse.stock : 0;
         // kurangin dulu
         const deficitQuantity = remainingQuantity - availableStock;
 
         // kalo kurang stock digudang yang terdekat, maka lakukan mutasi :
-        if (!stockInWarehouse || stockInWarehouse.stock < remainingQuantity) {
+        if (deficitQuantity > 0) {
           //cari gudang yang memiliki stock untuk produk tertentu
           const warehousesWithStock = await tx.productWarehouse.findMany({
             where: {
@@ -278,6 +280,7 @@ export class OrderRepository {
               warehouse: true,
             },
           });
+
           // setelah itu dapet gudang yang memiliki stock, maka urutkan dari gudang terdekat
           const sortedWarehouses = warehousesWithStock.sort((a, b) => {
             const distanceA = WarehouseRepository.getDistance(
@@ -294,23 +297,22 @@ export class OrderRepository {
             );
             return distanceA - distanceB;
           });
-
+          let currentDeficit = deficitQuantity;
           // buatin mutasi dan jurnal keluar masuk untuk setiap gudang
           for (const warehouseWithStock of sortedWarehouses) {
-            if (remainingQuantity <= 0) break;
+            if (currentDeficit <= 0) break;
             //cari jumlah yang di tranfer
             const transferQuantity = Math.min(
               warehouseWithStock.stock,
-              deficitQuantity,
-              remainingQuantity,
+              currentDeficit,
             );
             // buatin jurnal mutasi
             const mutation = await tx.mutation.create({
               data: {
                 stockRequest: transferQuantity,
                 stockProcess: transferQuantity,
-                sourceWarehouseId: warehouseWithStock.warehouseId,
-                destinationWarehouseId: warehouseId,
+                sourceWarehouseId: warehouseId,
+                destinationWarehouseId: warehouseWithStock.warehouseId,
                 status: 'APPROVED',
                 note: `Stock transfer for order fulfillment`,
                 productId: product.productId,
@@ -321,12 +323,15 @@ export class OrderRepository {
               data: {
                 quantity: transferQuantity,
                 transactionType: 'OUT',
-                description: `Stock OUT ${warehouseWithStock.product.name} from ${warehouseWithStock.warehouse.name} to ${stockInWarehouse?.warehouse.name || 'destination warehouse'}, qty : ${transferQuantity} for ORDER.`, // UPDATED
+                description: `Stock OUT ${warehouseWithStock.product.name} from ${warehouseWithStock.warehouse.name} to ${stockInWarehouse?.warehouse.name}, qty : ${transferQuantity} for ORDER. (Automatic Mutation)`, // UPDATED
                 productWarehouseId: warehouseWithStock.id,
                 warehouseId: warehouseWithStock.warehouseId,
                 refMutationId: mutation.id,
               },
             });
+
+            console.log('warehouseWithStock', warehouseWithStock);
+            console.log('stockInWarehouse', stockInWarehouse);
 
             // terus update ke warehouse terdekat
             await tx.productWarehouse.update({
@@ -357,22 +362,36 @@ export class OrderRepository {
               data: {
                 quantity: transferQuantity,
                 transactionType: 'IN',
-                description: `Stock IN ${stockInWarehouse.product.name} FROM ${warehouseWithStock.warehouse.name}, qty : ${transferQuantity} for ORDER.`, // UPDATED
+                description: `Stock IN ${stockInWarehouse.product.name} to ${stockInWarehouse.warehouse.name} from ${warehouseWithStock.warehouse.name}, qty : ${transferQuantity} for ORDER. (Automatic Mutation)`, // UPDATED
                 productWarehouseId: stockInWarehouse.id,
                 warehouseId: warehouseId,
                 refMutationId: mutation.id,
               },
             });
 
+            // IN inventory
+            await tx.journalMutation.create({
+              data: {
+                quantity: transferQuantity,
+                transactionType: 'IN',
+                description: `Stock IN ${stockInWarehouse.product.name} to ${stockInWarehouse.warehouse.name}, qty : ${transferQuantity} `, // UPDATED
+                productWarehouseId: stockInWarehouse.id,
+                refMutationId: mutation.id,
+              },
+            });
+
             //setelah setiap proses pencatatan jurnal, kurangin --
-            remainingQuantity -= transferQuantity;
+            currentDeficit -= transferQuantity;
+            // remainingQuantity -= transferQuantity;
           }
 
           // jika ga cukup :
-          if (remainingQuantity > 0) {
+          if (currentDeficit > 0) {
             throw new Error(
               `Not enough stock for product ${product.productId}`,
             );
+          } else {
+            console.log(` No transfer needed.`);
           }
         }
       }
@@ -404,7 +423,7 @@ export class OrderRepository {
         where: {
           paymentStatus: 'SHIPPED',
           //ini seharusnya pake shippedAtnya :
-          updatedAt: {
+          shippedAt: {
             lt: now,
           },
         },

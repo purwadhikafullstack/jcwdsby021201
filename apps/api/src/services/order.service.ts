@@ -1,5 +1,5 @@
 import { OrderRepository } from '@/repositories/order.repository';
-import { OrderQuery } from '@/types/order.type';
+import { CheckoutBody, OrderQuery } from '@/types/order.type';
 import {
   responseDataWithPagination,
   responseWithData,
@@ -9,7 +9,7 @@ import { OrderValidation } from '@/validators/order.validation';
 import { Validation } from '@/validators/validation';
 
 export class OrderService {
-  static async handleCheckout(id: number, body: any) {
+  static async handleCheckout(id: number, body: CheckoutBody) {
     const newBody = Validation.validate(OrderValidation.CHECKOUT_BODY, body);
     const response = await OrderRepository.handleCheckout(id, newBody);
     return responseWithData(200, 'Order created successfully', response);
@@ -21,10 +21,13 @@ export class OrderService {
     file: Express.Multer.File,
   ) {
     const validatedFiles = OrderValidation.fileValidation(file);
-
+    const newOrderId = Validation.validate(
+      OrderValidation.ONLY_ORDER_ID,
+      Number(orderId),
+    );
     const response = await OrderRepository.uploadPaymentProof(
       id,
-      orderId,
+      newOrderId,
       validatedFiles,
     );
     return responseWithData(200, 'Success upload payment Proofy', {
@@ -38,8 +41,12 @@ export class OrderService {
     latitude: number,
     longitude: number,
   ) {
-    const response = await OrderRepository.checkAndMutateStock(
+    const newWarehouseId = Validation.validate(
+      OrderValidation.ONLY_WAREHOUSE_ID,
       warehouseId,
+    );
+    const response = await OrderRepository.checkAndMutateStock(
+      newWarehouseId,
       products,
       latitude,
       longitude,
@@ -51,12 +58,20 @@ export class OrderService {
   }
 
   static async cancelOrder(id: number, orderId: number) {
-    const response = await OrderRepository.cancelOrder(id, orderId);
+    const newOrderId = Validation.validate(
+      OrderValidation.ONLY_ORDER_ID,
+      Number(orderId),
+    );
+    const response = await OrderRepository.cancelOrder(id, newOrderId);
     return responseWithData(200, 'Success cancel order', response);
   }
 
   static async receivedOrder(id: number, orderId: number) {
-    const response = await OrderRepository.receivedOrder(id, orderId);
+    const newOrderId = Validation.validate(
+      OrderValidation.ONLY_ORDER_ID,
+      Number(orderId),
+    );
+    const response = await OrderRepository.receivedOrder(id, newOrderId);
     return responseWithData(200, 'Success received Order ', response);
   }
 
@@ -160,7 +175,14 @@ export class OrderService {
   }
 
   static async getOrderDetailByOrderId(id: number, orderId: number) {
-    const response = await OrderRepository.getOrderDetailByOrderId(id, orderId);
+    const newOrderId = Validation.validate(
+      OrderValidation.ONLY_ORDER_ID,
+      Number(orderId),
+    );
+    const response = await OrderRepository.getOrderDetailByOrderId(
+      id,
+      newOrderId,
+    );
     if (response === null) {
       return responseWithoutData(404, false, 'Order not found');
     }

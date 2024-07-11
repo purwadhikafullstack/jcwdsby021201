@@ -1,16 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
-import axios from 'axios';
-import { RAJAONGKIR_API_KEY } from '@/config';
-import { CheckoutService } from '@/services/checkout.service';
-import { CheckoutBody } from '@/types/checkout.type';
 import { OrderService } from '@/services/order.service';
-import { OrderQuery } from '@/types/order.type';
+import { CheckoutBody, OrderQuery } from '@/types/order.type';
 
 export class OrderController {
   public async handleCheckout(req: Request, res: Response, next: NextFunction) {
     try {
       const id = res.locals.decoded.id;
-      const body = req.body as any;
+      const body = req.body as CheckoutBody;
       const response = await OrderService.handleCheckout(id, body);
       return res.status(200).send(response);
     } catch (error) {

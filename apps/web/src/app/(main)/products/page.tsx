@@ -28,6 +28,8 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
   const user = session.data?.user as UserSession;
   const token = user?.token;
   const isAuthenticated = session.status;
+  const verif = user?.isVerified;
+
   const router = useRouter();
   const [products, setProducts] = React.useState([]);
   const [jumlahTiket, setJumlahTiket] = React.useState(1);
@@ -166,7 +168,9 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
               <CardActions>
                 <StyledButton
                   onClick={() => handleAddToCart(product.id)}
-                  disabled={!isAuthenticated}
+                  disabled={
+                    isAuthenticated === 'unauthenticated' || verif === false
+                  }
                 >
                   Add to Cart
                 </StyledButton>

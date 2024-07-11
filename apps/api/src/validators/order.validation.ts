@@ -65,4 +65,14 @@ export class OrderValidation {
 
     return file;
   }
+
+  static ONLY_ORDER_ID = z
+    .number({ message: 'Order ID must be Number!' })
+    .int()
+    .positive({ message: 'Order ID must be a positive integer' });
+
+  static ONLY_WAREHOUSE_ID = z
+    .number({ message: 'Warehouse ID must be Number!' })
+    .int()
+    .positive({ message: 'Warehouse ID must be a positive integer' });
 }

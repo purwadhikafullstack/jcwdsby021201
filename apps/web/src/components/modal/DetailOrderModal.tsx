@@ -84,15 +84,6 @@ const DetailOrderModal: React.FunctionComponent<IDetailOrderModalProps> = ({
                     {data.shippingAddress}
                   </Typography>
                 </Typography>
-                <Typography>
-                  Recipient:{' '}
-                  <Typography
-                    component="span"
-                    sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
-                  >
-                    {data.username}
-                  </Typography>
-                </Typography>
               </Paper>
             </Grid>
             <Grid item xs={12}>

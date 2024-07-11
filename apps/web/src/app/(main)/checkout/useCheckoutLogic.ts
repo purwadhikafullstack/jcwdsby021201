@@ -66,6 +66,7 @@ export function useCheckoutLogic() {
       if (selectedAddress) {
         calculateShippingCost(String(selectedAddress.cityId), warehouseCity);
       }
+      console.log('INI WAREHOUSE :', warehouseCity);
     }
   }, [selectedAddressId, warehouseCity, courier]);
 
@@ -100,6 +101,7 @@ export function useCheckoutLogic() {
             String(primaryAddr.cityId),
             String(warehousePick.city.id),
           );
+          console.log('INI WAREHOUSE hhh :', warehouseCity);
         } catch (error) {
           console.error('Error checkout:', error);
           setErrorMessage('Failed checkout. Please try again.');
@@ -200,7 +202,7 @@ export function useCheckoutLogic() {
         .join('-');
 
       const orderData = {
-        name: 'Order-' + formattedDate + '-' + generateRandomAlphabet(7),
+        name: 'ORDER-' + formattedDate + '-' + generateRandomAlphabet(7),
         paymentStatus: 'UNPAID',
         shippingCost: shippingCost,
         total: total,

@@ -2,7 +2,7 @@ import { OrderRepository } from '@/repositories/order.repository';
 import cron from 'node-cron';
 
 export function startOrderCronJobs() {
-  cron.schedule('*/60 * * * *', async () => {
+  cron.schedule('*/2 * * * *', async () => {
     try {
       const canceledCount = await OrderRepository.cancelExpiredOrders();
       console.log(`Canceled ${canceledCount} expired orders`);
@@ -11,7 +11,7 @@ export function startOrderCronJobs() {
     }
   });
 
-  cron.schedule('*/60 * * * *', async () => {
+  cron.schedule('*/2 * * * *', async () => {
     try {
       const receivedCount = await OrderRepository.autoReceiveOrders();
       console.log(`Auto-received ${receivedCount} orders`);

@@ -55,9 +55,13 @@ export class AddressService {
 
   static async updateAddress(id: number, addressId: number, body: AddressBody) {
     const newBody = Validation.validate(AddressValidation.UPDATE, body);
+    const newAddressId = Validation.validate(
+      AddressValidation.ONLY_ADDRESS_ID,
+      Number(addressId),
+    );
     const response = await AddressRepository.updateAddress(
       id,
-      addressId,
+      newAddressId,
       newBody,
     );
     return responseWithData(200, 'Success get Address', {

@@ -37,7 +37,6 @@ import SimpleBar from 'simplebar-react';
 // NextAuth
 import { useSession, signOut } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import Footer from '@/components/core/Footer';
 
 const stickyBox: SxProps = {
   pl: 2,
@@ -252,7 +251,6 @@ export default function DashboardLayout({ children }: Props) {
         >
           {children}
         </Container>
-        <Footer />
       </Box>
     </Box>
   );
