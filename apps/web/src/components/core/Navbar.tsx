@@ -30,6 +30,7 @@ import { UserSession } from '@/features/types';
 import { useGetCountProductCart } from '@/features/user/cart/cartQueries';
 import { useRouter } from 'next/navigation';
 import { authPages } from '@/utils/routes';
+import { useGetCountWishlist } from '@/features/user/wishlist/wishlistQueries';
 
 const LanguageSelect = styled(Select)(({ theme }) => ({
   color: theme.palette.common.white,
@@ -86,6 +87,7 @@ export default function Navbar() {
   const router = useRouter();
 
   const { data } = useGetCountProductCart(token || '');
+  const { data: myWishlist } = useGetCountWishlist(token || '');
 
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -123,7 +125,7 @@ export default function Navbar() {
               href={
                 role === 'USER'
                   ? '/dashboard/user/profile'
-                  : '/dashboard/admin/warehouses'
+                  : '/dashboard/admin/categories'
               }
             >
               <ListItemText primary="My Account" />
@@ -141,10 +143,20 @@ export default function Navbar() {
           </ListItem>
         )}
         <ListItem button>
-          <FavoriteIcon />
+          <Badge
+            badgeContent={myWishlist?.count ? myWishlist.count : '0'}
+            onClick={() => router.push('/wishlist')}
+            color="secondary"
+          >
+            <FavoriteIcon />
+          </Badge>
         </ListItem>
         <ListItem button>
-          <Badge badgeContent={4} color="secondary">
+          <Badge
+            onClick={() => router.push('/cart')}
+            badgeContent={data?.count ? data.count : '0'}
+            color="secondary"
+          >
             <ShoppingCartIcon />
           </Badge>
         </ListItem>
@@ -205,7 +217,7 @@ export default function Navbar() {
                   href={
                     role === 'USER'
                       ? '/dashboard/user/profile'
-                      : '/dashboard/admin/warehouses'
+                      : '/dashboard/admin/categories'
                   }
                   passHref
                 >
@@ -239,7 +251,13 @@ export default function Navbar() {
               />
             </SearchContainer>
             <IconButton color="inherit">
-              <FavoriteIcon />
+              <Badge
+                onClick={() => router.push('/wishlist')}
+                badgeContent={myWishlist?.count ? myWishlist.count : '0'}
+                color="secondary"
+              >
+                <FavoriteIcon />
+              </Badge>
             </IconButton>
             <IconButton color="inherit">
               <Badge

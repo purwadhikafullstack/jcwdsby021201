@@ -70,6 +70,7 @@ const menuUser = [
   dashboardUserPages.purchases,
   dashboardUserPages.shipping,
   dashboardUserPages.receive,
+  dashboardUserPages.cancelled,
   dashboardUserPages.profile,
   dashboardUserPages.myAddress,
 ];

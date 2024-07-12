@@ -21,3 +21,13 @@ export const successNotification = (message: string) => {
     style: { border: '1px solid #66bb6a' },
   });
 };
+
+export const infoNotification = (message: string) => {
+  toast(message || 'Information', {
+    style: {
+      border: '1px solid #000080',
+      color: 'white',
+      backgroundColor: '#000080',
+    },
+  });
+};

@@ -8,6 +8,7 @@ import {
   CardMedia,
   CardActions,
   Box,
+  IconButton,
 } from '@mui/material';
 import * as React from 'react';
 import axios from 'axios';
@@ -21,6 +22,13 @@ import {
 } from '@/utils/notifications';
 import { useRouter } from 'next/navigation';
 import StyledButton from '@/components/button/StyledButton';
+import {
+  useAddWishlist,
+  useRemoveWishlist,
+} from '@/features/user/wishlist/wishlistMutation';
+import { useGetWishlistData } from '@/features/user/wishlist/wishlistQueries';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 interface IProductProps {}
 
 const Product: React.FunctionComponent<IProductProps> = (props) => {
@@ -32,10 +40,11 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
 
   const router = useRouter();
   const [products, setProducts] = React.useState([]);
-  const [jumlahTiket, setJumlahTiket] = React.useState(1);
+  const [qty, setQty] = React.useState(1);
 
   const { mutateAsync } = useAddToCart();
-
+  const { mutateAsync: AddWishlistMutateAsync } = useAddWishlist();
+  const { mutateAsync: RemoveWishlistMutateAsync } = useRemoveWishlist();
   React.useEffect(() => {
     getProduct();
   }, []);
@@ -60,7 +69,7 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
     try {
       const stock = await checkStock(productId);
 
-      if (stock < jumlahTiket) {
+      if (stock < qty) {
         errorNotification('Not enough stock available.');
         return;
       }
@@ -68,7 +77,7 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
         await mutateAsync({
           token,
           data: {
-            quantity: jumlahTiket,
+            quantity: qty,
             productId: productId,
           },
         });
@@ -88,7 +97,6 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
         `http://localhost:8000/products/stock/${productId}`,
       );
 
-      console.log(response.data.result.stock);
       return response.data.result.stock;
     } catch (error) {
       console.error('Error checking stock:', error);
@@ -100,16 +108,51 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
     router.push('/cart');
   };
 
+  //handle wishlist
+  const toggleWishlist = async (productId: number) => {
+    try {
+      if (token) {
+        if (isProductInWishlist(productId)) {
+          await RemoveWishlistMutateAsync({
+            token,
+            productId,
+          });
+        } else {
+          await AddWishlistMutateAsync({
+            token,
+            productId,
+          });
+        }
+      } else {
+        errorNotification('Please log in to manage your wishlist');
+      }
+    } catch (error) {
+      console.error(error);
+      errorNotification('Failed to update wishlist');
+    }
+  };
+
+  //data wishlist
+  const { data: wishlistData } = useGetWishlistData(token || '');
+  const isProductInWishlist = (productId: number) => {
+    if (!wishlistData) return false;
+    for (let item of wishlistData) {
+      if (item.productId === productId) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   return (
     <Container sx={{ my: '120px' }}>
       <Typography
-        variant="h4"
+        variant="h5"
         gutterBottom
-        textAlign="center"
         sx={{
           fontWeight: 'bold',
           textTransform: 'uppercase',
-          fontSize: '30px',
+          mb: 5,
         }}
       >
         Product
@@ -124,6 +167,7 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
                 flexDirection: 'column',
                 boxShadow: 'none',
                 border: 'none',
+                position: 'relative',
               }}
             >
               <Box>
@@ -137,6 +181,28 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
                   alt={product.name}
                   sx={{ objectFit: 'contain' }}
                 />
+                <IconButton
+                  onClick={() => toggleWishlist(product.id)}
+                  disabled={
+                    isAuthenticated === 'unauthenticated' || verif === false
+                  }
+                  sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: isProductInWishlist(product.id) ? 'red' : 'black',
+                  }}
+                >
+                  {isProductInWishlist(product.id) ? (
+                    <FavoriteIcon />
+                  ) : (
+                    <FavoriteBorderIcon
+                      sx={{
+                        color: 'black',
+                      }}
+                    />
+                  )}
+                </IconButton>
               </Box>
               <CardContent sx={{ flexGrow: 1 }}>
                 <Typography
@@ -162,7 +228,7 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
                     fontWeight: 'bold',
                   }}
                 >
-                  IDR. {(product.price * jumlahTiket).toLocaleString()}
+                  IDR. {(product.price * qty).toLocaleString()}
                 </Typography>
               </CardContent>
               <CardActions>

@@ -100,7 +100,17 @@ export default function ForgotPasswordForm() {
           variant="contained"
           type="submit"
           disabled={isPending}
-          sx={{ mt: 1 }}
+          sx={{
+            mt: 1,
+            color: 'white',
+            backgroundColor: 'black',
+            borderRadius: '0',
+            borderColor: 'black',
+            '&:hover': {
+              backgroundColor: '#333333',
+              color: 'white',
+            },
+          }}
         >
           Reset Password
         </Button>

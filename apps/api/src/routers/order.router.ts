@@ -45,6 +45,13 @@ export class OrderRouter {
       this.orderController.getToReceive,
     );
 
+    this.router.get(
+      '/cancelled',
+      verifyToken,
+      userGuard,
+      this.orderController.getCancelOrder,
+    );
+
     this.router.patch(
       '/cancel-order/:orderId',
       verifyToken,

@@ -136,6 +136,16 @@ export default function LoginCredentialForm() {
         variant="contained"
         type="submit"
         disabled={isPending}
+        sx={{
+          color: 'white',
+          backgroundColor: 'black',
+          borderRadius: '0',
+          borderColor: 'black',
+          '&:hover': {
+            backgroundColor: '#333333',
+            color: 'white',
+          },
+        }}
       >
         Sign In
       </Button>

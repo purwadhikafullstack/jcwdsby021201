@@ -93,6 +93,16 @@ export default function RegisterCredentialForm() {
         variant="contained"
         type="submit"
         disabled={isPending}
+        sx={{
+          color: 'white',
+          backgroundColor: 'black',
+          borderRadius: '0',
+          borderColor: 'black',
+          '&:hover': {
+            backgroundColor: '#333333',
+            color: 'white',
+          },
+        }}
       >
         Sign Up
       </Button>

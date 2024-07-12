@@ -17,6 +17,7 @@ import { startOrderCronJobs } from './cron/orderCron';
 import { InventoryRouter } from '@/routers/inventory.router';
 import { MutationRouter } from '@/routers/mutation.router';
 import { AdminRouter } from '@/routers/admin.router';
+import { WishlistRouter } from './routers/wishlist.router';
 
 export default class App {
   private app: Express;
@@ -52,6 +53,7 @@ export default class App {
     const inventoryRouter = new InventoryRouter();
     const mutationRouter = new MutationRouter();
     const adminRouter = new AdminRouter();
+    const wishlistRouter = new WishlistRouter();
 
     this.app.get('/', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student !`);
@@ -71,6 +73,7 @@ export default class App {
     this.app.use('/inventories', inventoryRouter.getRouter());
     this.app.use('/mutations', mutationRouter.getRouter());
     this.app.use('/admin', adminRouter.getRouter());
+    this.app.use('/wishlists', wishlistRouter.getRouter());
   }
 
   private startCronJobs(): void {

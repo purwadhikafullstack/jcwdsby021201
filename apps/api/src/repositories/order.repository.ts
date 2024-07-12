@@ -1,6 +1,10 @@
 import prisma from '@/prisma';
 import { WarehouseRepository } from './warehouse.repository';
-import { CheckoutBody } from '@/types/order.type';
+import {
+  CancellationSource,
+  CancellationStatus,
+  CheckoutBody,
+} from '@/types/order.type';
 
 export class OrderRepository {
   static async handleCheckout(id: number, body: CheckoutBody) {
@@ -126,7 +130,12 @@ export class OrderRepository {
       let canceledCount = 0;
       for (const order of expiredOrders) {
         try {
-          await this.cancelOrder(order.cart.userId, order.id);
+          // ini sudah melakukan pencatatan jurnalnya juga
+          await this.cancelOrder(
+            order.cart.userId,
+            order.id,
+            CancellationStatus.SYSTEM,
+          );
           canceledCount++;
         } catch (error) {
           console.error(`Failed to cancel order ${order.id}:`, error);
@@ -137,7 +146,11 @@ export class OrderRepository {
     });
   }
 
-  static async cancelOrder(id: number, orderId: number) {
+  static async cancelOrder(
+    id: number,
+    orderId: number,
+    source: CancellationSource,
+  ) {
     return await prisma.$transaction(async (tx) => {
       //update order
       const updatedOrder = await tx.order.update({
@@ -151,6 +164,7 @@ export class OrderRepository {
         },
         data: {
           paymentStatus: 'CANCELED',
+          cancellationSource: source,
         },
       });
 
@@ -330,8 +344,6 @@ export class OrderRepository {
               },
             });
 
-            console.log('warehouseWithStock', warehouseWithStock);
-            console.log('stockInWarehouse', stockInWarehouse);
 
             // terus update ke warehouse terdekat
             await tx.productWarehouse.update({
@@ -736,6 +748,88 @@ export class OrderRepository {
           },
         },
       },
+    });
+  }
+
+  static async countToCancelOrder(id: number, filter: string) {
+    return await prisma.order.count({
+      where: {
+        cart: { userId: id },
+        paymentStatus: 'CANCELED',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  static async getCancelOrder(
+    id: number,
+    page: number,
+    limit: number,
+    filter: string,
+    sortBy: string,
+    orderBy: string,
+  ) {
+    const orders = await prisma.order.findMany({
+      where: {
+        cart: {
+          userId: id,
+        },
+        paymentStatus: 'CANCELED',
+        OR: [
+          { name: { contains: filter } },
+          {
+            orderProducts: {
+              some: {
+                product: {
+                  name: { contains: filter },
+                },
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        orderProducts: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                pictures: {
+                  select: {
+                    url: true,
+                  },
+                  take: 1,
+                },
+              },
+            },
+          },
+        },
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: { [sortBy]: orderBy },
+    });
+    return orders.map((order) => {
+      const productPhoto =
+        order.orderProducts[0]?.product.pictures[0]?.url || null;
+
+      return {
+        ...order,
+        product: order.orderProducts.map((product) => product.product.name),
+        image: productPhoto,
+        orderProducts: undefined,
+      };
     });
   }
 }

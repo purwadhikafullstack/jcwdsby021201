@@ -1,5 +1,6 @@
 import {
   getDetailOrder,
+  getToCancelOrder,
   getToReceiveOrder,
   getToShipOrder,
   getUnpaidOrder,
@@ -116,6 +117,47 @@ export const useGetToReceiveOrder = (
       });
 
       const res = await getToReceiveOrder({
+        token,
+        params: {
+          page: pagination.pageIndex + 1,
+          limit: pagination.pageSize,
+          filter: globalFilter ?? '',
+          sortBy,
+          orderBy,
+        },
+      });
+
+      return res;
+    },
+    placeholderData: keepPreviousData,
+    enabled: !!token,
+  });
+};
+export const useGetToCancelOrder = (
+  globalFilter: string,
+  pagination: MRT_PaginationState,
+  sorting: MRT_SortingState,
+  token: string,
+) => {
+  return useQuery({
+    queryKey: [
+      'to-ship',
+      globalFilter,
+      pagination.pageIndex,
+      pagination.pageSize,
+      sorting,
+      token,
+    ],
+    queryFn: async () => {
+      let sortBy = 'name';
+      let orderBy = 'asc';
+
+      sorting.forEach((s) => {
+        s.id ? (sortBy = s.id) : 'name';
+        s.desc ? (orderBy = 'desc') : 'asc';
+      });
+
+      const res = await getToCancelOrder({
         token,
         params: {
           page: pagination.pageIndex + 1,

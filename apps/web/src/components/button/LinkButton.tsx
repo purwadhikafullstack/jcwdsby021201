@@ -32,7 +32,17 @@ export default function LinkButton({
           variant="contained"
           color="info"
           startIcon={<AddIcon />}
-          sx={{ mt: 2 }}
+          sx={{
+            mt: 2,
+            color: 'white',
+            backgroundColor: 'black',
+            borderRadius: '0',
+            borderColor: 'black',
+            '&:hover': {
+              backgroundColor: '#333333',
+              color: 'white',
+            },
+          }}
         >
           {children}
         </Button>
@@ -43,6 +53,7 @@ export default function LinkButton({
           disabled={disabled}
           variant="contained"
           sx={{
+            borderRadius: '0',
             backgroundColor: (theme) => theme.palette.grey[500],
             color: 'white',
             '&:hover': {

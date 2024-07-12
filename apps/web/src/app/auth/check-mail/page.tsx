@@ -17,7 +17,21 @@ export default function CheckMailPage() {
           We have sent a password recover instructions to your email.
         </Typography>
         <Link href={authPages.login.path} passHref>
-          <Button fullWidth size="large" variant="contained">
+          <Button
+            fullWidth
+            size="large"
+            variant="contained"
+            sx={{
+              color: 'white',
+              backgroundColor: 'black',
+              borderRadius: '0',
+              borderColor: 'black',
+              '&:hover': {
+                backgroundColor: '#333333',
+                color: 'white',
+              },
+            }}
+          >
             Login
           </Button>
         </Link>

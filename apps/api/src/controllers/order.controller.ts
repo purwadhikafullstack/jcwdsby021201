@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { OrderService } from '@/services/order.service';
-import { CheckoutBody, OrderQuery } from '@/types/order.type';
+import {
+  CancellationStatus,
+  CheckoutBody,
+  OrderQuery,
+} from '@/types/order.type';
 
 export class OrderController {
   public async handleCheckout(req: Request, res: Response, next: NextFunction) {
@@ -53,7 +57,11 @@ export class OrderController {
     try {
       const id = res.locals.decoded.id;
       const orderId = Number(req.params.orderId);
-      const response = await OrderService.cancelOrder(id, orderId);
+      const response = await OrderService.cancelOrder(
+        id,
+        orderId,
+        CancellationStatus.USER,
+      );
       return res.status(200).send(response);
     } catch (error) {
       next(error);
@@ -98,6 +106,17 @@ export class OrderController {
       const id = res.locals.decoded.id;
       const query = req.query as OrderQuery;
       const response = await OrderService.getToReceive(id, query);
+      return res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async getCancelOrder(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = res.locals.decoded.id;
+      const query = req.query as OrderQuery;
+      const response = await OrderService.getCancelOrder(id, query);
       return res.status(200).json(response);
     } catch (error) {
       next(error);

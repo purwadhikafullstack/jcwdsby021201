@@ -65,8 +65,9 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
               ) : data ? (
                 <Image
                   src={
-                    process.env.NEXT_PUBLIC_BASE_API_URL + `${data.image}` ||
-                    `${data?.image}`
+                    data.image && data.image.startsWith('https')
+                      ? data.image
+                      : `${process.env.NEXT_PUBLIC_BASE_API_URL || ''}${data.image || '/profile.jpg'}`
                   }
                   alt="Profile"
                   width={150}

@@ -1,5 +1,9 @@
 import { OrderRepository } from '@/repositories/order.repository';
-import { CheckoutBody, OrderQuery } from '@/types/order.type';
+import {
+  CancellationSource,
+  CheckoutBody,
+  OrderQuery,
+} from '@/types/order.type';
 import {
   responseDataWithPagination,
   responseWithData,
@@ -57,12 +61,16 @@ export class OrderService {
     });
   }
 
-  static async cancelOrder(id: number, orderId: number) {
+  static async cancelOrder(
+    id: number,
+    orderId: number,
+    source: CancellationSource,
+  ) {
     const newOrderId = Validation.validate(
       OrderValidation.ONLY_ORDER_ID,
       Number(orderId),
     );
-    const response = await OrderRepository.cancelOrder(id, newOrderId);
+    const response = await OrderRepository.cancelOrder(id, newOrderId, source);
     return responseWithData(200, 'Success cancel order', response);
   }
 
@@ -167,6 +175,38 @@ export class OrderService {
     }
 
     const total = await OrderRepository.countToReceiveOrder(id, queryFilter);
+    return responseDataWithPagination(200, 'Success Get Categories', response, {
+      page: queryPage,
+      limit: queryLimit,
+      total,
+    });
+  }
+  static async getCancelOrder(id: number, query: OrderQuery) {
+    const { filter, limit, page, sortBy, orderBy } = Validation.validate(
+      Validation.QUERY,
+      query,
+    );
+
+    const queryPage = page || 1;
+    const queryLimit = limit || 10;
+    const queryFilter = filter || '';
+    const querySortBy = sortBy || 'name';
+    const queryOrderBy = orderBy || 'asc';
+
+    const response = await OrderRepository.getCancelOrder(
+      id,
+      queryPage,
+      queryLimit,
+      queryFilter,
+      querySortBy,
+      queryOrderBy,
+    );
+
+    if (!response.length) {
+      return responseWithoutData(404, false, 'Data Not Found');
+    }
+
+    const total = await OrderRepository.countToCancelOrder(id, queryFilter);
     return responseDataWithPagination(200, 'Success Get Categories', response, {
       page: queryPage,
       limit: queryLimit,

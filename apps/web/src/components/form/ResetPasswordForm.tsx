@@ -142,6 +142,16 @@ export default function ResetPasswordForm({ name, path }: Props) {
           variant="contained"
           type="submit"
           disabled={isVerifyPending || isResetPending}
+          sx={{
+            color: 'white',
+            backgroundColor: 'black',
+            borderRadius: '0',
+            borderColor: 'black',
+            '&:hover': {
+              backgroundColor: '#333333',
+              color: 'white',
+            },
+          }}
         >
           {name || 'Reset Password'}
         </Button>

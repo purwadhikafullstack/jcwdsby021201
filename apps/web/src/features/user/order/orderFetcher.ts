@@ -169,6 +169,26 @@ export const getToReceiveOrder = async ({
   return res.data;
 };
 
+export const getToCancelOrder = async ({
+  token,
+  params,
+}: {
+  token: string;
+  params: QueryPagination;
+}) => {
+  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+    '/orders/cancelled',
+    {
+      params,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+
+  return res.data;
+};
+
 export const getDetailOrder = async ({ token, orderId }: DetailOrder) => {
   const res = await axiosInstance.get<OrderDetailResponseWrapper>(
     `orders/detail/${orderId}`,

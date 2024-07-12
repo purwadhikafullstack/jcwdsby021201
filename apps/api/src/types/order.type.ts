@@ -34,3 +34,10 @@ export type OrderProductBody = {
   price: number;
   total: number;
 };
+
+export type CancellationSource = CancellationStatus;
+
+export enum CancellationStatus {
+  USER = 'USER',
+  SYSTEM = 'SYSTEM',
+}

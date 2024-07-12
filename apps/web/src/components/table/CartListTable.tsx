@@ -65,6 +65,8 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
           onClick={() => router.push('/products')}
           sx={{
             backgroundColor: 'black',
+            borderRadius: 0,
+            p: 2,
             color: 'white',
             '&:hover': {
               backgroundColor: '#333333',

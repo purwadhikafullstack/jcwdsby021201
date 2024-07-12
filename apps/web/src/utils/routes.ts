@@ -9,6 +9,7 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InboxIcon from '@mui/icons-material/Inbox';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import CloseIcon from '@mui/icons-material/Close';
 export type Route = {
   path: string;
   label?: string;
@@ -44,16 +45,21 @@ export const dashboardUserPages: Record<string, Route> = {
     label: 'To Receive',
     Icon: InboxIcon,
   },
+  cancelled: {
+    path: '/dashboard/user/order/cancelled',
+    label: 'Cancel',
+    Icon: CloseIcon,
+  },
   profile: {
     path: '/dashboard/user/profile',
     label: 'Profile',
     Icon: AccountCircleIcon,
   },
-  myAddress :{
+  myAddress: {
     path: '/dashboard/user/profile/address',
     label: 'My Address',
     Icon: MyLocationIcon,
-  }
+  },
 };
 
 export const dashboardAdminPages: Record<string, Route> = {

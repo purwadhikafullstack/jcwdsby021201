@@ -1,9 +1,5 @@
 import { CartService } from '@/services/cart.service';
-import {
-  AddToCartBody,
-  DeleteProductCart,
-  UpdateBody,
-} from '@/types/cart.type';
+import { UpdateBody } from '@/types/cart.type';
 import { NextFunction, Request, Response } from 'express';
 
 export class CartController {
