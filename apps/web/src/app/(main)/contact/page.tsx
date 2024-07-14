@@ -9,6 +9,9 @@ import {
   Paper,
 } from '@mui/material';
 import { Phone, Email } from '@mui/icons-material';
+import { contactMetadata } from '@/app/meta-tag';
+
+export const metadata = contactMetadata;
 
 const ContactPage = () => {
   return (

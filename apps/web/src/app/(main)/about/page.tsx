@@ -7,6 +7,9 @@ import SecurityIcon from '@mui/icons-material/Security';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
+import { aboutMetadata } from '@/app/meta-tag';
+
+export const metadata = aboutMetadata;
 
 const AboutPage = () => {
   return (

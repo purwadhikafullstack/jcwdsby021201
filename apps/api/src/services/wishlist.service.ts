@@ -1,14 +1,20 @@
 import { WishlistRepository } from '@/repositories/wishlist.repository';
+import { WishlistBody } from '@/types/wishlist.type';
 import { responseWithData, responseWithoutData } from '@/utils/response';
+import { Validation } from '@/validators/validation';
+import { WishlistValidation } from '@/validators/wishlist.validation';
 
 export class WishlistService {
-  static async AddToWishlist(id: number, body: any) {
-    await WishlistRepository.AddToWishlist(id, body);
+  static async AddToWishlist(id: number, body: WishlistBody) {
+    const newBody = Validation.validate(WishlistValidation.PRODUCT_ID, body);
+    await WishlistRepository.AddToWishlist(id, newBody);
     return responseWithoutData(200, true, 'Success Add Product to Wishlist');
   }
 
-  static async removeWishlist(id: number, body: any) {
-    await WishlistRepository.removeWishlist(id, body);
+  static async removeWishlist(id: number, body: WishlistBody) {
+    const newBody = Validation.validate(WishlistValidation.PRODUCT_ID, body);
+
+    await WishlistRepository.removeWishlist(id, newBody);
     return responseWithoutData(200, true, 'Success Remove Product to Wishlist');
   }
 

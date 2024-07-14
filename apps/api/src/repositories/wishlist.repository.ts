@@ -1,8 +1,9 @@
 import { Prisma } from '@prisma/client';
 import prisma from '@/prisma';
+import { WishlistBody } from '@/types/wishlist.type';
 
 export class WishlistRepository {
-  static async AddToWishlist(id: number, body: any) {
+  static async AddToWishlist(id: number, body: WishlistBody) {
     const { productId } = body;
     const existingWishlistItem = await prisma.wishlist.findFirst({
       where: {
@@ -20,12 +21,12 @@ export class WishlistRepository {
     }
   }
 
-  static async removeWishlist(id: number, body: any) {
+  static async removeWishlist(id: number, body: WishlistBody) {
     const { productId } = body;
     const existingWishlistItem = await prisma.wishlist.findFirst({
       where: {
         userId: id,
-        productId: productId,
+        productId: Number(productId),
       },
     });
     if (!existingWishlistItem) {

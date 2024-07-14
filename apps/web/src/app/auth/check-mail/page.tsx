@@ -5,6 +5,9 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { formWrapperStyles } from '@/styles/authFormStyles';
 import { authPages } from '@/utils/routes';
+import { checkEmailMetadata } from '@/app/meta-tag';
+
+export const metadata = checkEmailMetadata;
 
 export default function CheckMailPage() {
   return (

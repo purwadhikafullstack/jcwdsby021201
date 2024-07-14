@@ -4,7 +4,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { formWrapperStyles } from '@/styles/authFormStyles';
-import { authPages, mainPages } from '@/utils/routes';
+import { mainPages } from '@/utils/routes';
+import { checkMailActivationMetadata } from '@/app/meta-tag';
+
+export const metadata = checkMailActivationMetadata;
 
 export default function CheckMailActivationPage() {
   return (

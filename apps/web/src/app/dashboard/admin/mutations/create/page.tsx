@@ -1,7 +1,10 @@
+import { adminMutationWarehouseCreateMetadata } from '@/app/meta-tag';
 import DashboardBreadcrumbs from '@/components/core/DashboardBreadcrumbs';
 import { MutationFormCreate } from '@/components/form/MutationForm';
 import { dashboardAdminPages } from '@/utils/routes';
 import Box from '@mui/material/Box';
+
+export const metadata = adminMutationWarehouseCreateMetadata;
 
 export default function MutationCreatePage() {
   return (

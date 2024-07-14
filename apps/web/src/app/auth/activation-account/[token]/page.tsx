@@ -9,9 +9,11 @@ import Typography from '@mui/material/Typography';
 import { formWrapperStyles } from '@/styles/authFormStyles';
 import React from 'react';
 import axiosInstance from '@/utils/axiosInstance';
+import { activationAccountMetadata } from '@/app/meta-tag';
 type Props = {
   params: { token: string };
 };
+export const metadata = activationAccountMetadata;
 
 export default async function VerifyPage({ params }: Props) {
   try {
