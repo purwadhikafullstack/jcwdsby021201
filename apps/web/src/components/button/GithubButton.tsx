@@ -1,24 +1,31 @@
-import { signIn } from '@/utils/auth';
+'use client';
+
 import Image from 'next/image';
+
+// MUI Components
 import Button from '@mui/material/Button';
+
+// Image
 import github from '@/public/icons/github.svg';
 
-export default function GithubButton() {
+type Props = {
+  handleSignIn: () => void;
+  disabled?: boolean;
+};
+
+export default function GithubButton({ handleSignIn, disabled }: Props) {
   return (
-    <form
-      action={async () => {
-        'use server';
-        await signIn('github');
-      }}
+    <Button
+      onClick={handleSignIn}
+      variant="outlined"
+      type="button"
+      disabled={disabled}
+      startIcon={
+        <Image alt="Logo Github" src={github} height={25} width={25} />
+      }
+      sx={{ width: '100%' }}
     >
-      <Button
-        variant="outlined"
-        type="submit"
-        startIcon={<Image alt="Logo" src={github} height={25} width={25} />}
-        sx={{ width: '100%' }}
-      >
-        Github
-      </Button>
-    </form>
+      Github
+    </Button>
   );
 }

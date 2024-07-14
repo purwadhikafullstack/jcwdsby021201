@@ -16,6 +16,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 // Styles
 import { formWrapperStyles } from '@/styles/authFormStyles';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -142,16 +143,7 @@ export default function ResetPasswordForm({ name, path }: Props) {
           variant="contained"
           type="submit"
           disabled={isVerifyPending || isResetPending}
-          sx={{
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '0',
-            borderColor: 'black',
-            '&:hover': {
-              backgroundColor: '#333333',
-              color: 'white',
-            },
-          }}
+          sx={buttonPrimaryStyles}
         >
           {name || 'Reset Password'}
         </Button>

@@ -15,13 +15,30 @@ export class JournalMutationRepository {
     }
 
     if (typeof query.filter === 'string' && query.filter.trim() !== '') {
-      whereClause.OR = [{ description: { contains: query.filter } }];
+      whereClause.OR = [
+        {
+          productWarehouse: {
+            OR: [
+              { product: { name: { contains: query.filter } } },
+              { warehouse: { name: { contains: query.filter } } },
+            ],
+          },
+        },
+      ];
     } else if (typeof query.filter === 'number') {
       whereClause.OR = [{ quantity: { equals: query.filter } }];
     }
 
     return await prisma.journalMutation.findMany({
       where: Object.keys(whereClause).length ? whereClause : undefined,
+      include: {
+        productWarehouse: {
+          include: {
+            warehouse: { select: { id: true, name: true } },
+            product: { select: { id: true, name: true, price: true } },
+          },
+        },
+      },
       skip: (query.page - 1) * query.limit,
       take: query.limit,
       orderBy: { [query.sortBy]: query.orderBy },
@@ -64,13 +81,30 @@ export class JournalMutationRepository {
     }
 
     if (typeof query.filter === 'string' && query.filter.trim() !== '') {
-      whereClause.OR = [{ description: { contains: query.filter } }];
+      whereClause.OR = [
+        {
+          productWarehouse: {
+            OR: [
+              { product: { name: { contains: query.filter } } },
+              { warehouse: { name: { contains: query.filter } } },
+            ],
+          },
+        },
+      ];
     } else if (typeof query.filter === 'number') {
       whereClause.OR = [{ quantity: { equals: query.filter } }];
     }
 
     return await prisma.journalMutation.findMany({
       where: Object.keys(whereClause).length ? whereClause : undefined,
+      include: {
+        productWarehouse: {
+          include: {
+            warehouse: { select: { id: true, name: true } },
+            product: { select: { id: true, name: true, price: true } },
+          },
+        },
+      },
       skip: (query.page - 1) * query.limit,
       take: query.limit,
       orderBy: { [query.sortBy]: query.orderBy },
@@ -113,13 +147,30 @@ export class JournalMutationRepository {
     }
 
     if (typeof query.filter === 'string' && query.filter.trim() !== '') {
-      whereClause.OR = [{ description: { contains: query.filter } }];
+      whereClause.OR = [
+        {
+          productWarehouse: {
+            OR: [
+              { product: { name: { contains: query.filter } } },
+              { warehouse: { name: { contains: query.filter } } },
+            ],
+          },
+        },
+      ];
     } else if (typeof query.filter === 'number') {
       whereClause.OR = [{ quantity: { equals: query.filter } }];
     }
 
     return await prisma.journalMutation.findMany({
       where: Object.keys(whereClause).length ? whereClause : undefined,
+      include: {
+        productWarehouse: {
+          include: {
+            warehouse: { select: { id: true, name: true } },
+            product: { select: { id: true, name: true, price: true } },
+          },
+        },
+      },
       skip: (query.page - 1) * query.limit,
       take: query.limit,
       orderBy: { [query.sortBy]: query.orderBy },
@@ -162,13 +213,30 @@ export class JournalMutationRepository {
     }
 
     if (typeof query.filter === 'string' && query.filter.trim() !== '') {
-      whereClause.OR = [{ description: { contains: query.filter } }];
+      whereClause.OR = [
+        {
+          productWarehouse: {
+            OR: [
+              { product: { name: { contains: query.filter } } },
+              { warehouse: { name: { contains: query.filter } } },
+            ],
+          },
+        },
+      ];
     } else if (typeof query.filter === 'number') {
       whereClause.OR = [{ quantity: { equals: query.filter } }];
     }
 
     return await prisma.journalMutation.findMany({
       where: Object.keys(whereClause).length ? whereClause : undefined,
+      include: {
+        productWarehouse: {
+          include: {
+            warehouse: { select: { id: true, name: true } },
+            product: { select: { id: true, name: true, price: true } },
+          },
+        },
+      },
       skip: (query.page - 1) * query.limit,
       take: query.limit,
       orderBy: { [query.sortBy]: query.orderBy },

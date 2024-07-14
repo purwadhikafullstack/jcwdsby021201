@@ -19,6 +19,7 @@ import Box from '@mui/material/Box';
 import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Chip from '@mui/material/Chip';
 
 // MUI Icons
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,6 +33,7 @@ import { useDeleteUser } from '@/features/admin/users/usersMutations';
 
 // Utils
 import { dashboardAdminPages } from '@/utils/routes';
+import { toTitleCase } from '@/utils/formatter';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
@@ -92,19 +94,71 @@ export default function UserTable() {
         header: 'Role',
         enableColumnActions: false,
         enableFilterMatchHighlighting: false,
+        muiTableHeadCellProps: {
+          align: 'center',
+        },
+        muiTableBodyCellProps: {
+          align: 'center',
+        },
+        muiTableFooterCellProps: {
+          align: 'center',
+        },
+        Cell: ({ cell }) => {
+          const role = cell.getValue() as Role;
+          return (
+            <Chip
+              label={toTitleCase(role)}
+              size="small"
+              color={role === 'ADMIN' ? 'primary' : 'info'}
+            />
+          );
+        },
       },
       {
         accessorKey: 'isVerified',
         header: 'Verified',
         enableColumnActions: false,
         enableFilterMatchHighlighting: false,
-        Cell: ({ cell }) => (cell.getValue() ? 'Yes' : 'No'),
+        muiTableHeadCellProps: {
+          align: 'center',
+        },
+        muiTableBodyCellProps: {
+          align: 'center',
+        },
+        muiTableFooterCellProps: {
+          align: 'center',
+        },
+        Cell: ({ cell }) =>
+          cell.getValue() ? (
+            <Chip label="Yes" size="small" color="success" />
+          ) : (
+            <Chip label="No" size="small" color="error" />
+          ),
       },
       {
         accessorKey: 'provider',
         header: 'Provider',
         enableColumnActions: false,
         enableFilterMatchHighlighting: false,
+        muiTableHeadCellProps: {
+          align: 'center',
+        },
+        muiTableBodyCellProps: {
+          align: 'center',
+        },
+        muiTableFooterCellProps: {
+          align: 'center',
+        },
+        Cell: ({ cell }) => {
+          const provider = cell.getValue() as string;
+          return (
+            <Chip
+              label={toTitleCase(provider)}
+              size="small"
+              sx={{ backgroundColor: 'black', color: 'white' }}
+            />
+          );
+        },
       },
     ],
     [],

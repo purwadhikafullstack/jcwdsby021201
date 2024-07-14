@@ -18,6 +18,7 @@ import {
 import { dashboardAdminPages } from '@/utils/routes';
 
 // Styles
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import {
   adminFormContainerStyles,
   adminFormStyles,
@@ -139,16 +140,7 @@ export default function CategoryForm({
               variant="contained"
               color="info"
               disabled={disabledOnPending}
-              sx={{
-                color: 'white',
-                backgroundColor: 'black',
-                borderRadius: '0',
-                borderColor: 'black',
-                '&:hover': {
-                  backgroundColor: '#333333',
-                  color: 'white',
-                },
-              }}
+              sx={buttonPrimaryStyles}
             >
               Submit
             </Button>

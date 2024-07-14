@@ -1,24 +1,31 @@
-import { signIn } from '@/utils/auth';
+'use client';
+
 import Image from 'next/image';
+
+// MUI Components
 import Button from '@mui/material/Button';
+
+// Image
 import discord from '@/public/icons/discord.svg';
 
-export default function DiscordButton() {
+type Props = {
+  handleSignIn: () => void;
+  disabled?: boolean;
+};
+
+export default function DiscordButton({ handleSignIn, disabled }: Props) {
   return (
-    <form
-      action={async () => {
-        'use server';
-        await signIn('discord', { callbackUrl: '/dashboard' });
-      }}
+    <Button
+      onClick={handleSignIn}
+      variant="outlined"
+      type="button"
+      disabled={disabled}
+      startIcon={
+        <Image alt="Logo Discord" src={discord} height={20} width={20} />
+      }
+      sx={{ width: '100%' }}
     >
-      <Button
-        variant="outlined"
-        type="submit"
-        startIcon={<Image alt="Logo" src={discord} height={20} width={20} />}
-        sx={{ width: '100%' }}
-      >
-        Discord
-      </Button>
-    </form>
+      Discord
+    </Button>
   );
 }

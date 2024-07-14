@@ -12,6 +12,11 @@ const roboto = Roboto({
 
 const theme = createTheme({
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: { borderRadius: 0 },
+      },
+    },
     MuiTextField: {
       styleOverrides: {
         root: {

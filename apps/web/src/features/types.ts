@@ -1,3 +1,4 @@
+import { InventoryResponse } from '@/features/admin/inventories/types';
 import type { User } from 'next-auth';
 
 export type ResponseWithData<T = any> = {
@@ -72,4 +73,16 @@ export type HistoryResponse = {
   refMutationId: number | null;
   createdAt: string;
   updatedAt: string;
+  productWarehouse: InventoryResponse;
+};
+
+export type ExportHistory = {
+  id: number;
+  date: string;
+  quantity: number;
+  type: 'IN' | 'OUT';
+  product: string;
+  warehouse: string;
+  mutationCode: number | null;
+  description: string;
 };

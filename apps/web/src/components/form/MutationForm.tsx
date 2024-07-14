@@ -20,6 +20,7 @@ import {
 } from '@/components/form/schemas/mutationSchema';
 
 // Styles
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import {
   adminFormContainerStyles,
   adminFormStyles,
@@ -65,7 +66,7 @@ const defaultValues: MutationFormData = {
   destinationWarehouseId: null,
   productId: null,
   stockRequest: '',
-  stockProcess: '',
+  stockProcess: '0',
   note: '',
 };
 
@@ -238,7 +239,9 @@ export default function MutationForm({
       const newData = {
         ...queryData.result,
         stockRequest: toThousandFlag(queryData.result.stockRequest),
-        stockProcess: toThousandFlag(queryData.result.stockProcess),
+        stockProcess: queryData.result.stockProcess
+          ? toThousandFlag(queryData.result.stockProcess)
+          : '0',
       };
 
       reset(newData);
@@ -522,16 +525,7 @@ export default function MutationForm({
                 (id && queryData?.result?.status !== 'PENDING') ||
                 disabledOnPending
               }
-              sx={{
-                color: 'white',
-                backgroundColor: 'black',
-                borderRadius: '0',
-                borderColor: 'black',
-                '&:hover': {
-                  backgroundColor: '#333333',
-                  color: 'white',
-                },
-              }}
+              sx={buttonPrimaryStyles}
             >
               Submit
             </Button>
@@ -546,7 +540,7 @@ export default function MutationForm({
                   disabledOnPending
                 }
               >
-                Cancel
+                Reject
               </Button>
             )}
             <LinkButton

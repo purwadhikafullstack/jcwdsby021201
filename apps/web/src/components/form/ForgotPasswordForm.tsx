@@ -12,6 +12,7 @@ import Stack from '@mui/material/Stack';
 
 // Styles
 import { formWrapperStyles } from '@/styles/authFormStyles';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 // Utils
 import { authPages } from '@/utils/routes';
@@ -102,14 +103,7 @@ export default function ForgotPasswordForm() {
           disabled={isPending}
           sx={{
             mt: 1,
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '0',
-            borderColor: 'black',
-            '&:hover': {
-              backgroundColor: '#333333',
-              color: 'white',
-            },
+            ...buttonPrimaryStyles,
           }}
         >
           Reset Password

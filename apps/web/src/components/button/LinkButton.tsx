@@ -2,8 +2,13 @@
 
 import { useRouter } from 'next/navigation';
 import React from 'react';
+
+// MUI Icons
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+
+// Styles
+import { buttonBackStyles, buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 type Props = {
   href: string;
@@ -32,17 +37,7 @@ export default function LinkButton({
           variant="contained"
           color="info"
           startIcon={<AddIcon />}
-          sx={{
-            mt: 2,
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '0',
-            borderColor: 'black',
-            '&:hover': {
-              backgroundColor: '#333333',
-              color: 'white',
-            },
-          }}
+          sx={{ mt: 2, ...buttonPrimaryStyles }}
         >
           {children}
         </Button>
@@ -52,14 +47,7 @@ export default function LinkButton({
           onClick={handleClick}
           disabled={disabled}
           variant="contained"
-          sx={{
-            borderRadius: '0',
-            backgroundColor: (theme) => theme.palette.grey[500],
-            color: 'white',
-            '&:hover': {
-              backgroundColor: (theme) => theme.palette.grey[600],
-            },
-          }}
+          sx={buttonBackStyles}
         >
           {children}
         </Button>

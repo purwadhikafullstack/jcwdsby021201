@@ -16,6 +16,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -27,7 +28,7 @@ import { MutationResponse } from '@/features/admin/mutations/types';
 import { dashboardAdminPages } from '@/utils/routes';
 
 // Utils
-import { toThousandFlag } from '@/utils/formatter';
+import { toThousandFlag, toTitleCase } from '@/utils/formatter';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
@@ -49,6 +50,52 @@ export default function MutationTable() {
 
   const columns = useMemo<MRT_ColumnDef<MutationResponse>[]>(
     () => [
+      {
+        accessorKey: 'id',
+        header: 'Code',
+        enableColumnActions: false,
+        size: 100,
+        grow: false,
+        Cell: ({ cell }) => {
+          const id = cell.getValue() as number;
+          return (
+            <Chip
+              label={id}
+              size="small"
+              sx={{ backgroundColor: 'black', color: 'white' }}
+            />
+          );
+        },
+      },
+      {
+        accessorKey: 'status',
+        header: 'Status',
+        enableColumnActions: false,
+        enableSorting: false,
+        muiTableHeadCellProps: {
+          align: 'center',
+        },
+        muiTableBodyCellProps: {
+          align: 'center',
+        },
+        muiTableFooterCellProps: {
+          align: 'center',
+        },
+        Cell: ({ cell }) => {
+          const status = cell.getValue() as 'PENDING' | 'APPROVED' | 'CANCELED';
+
+          let color: 'info' | 'success' | 'error' = 'info';
+          if (status === 'APPROVED') {
+            color = 'success';
+          } else if (status === 'CANCELED') {
+            color = 'error';
+          }
+
+          return (
+            <Chip label={toTitleCase(status)} size="small" color={color} />
+          );
+        },
+      },
       {
         accessorKey: 'sourceWarehouse.name',
         header: 'Warehouse Source',
@@ -72,6 +119,15 @@ export default function MutationTable() {
         header: 'Stock Request',
         enableColumnActions: false,
         enableFilterMatchHighlighting: false,
+        muiTableHeadCellProps: {
+          align: 'center',
+        },
+        muiTableBodyCellProps: {
+          align: 'center',
+        },
+        muiTableFooterCellProps: {
+          align: 'center',
+        },
         Cell: ({ cell }) => toThousandFlag(cell.getValue() as number),
       },
       {
@@ -79,16 +135,19 @@ export default function MutationTable() {
         header: 'Stock Process',
         enableColumnActions: false,
         enableFilterMatchHighlighting: false,
+        muiTableHeadCellProps: {
+          align: 'center',
+        },
+        muiTableBodyCellProps: {
+          align: 'center',
+        },
+        muiTableFooterCellProps: {
+          align: 'center',
+        },
         Cell: ({ cell }) =>
           (cell.getValue() as number | null)
             ? toThousandFlag(cell.getValue() as number)
             : '-',
-      },
-      {
-        accessorKey: 'status',
-        header: 'Status',
-        enableColumnActions: false,
-        enableSorting: false,
       },
     ],
     [],
