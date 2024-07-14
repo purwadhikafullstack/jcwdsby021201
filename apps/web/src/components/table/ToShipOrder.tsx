@@ -1,9 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Button } from '@mui/material';
 import Image from 'next/image';
-import { toThousandFlag } from '@/utils/formatter';
 
 // MRT
 import {
@@ -18,6 +16,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -33,7 +32,12 @@ import ConfirmationReceived from '../dialog/ConfirmationReceived';
 // NextAuth
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import DetailOrderModal from '../modal/DetailOrderModal';
+
+// Utils
+import { toThousandFlag } from '@/utils/formatter';
+
+// Modal
+import DetailOrderModal from '@/components/modal/DetailOrderModal';
 
 export default function ToShipTable() {
   const [globalFilter, setGlobalFilter] = useState('');

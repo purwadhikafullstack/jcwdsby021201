@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import React from 'react';
 
 // MUI Icons
@@ -23,19 +23,14 @@ export default function LinkButton({
   variant,
   disabled,
 }: Props) {
-  const router = useRouter();
-
-  const handleClick = () => {
-    router.push(href);
-  };
   return (
     <>
       {variant === 'create' && (
         <Button
-          onClick={handleClick}
+          LinkComponent={Link}
+          href={href}
           disabled={disabled}
           variant="contained"
-          color="info"
           startIcon={<AddIcon />}
           sx={{ mt: 2, ...buttonPrimaryStyles }}
         >
@@ -44,7 +39,8 @@ export default function LinkButton({
       )}
       {variant === 'back' && (
         <Button
-          onClick={handleClick}
+          LinkComponent={Link}
+          href={href}
           disabled={disabled}
           variant="contained"
           sx={buttonBackStyles}

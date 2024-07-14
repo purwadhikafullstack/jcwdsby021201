@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -112,14 +113,13 @@ export default function DashboardLayout({ children }: Props) {
             <ListItem
               key={index}
               disablePadding
-              onClick={() => router.push(menu.path)}
               sx={{
                 '&:hover': {
                   bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
                 },
               }}
             >
-              <ListItemButton>
+              <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
                   {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
@@ -132,14 +132,13 @@ export default function DashboardLayout({ children }: Props) {
             <ListItem
               key={index}
               disablePadding
-              onClick={() => router.push(menu.path)}
               sx={{
                 '&:hover': {
                   bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
                 },
               }}
             >
-              <ListItemButton>
+              <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
                   {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
@@ -152,14 +151,13 @@ export default function DashboardLayout({ children }: Props) {
             <ListItem
               key={index}
               disablePadding
-              onClick={() => router.push(menu.path)}
               sx={{
                 '&:hover': {
                   bgcolor: (theme) => alpha(theme.palette.primary.light, 0.3),
                 },
               }}
             >
-              <ListItemButton>
+              <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
                   {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
@@ -171,7 +169,7 @@ export default function DashboardLayout({ children }: Props) {
     </Box>
   );
   return (
-    <Box>
+    <>
       <AppBar
         position="fixed"
         sx={{
@@ -179,6 +177,7 @@ export default function DashboardLayout({ children }: Props) {
           boxShadow: 'none',
           borderBottom: '1px solid',
           borderColor: '#e0e0e0',
+          zIndex: 1,
         }}
       >
         <Container maxWidth="xl">
@@ -253,6 +252,6 @@ export default function DashboardLayout({ children }: Props) {
           {children}
         </Container>
       </Box>
-    </Box>
+    </>
   );
 }

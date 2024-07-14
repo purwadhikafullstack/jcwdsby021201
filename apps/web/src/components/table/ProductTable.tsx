@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -158,11 +159,10 @@ export default function ProductTable() {
         <Tooltip title={user?.role === 'SUPER_ADMIN' ? 'Edit' : 'View'}>
           <IconButton
             size="small"
-            onClick={() => {
-              router.push(
-                dashboardAdminPages.product.path + `/update/${row.original.id}`,
-              );
-            }}
+            LinkComponent={Link}
+            href={
+              dashboardAdminPages.product.path + `/update/${row.original.id}`
+            }
           >
             <EditIcon />
           </IconButton>

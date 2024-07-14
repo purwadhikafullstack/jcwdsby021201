@@ -1,8 +1,7 @@
 'use client';
-import Image from 'next/image';
-import { Button } from '@mui/material';
-import { toThousandFlag } from '@/utils/formatter';
 
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useMemo, useState } from 'react';
 
 // MRT
@@ -18,6 +17,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -33,9 +33,13 @@ import ConfirmationCancel from '../dialog/ConfirmationCancel';
 // NextAuth
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import PaymentProofModal from '../modal/PaymentProofModal';
-import DetailOrderModal from '../modal/DetailOrderModal';
-import { useRouter } from 'next/navigation';
+
+// Utils
+import { toThousandFlag } from '@/utils/formatter';
+
+// Modal
+import PaymentProofModal from '@/components/modal/PaymentProofModal';
+import DetailOrderModal from '@/components/modal/DetailOrderModal';
 
 export default function ToPayTable() {
   const [globalFilter, setGlobalFilter] = useState('');

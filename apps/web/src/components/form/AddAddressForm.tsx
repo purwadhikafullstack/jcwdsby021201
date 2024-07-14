@@ -207,7 +207,7 @@ export default function AddressForm({
         control={control}
         name="provinceId"
         render={({ field, fieldState: { error } }) => (
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel id="province-label">Province</InputLabel>
             <Select
               {...field}
@@ -248,7 +248,7 @@ export default function AddressForm({
         control={control}
         name="cityId"
         render={({ field, fieldState: { error } }) => (
-          <FormControl fullWidth>
+          <FormControl fullWidth size="small">
             <InputLabel id="city-label">City</InputLabel>
             <Select
               {...field}

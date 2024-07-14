@@ -1,6 +1,6 @@
 'use client';
+
 import Image from 'next/image';
-import { toThousandFlag } from '@/utils/formatter';
 import { useMemo, useState } from 'react';
 
 // MRT
@@ -19,7 +19,6 @@ import Box from '@mui/material/Box';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 
 // React Query
 import { useGetToReceiveOrder } from '@/features/user/order/orderQueries';
@@ -28,7 +27,12 @@ import { CobaResponse } from '@/features/user/order/type';
 // NextAuth
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import DetailOrderModal from '../modal/DetailOrderModal';
+
+// Utils
+import { toThousandFlag } from '@/utils/formatter';
+
+// Modal
+import DetailOrderModal from '@/components/modal/DetailOrderModal';
 
 export default function ToReceiveTable() {
   const [globalFilter, setGlobalFilter] = useState('');

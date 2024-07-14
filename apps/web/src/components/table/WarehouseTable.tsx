@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -159,12 +160,10 @@ export default function WarehouseTable() {
         <Tooltip title="Edit">
           <IconButton
             size="small"
-            onClick={() => {
-              router.push(
-                dashboardAdminPages.warehouse.path +
-                  `/update/${row.original.id}`,
-              );
-            }}
+            LinkComponent={Link}
+            href={
+              dashboardAdminPages.warehouse.path + `/update/${row.original.id}`
+            }
           >
             <EditIcon />
           </IconButton>

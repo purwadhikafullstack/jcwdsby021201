@@ -15,7 +15,7 @@ export const useLoginTransport = () => {
     onSuccess: (data) => {
       if (data.success) {
         successNotification(data.message);
-        router.refresh();
+        window.location.reload();
       } else {
         errorNotification(data.message);
       }

@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/utils/auth';
 import type { NextRequest } from 'next/server';
-import {
-  authPages,
-  dashboardAdminPages,
-  dashboardUserPages,
-  mainPages,
-} from '@/utils/routes';
+import { authPages, dashboardAdminPages, mainPages } from '@/utils/routes';
 import { UserSession } from '@/features/types';
 
 export const middleware = async (req: NextRequest) => {

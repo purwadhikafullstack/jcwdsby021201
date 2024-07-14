@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -230,12 +231,10 @@ export default function UserTable() {
             <Tooltip title="Edit">
               <IconButton
                 size="small"
-                onClick={() => {
-                  router.push(
-                    dashboardAdminPages.user.path +
-                      `/update/${row.original.id}`,
-                  );
-                }}
+                LinkComponent={Link}
+                href={
+                  dashboardAdminPages.user.path + `/update/${row.original.id}`
+                }
               >
                 <EditIcon />
               </IconButton>
