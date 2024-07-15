@@ -7,7 +7,6 @@ import {
   SelectChangeEvent,
   Button,
 } from '@mui/material';
-import { common } from '@mui/material/colors';
 import AddressForm from '@/components/form/AddAddressForm';
 import Image from 'next/image';
 import mandiriLogo from '@/public/icons/mandiri.webp';
@@ -16,11 +15,7 @@ import briLogo from '@/public/icons/bri.png';
 import bniLogo from '@/public/icons/bni.png';
 import gopayLogo from '@/public/icons/GOPAY.png';
 import ovoLogo from '@/public/icons/OVO.png';
-
-interface Address {
-  id: number;
-  address: string;
-}
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 interface IAddressAndPaymentSelectionProps {
   selectedAddressId: number;
@@ -73,21 +68,18 @@ const AddressAndPaymentSelection: React.FunctionComponent<
       {showAddressForm && (
         <Grid item xs={12} sx={{ position: 'relative' }}>
           <Button
-            variant="outlined"
+            variant="text"
             onClick={() => setShowAddressForm(false)}
             sx={{
+              p: 2,
               position: 'absolute',
               top: '12px',
               right: '12px',
-              backgroundColor: 'black',
-              borderRadius: 0,
-              borderColor: 'white',
-              color: 'white',
               '&:hover': {
-                backgroundColor: 'white',
-                color: 'black',
-                borderColor: 'black',
+                backgroundColor: '#333333',
+                borderColor: 'white',
               },
+              ...buttonPrimaryStyles,
             }}
           >
             Cancel Add Address

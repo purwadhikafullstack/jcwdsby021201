@@ -8,7 +8,7 @@ import { Send as SendIcon } from '@mui/icons-material';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useChangeProfileEmail } from '@/features/user/profile/profileMutation';
-import StyledButton from '../button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 interface ChangeEmailFormProps {
   initialEmail: string;
@@ -111,9 +111,21 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
         If you change your email address, you'll need to verify it again.
       </Typography>
 
-      <StyledButton type="submit" variant="contained" startIcon={<SendIcon />}>
+      <Button
+        sx={{
+          mt: '10px',
+          fontWeight: 'bold',
+          padding: '12px 16px',
+          fontSize: '14px',
+          textTransform: 'uppercase',
+          ...buttonPrimaryStyles,
+        }}
+        type="submit"
+        variant="contained"
+        startIcon={<SendIcon />}
+      >
         Submit
-      </StyledButton>
+      </Button>
     </Box>
   );
 };

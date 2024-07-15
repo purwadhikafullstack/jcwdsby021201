@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 interface ConfirmationReceivedProps {
   open: boolean;
@@ -59,12 +60,7 @@ const ConfirmationReceived: React.FC<ConfirmationReceivedProps> = ({
           autoFocus
           disabled={isPending}
           sx={{
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '0px',
-            '&:hover': {
-              backgroundColor: '#333333',
-            },
+            ...buttonPrimaryStyles,
           }}
         >
           {isPending ? <CircularProgress size={24} /> : 'Yes, Accept Order'}

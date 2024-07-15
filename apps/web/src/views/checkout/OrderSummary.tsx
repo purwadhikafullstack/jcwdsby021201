@@ -1,7 +1,13 @@
-import { d } from '@tanstack/react-query-devtools/build/legacy/devtools-PtxSnd7z';
 import * as React from 'react';
-import { Paper, Typography, Divider, Box, useTheme } from '@mui/material';
-import StyledButton from '@/components/button/StyledButton';
+import {
+  Paper,
+  Typography,
+  Divider,
+  Box,
+  useTheme,
+  Button,
+} from '@mui/material';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import { toThousandFlag } from '@/utils/formatter';
 interface IOrderSummaryProps {
   subtotal: number;
@@ -23,7 +29,7 @@ const OrderSummary: React.FunctionComponent<IOrderSummaryProps> = ({
         boxShadow: 'none',
         backgroundColor: '#EEE',
         [theme.breakpoints.down('lg')]: {
-          backgroundColor: '#FFF', 
+          backgroundColor: '#FFF',
         },
       }}
     >
@@ -54,15 +60,14 @@ const OrderSummary: React.FunctionComponent<IOrderSummaryProps> = ({
           Total: Rp {toThousandFlag(total)}
         </Typography>
       </Box>
-      <StyledButton
-        variant="contained"
-        color="primary"
+      <Button
         fullWidth
         style={{ marginTop: 16 }}
         onClick={onCheckout}
+        sx={{ p: 2, ...buttonPrimaryStyles }}
       >
         Make Order
-      </StyledButton>
+      </Button>
     </Paper>
   );
 };

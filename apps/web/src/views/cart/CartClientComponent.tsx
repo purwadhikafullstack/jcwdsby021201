@@ -1,5 +1,15 @@
 'use client';
 import React from 'react';
+import {
+  Container,
+  Grid,
+  Typography,
+  Alert,
+  Backdrop,
+  CircularProgress,
+} from '@mui/material';
+import TableCart from '@/components/table/CartListTable';
+import OrderSummaryCart from './OrderSummaryCart';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import {
@@ -11,8 +21,12 @@ import { useRouter } from 'next/navigation';
 import { ProductBody } from '@/features/user/cart/type';
 import { checkStock } from '@/features/user/cart/cartFecther';
 import { errorFetcherNotification } from '@/utils/notifications';
+import { isStockInsufficient } from './CartHelper';
+interface ICartClientComponentProps {}
 
-export function useCartLogic() {
+const CartClientComponent: React.FunctionComponent<
+  ICartClientComponentProps
+> = (props) => {
   const router = useRouter();
   const session = useSession();
   const user = session.data?.user as UserSession;
@@ -22,7 +36,7 @@ export function useCartLogic() {
   const [productStocks, setProductStocks] = React.useState<{
     [key: number]: number;
   }>({});
-
+  const [isUpdating, setIsUpdating] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
 
   const { mutateAsync, isPending: isLoadingDelete } = useDeleteProduct();
@@ -45,21 +59,34 @@ export function useCartLogic() {
     }
   };
 
+  const updateProductQuantity = async (
+    token: string,
+    productId: number,
+    newQuantity: number,
+  ) => {
+    await updateQuantityProduct({
+      token,
+      data: {
+        productId: Number(productId),
+        quantity: newQuantity,
+      },
+    });
+  };
+
   //Handle Update
   const updateQuantity = async (productId: number, newQuantity: number) => {
-    try {
-      if (token) {
-        await updateQuantityProduct({
-          token,
-          data: {
-            productId: Number(productId),
-            quantity: newQuantity,
-          },
-        });
+    setIsUpdating(true);
+    setTimeout(async () => {
+      try {
+        if (token) {
+          await updateProductQuantity(token, productId, newQuantity);
+        }
+      } catch (error) {
+        errorFetcherNotification(error);
+      } finally {
+        setIsUpdating(false);
       }
-    } catch (error) {
-      errorFetcherNotification(error);
-    }
+    }, 2000);
   };
 
   //jumlah stock di seluruh gudang
@@ -83,22 +110,14 @@ export function useCartLogic() {
   //CheckSTock before checkout:
   const checkStockBeforeCheckout = async () => {
     if (!product || product.length === 0) {
-      setErrorMessage(
-        'Your cart is empty. Please add products before checkout.',
-      );
+      setErrorMessage('Your cart is empty');
       return false;
     }
 
-    let insufficientStock = false;
-    let errorMsg = 'Insufficient stock for: ';
-
-    for (const item of product) {
-      const availableStock = productStocks[item.productId] || 0;
-      if (item.quantity > availableStock) {
-        insufficientStock = true;
-        errorMsg += `${item.name}, `;
-      }
-    }
+    const { insufficientStock, errorMsg } = isStockInsufficient(
+      product,
+      productStocks,
+    );
 
     if (insufficientStock) {
       setErrorMessage(errorMsg.slice(0, -2));
@@ -110,7 +129,7 @@ export function useCartLogic() {
     return true;
   };
 
-  const calculateTotal = () => {
+  const calculateTotal = (): number | undefined => {
     return product?.reduce((total, item) => {
       return total + item.price * item.quantity;
     }, 0);
@@ -123,15 +142,46 @@ export function useCartLogic() {
     }
   };
 
-  const isLoading = isLoadingCart || isLoadingDelete;
-  return {
-    product,
-    errorMessage,
-    deleteProduct,
-    updateQuantity,
-    getMaxQuantity,
-    calculateTotal,
-    handleCheckout,
-    isLoading,
-  };
-}
+  const isLoading = isLoadingCart || isLoadingDelete || isUpdating;
+
+  return (
+    <Container sx={{ my: '120px' }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ textTransform: 'uppercase', fontWeight: 'bold' }}
+      >
+        Shopping Cart
+      </Typography>
+      {errorMessage && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {errorMessage}
+        </Alert>
+      )}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={8}>
+          <TableCart
+            product={product}
+            updateQuantity={updateQuantity}
+            deleteProduct={deleteProduct}
+            getMaxQuantity={getMaxQuantity}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <OrderSummaryCart
+            calculateTotal={calculateTotal}
+            handleCheckout={handleCheckout}
+          />
+        </Grid>
+      </Grid>
+    </Container>
+  );
+};
+
+export default CartClientComponent;

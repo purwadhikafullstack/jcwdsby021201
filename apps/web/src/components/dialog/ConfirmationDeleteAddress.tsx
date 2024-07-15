@@ -8,6 +8,7 @@ import {
   Button,
   CircularProgress,
 } from '@mui/material';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 export interface IConfirmationDeleteAddressProps {
   open: boolean;
   onClose: () => void;
@@ -57,12 +58,7 @@ export function ConfirmationDeleteAddress({
           autoFocus
           disabled={isPending}
           sx={{
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '0px',
-            '&:hover': {
-              backgroundColor: '#333333',
-            },
+            ...buttonPrimaryStyles,
           }}
         >
           {isPending ? <CircularProgress size={24} /> : 'Yes'}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import CardClientComponent from '@/views/cart/CardContent';
+import CardClientComponent from '@/views/cart/CartClientComponent';
 import { cartMetadata } from '@/app/meta-tag';
 
 interface ICartProps {}

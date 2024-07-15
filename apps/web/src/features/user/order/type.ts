@@ -115,10 +115,10 @@ export type QueryPaginationWithToken = {
   params: QueryPagination;
 };
 
-export type CobaBody = {
+export type UserBody = {
   name: string;
 };
-export type CobaResponse = CobaBody & {
+export type UserResponse = UserBody & {
   id: number;
   paymentStatus: string;
   shippingCost: number;

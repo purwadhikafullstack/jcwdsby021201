@@ -25,7 +25,7 @@ import {
   useGetToCancelOrder,
   useGetToReceiveOrder,
 } from '@/features/user/order/orderQueries';
-import { CobaResponse } from '@/features/user/order/type';
+import { UserResponse } from '@/features/user/order/type';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
@@ -90,7 +90,7 @@ export default function CancelledTable() {
     );
   };
 
-  const columns = useMemo<MRT_ColumnDef<CobaResponse>[]>(
+  const columns = useMemo<MRT_ColumnDef<UserResponse>[]>(
     () => [
       {
         accessorKey: 'image',

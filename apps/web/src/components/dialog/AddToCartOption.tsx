@@ -9,6 +9,7 @@ import {
   Box,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 interface AddToCartConfirmationProps {
   open: boolean;
@@ -62,11 +63,11 @@ const AddToCartConfirmation: React.FC<AddToCartConfirmationProps> = ({
               color="primary"
               variant="contained"
               sx={{
-                backgroundColor: 'black',
-                borderRadius: '0px',
-                '&:hover': {
-                  backgroundColor: '#333333',
-                },
+                fontWeight: 'bold',
+                padding: '12px 16px',
+                fontSize: '14px',
+                textTransform: 'uppercase',
+                ...buttonPrimaryStyles,
               }}
             >
               Go to Cart

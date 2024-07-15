@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useChangeProfilePicture } from '@/features/user/profile/profileMutation';
 import { useUploadPaymmentProof } from '@/features/user/order/orderMutation';
-import StyledButton from '../button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
@@ -155,9 +155,20 @@ export default function UploadPictureForm({
           </>
         )}
       />
-      <StyledButton type="submit" sx={{ mt: '10px' }}>
+      <Button
+        sx={{
+          mt: '10px',
+          fontWeight: 'bold',
+          padding: '12px 16px',
+          fontSize: '14px',
+          textTransform: 'uppercase',
+          ...buttonPrimaryStyles,
+        }}
+        type="submit"
+        fullWidth
+      >
         Submit
-      </StyledButton>
+      </Button>
     </Box>
   );
 }

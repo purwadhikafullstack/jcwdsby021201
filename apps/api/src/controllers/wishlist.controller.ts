@@ -6,7 +6,7 @@ export class WishlistController {
   public async AddToWishlist(req: Request, res: Response, next: NextFunction) {
     try {
       const id = res.locals.decoded.id;
-      const body = req.body as WishlistBody
+      const body = req.body as WishlistBody;
       const response = await WishlistService.AddToWishlist(id, body);
       return res.status(200).send(response);
     } catch (error) {

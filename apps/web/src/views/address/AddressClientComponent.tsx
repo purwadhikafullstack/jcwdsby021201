@@ -1,23 +1,25 @@
 'use client';
+
 import * as React from 'react';
+
+//MATERIAL UI
 import {
   Box,
   Typography,
-  Card,
-  CardContent,
   Grid,
   Skeleton,
+  Button,
 } from '@mui/material';
+
+// OTHER
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
+import AddressCard from './AddressCard';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import { useGetAddressById } from '@/features/user/address/addressQueries';
+
+//AUTH
 import { UserSession } from '@/features/types';
-import {
-  useGetProvinceName,
-  useGetCityName,
-} from '@/features/user/location/locationQueries';
-import { useRouter } from 'next/navigation';
-import StyledButton from '@/components/button/StyledButton';
 
 interface IAddressListProps {}
 
@@ -37,12 +39,12 @@ const AddressList: React.FunctionComponent<IAddressListProps> = (props) => {
         p={2}
       >
         <Typography
-          variant="h4"
+          variant="h5"
           gutterBottom
-          fontWeight={500}
           sx={{
-            fontWeight: 'bold ',
+            fontWeight: 'bold',
             textTransform: 'uppercase',
+            mb: 5,
           }}
         >
           Address List
@@ -61,108 +63,24 @@ const AddressList: React.FunctionComponent<IAddressListProps> = (props) => {
 
         <Box mt={3}>
           <Link href={'/dashboard/user/profile/create-address'} passHref>
-            <StyledButton variant="contained" color="primary">
+            <Button
+              sx={{
+                mt: '10px',
+                fontWeight: 'bold',
+                padding: '12px 16px',
+                fontSize: '14px',
+                textTransform: 'uppercase',
+                ...buttonPrimaryStyles,
+              }}
+              variant="contained"
+              color="primary"
+            >
               Add New Address
-            </StyledButton>
+            </Button>
           </Link>
         </Box>
       </Box>
     </Box>
-  );
-};
-
-const AddressCard = ({ address }: { address: any }) => {
-  const router = useRouter();
-  const { data: provinceName, isLoading: isProvinceLoading } =
-    useGetProvinceName(address.provinceId);
-  const { data: cityName, isLoading: isCityLoading } = useGetCityName(
-    address.cityId,
-  );
-
-  return (
-    <Grid item>
-      <Card
-        onClick={() =>
-          router.push(`/dashboard/user/profile/update-address/${address.id}`)
-        }
-        sx={{
-          backgroundColor: '#EEE',
-          width: 345,
-          cursor: 'pointer',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          border: 'none',
-          boxShadow: 'none',
-          transition: 'transform 0.2s ease-in-out',
-          '&:hover': {
-            transform: 'scale(1.02)',
-          },
-        }}
-      >
-        <CardContent>
-          <Typography
-            gutterBottom
-            variant="body1"
-            component="div"
-            sx={{
-              textDecoration: 'none',
-              textTransform: 'uppercase',
-              fontWeight: 'bold',
-            }}
-          >
-            {address.name}
-          </Typography>
-
-          <Typography variant="body1">
-            Province:{' '}
-            {isProvinceLoading
-              ? 'Loading...'
-              : provinceName?.name || address.provinceId}
-          </Typography>
-          <Typography variant="body1">
-            City:{' '}
-            {isCityLoading
-              ? 'Loading...'
-              : cityName?.[0]?.name || address.cityId}
-          </Typography>
-          <Typography variant="body1">
-            Postal Code: {address.postalCode}
-          </Typography>
-          <Typography variant="body1">
-            <Typography component="span" sx={{ fontWeight: 'bold' }}>
-              Full Address :{' '}
-            </Typography>{' '}
-            {address.address}
-          </Typography>
-        </CardContent>
-        {address.isPrimary && (
-          <Box p={2} display="flex" flexDirection="column" alignItems="center">
-            <Typography
-              variant="body1"
-              sx={{
-                fontWeight: 'bold',
-                color: 'black',
-                textTransform: 'uppercase',
-              }}
-            >
-              Primary Address
-            </Typography>
-          </Box>
-        )}
-        <Box textAlign="center">
-          <StyledButton
-            variant="outlined"
-            color="primary"
-            component="span"
-            size="small"
-          >
-            Edit
-          </StyledButton>
-        </Box>
-      </Card>
-    </Grid>
   );
 };
 

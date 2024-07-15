@@ -13,9 +13,9 @@ import {
   Grid,
 } from '@mui/material';
 import Image from 'next/image';
-import StyledButton from '../button/StyledButton';
 import { useRouter } from 'next/navigation';
 import { toThousandFlag } from '@/utils/formatter';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 interface ITableCartProps {
   product: any | undefined;
   handleAddToCart: (productId: number) => Promise<void>;
@@ -51,13 +51,11 @@ const WishlistTable: React.FunctionComponent<ITableCartProps> = ({
           variant="contained"
           onClick={() => router.push('/products')}
           sx={{
-            backgroundColor: 'black',
-            borderRadius: 0,
-            p: 2,
-            color: 'white',
-            '&:hover': {
-              backgroundColor: '#333333',
-            },
+            fontWeight: 'bold',
+            padding: '12px 16px',
+            fontSize: '14px',
+            textTransform: 'uppercase',
+            ...buttonPrimaryStyles,
           }}
         >
           Let's Explore Product
@@ -108,22 +106,36 @@ const WishlistTable: React.FunctionComponent<ITableCartProps> = ({
               </TableCell>
               <TableCell align="center">
                 <Box display="flex" justifyContent="center" gap={2}>
-                  <StyledButton
+                  <Button
                     variant="contained"
                     color="error"
                     style={{ width: '140px' }}
                     onClick={() => handleAddToCart(item.productId)}
+                    sx={{
+                      fontWeight: 'bold',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      textTransform: 'uppercase',
+                      ...buttonPrimaryStyles,
+                    }}
                   >
                     Add To Cart
-                  </StyledButton>
-                  <StyledButton
+                  </Button>
+                  <Button
                     variant="contained"
                     color="error"
                     style={{ width: '140px' }}
+                    sx={{
+                      fontWeight: 'bold',
+                      padding: '12px 16px',
+                      fontSize: '14px',
+                      textTransform: 'uppercase',
+                      ...buttonPrimaryStyles,
+                    }}
                     onClick={() => handleRemove(item.productId)}
                   >
                     Remove
-                  </StyledButton>
+                  </Button>
                 </Box>
               </TableCell>
             </TableRow>

@@ -10,7 +10,6 @@ import {
 } from '@mui/icons-material';
 // Zod
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
 
 import { passwordSchema, PasswordSchema } from './schemas/updatePasswordSchema';
 
@@ -26,7 +25,7 @@ import {
 import { useChangeProfileUpdate } from '@/features/user/profile/profileMutation';
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-import StyledButton from '../button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 interface ChangePasswordFormProps {
   handleClose: () => void;
@@ -156,9 +155,21 @@ export default function ChangePasswordForm({
         )}
       />
 
-      <StyledButton type="submit" variant="contained" startIcon={<LockIcon />}>
+      <Button
+        sx={{
+          mt: '10px',
+          fontWeight: 'bold',
+          padding: '12px 16px',
+          fontSize: '14px',
+          textTransform: 'uppercase',
+          ...buttonPrimaryStyles,
+        }}
+        type="submit"
+        variant="contained"
+        startIcon={<LockIcon />}
+      >
         Submit
-      </StyledButton>
+      </Button>
     </Box>
   );
 }

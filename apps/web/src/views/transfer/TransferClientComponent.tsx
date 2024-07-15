@@ -14,6 +14,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Image from 'next/image';
 import PaymentProofModal from '@/components/modal/PaymentProofModal';
 import { paymentMethods } from './paymentList';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 const PaymentInstructions = () => {
   const id = useParams();
@@ -43,14 +44,7 @@ const PaymentInstructions = () => {
         variant="outlined"
         sx={{
           p: 2,
-          color: 'white',
-          backgroundColor: 'black',
-          borderRadius: '0',
-          borderColor: 'black',
-          '&:hover': {
-            backgroundColor: '#333333',
-            color: 'white',
-          },
+          ...buttonPrimaryStyles,
         }}
         onClick={handleOpenPaymentProofModal}
       >
@@ -170,14 +164,7 @@ const PaymentInstructions = () => {
         fullWidth
         sx={{
           p: 2,
-          color: 'white',
-          backgroundColor: 'black',
-          borderRadius: '0',
-          borderColor: 'black',
-          '&:hover': {
-            backgroundColor: '#333333',
-            color: 'white',
-          },
+          ...buttonPrimaryStyles,
         }}
         onClick={() => router.push('/dashboard/user/order/to-pay')}
       >

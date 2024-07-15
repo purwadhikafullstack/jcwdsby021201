@@ -26,7 +26,7 @@ import {
 import { useAddAddress } from '@/features/user/address/addressMutations';
 import Map from '../map/Map';
 import { errorNotification } from '@/utils/notifications';
-import StyledButton from '../button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 const defaultValues: AddressSchema = {
   name: '',
@@ -42,43 +42,35 @@ const defaultValues: AddressSchema = {
 
 interface AddressFormProps {
   onAddressAdded?: () => void;
-  shouldRedirect?: boolean; // tambahkan parameter ini
+  shouldRedirect?: boolean;
 }
 
 export default function AddressForm({
   onAddressAdded,
   shouldRedirect = false,
 }: AddressFormProps) {
+  //AUTH
   const session = useSession();
   const user = session.data?.user as UserSession;
   const token = user?.token;
 
+  //USE FORM
   const { control, handleSubmit, reset, setValue } = useForm<AddressSchema>({
     resolver: zodResolver(addressSchema),
     defaultValues,
   });
 
+  //FETCG DATA PROVINCE DAN CITY, TRIGGER CITY BY PROVINCE
   const { data: provinces, isLoading: isLoadingProvinces } = useFetchProvince();
   const [selectedProvince, setSelectedProvince] = React.useState<number>(0);
   const { data: cities, isLoading: isLoadingCities } =
     useFetchCities(selectedProvince);
-  const [selectedCity, setSelectedCity] = React.useState<number>(0);
-
-  //State Nama Provinsi dan City
-  const [province, setProvince] = React.useState<string>('');
-  const [city, setCity] = React.useState<string>('');
 
   //State untuk titik koordinat:
   const [coordinates, setCoordinates] = React.useState<{
     lat: number;
     lon: number;
   } | null>(null);
-
-  //Fetch Nama :
-  const { data: provinceName, isLoading: isProvinceNameLoading } =
-    useGetProvinceName(selectedProvince);
-  const { data: cityName, isLoading: isCityNameLoading } =
-    useGetCityName(selectedCity);
 
   //Fetch Redirect Halaman
   const { mutateAsync: addAddressMutateAsync, isPending: isADdPending } =
@@ -93,7 +85,6 @@ export default function AddressForm({
 
   const handleCityChange = (event: SelectChangeEvent<number>) => {
     const cityId = event.target.value as number;
-    setSelectedCity(cityId);
     setValue('cityId', cityId);
   };
 
@@ -121,23 +112,12 @@ export default function AddressForm({
     }
   };
 
-  React.useEffect(() => {
-    if (selectedProvince && !isProvinceNameLoading && provinceName) {
-      setProvince(provinceName.name);
-    }
-  }, [selectedProvince, isProvinceNameLoading, provinceName]);
-
-  React.useEffect(() => {
-    if (selectedCity && !isCityNameLoading && cityName) {
-      setCity(cityName[0]?.name);
-    }
-  }, [selectedCity, isCityNameLoading, cityName]);
-
   // Fungsi untuk mengatur koordinat yang diperoleh dari komponen Map
   const handleCoordinatesChange = (lat: number, lon: number) => {
     setCoordinates({ lat: lat, lon: lon });
   };
 
+  //Fetch coordinates
   React.useEffect(() => {
     if (coordinates) {
       setValue('latitude', coordinates.lat);
@@ -207,7 +187,7 @@ export default function AddressForm({
         control={control}
         name="provinceId"
         render={({ field, fieldState: { error } }) => (
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth>
             <InputLabel id="province-label">Province</InputLabel>
             <Select
               {...field}
@@ -248,7 +228,7 @@ export default function AddressForm({
         control={control}
         name="cityId"
         render={({ field, fieldState: { error } }) => (
-          <FormControl fullWidth size="small">
+          <FormControl fullWidth>
             <InputLabel id="city-label">City</InputLabel>
             <Select
               {...field}
@@ -318,9 +298,14 @@ export default function AddressForm({
         />
       </Box>
 
-      <StyledButton type="submit" variant="contained" startIcon={<AddIcon />}>
+      <Button
+        sx={{ p: 2, ...buttonPrimaryStyles }}
+        type="submit"
+        variant="contained"
+        startIcon={<AddIcon />}
+      >
         Submit
-      </StyledButton>
+      </Button>
     </Box>
   );
 }

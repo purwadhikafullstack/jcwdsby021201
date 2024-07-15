@@ -7,10 +7,9 @@ import axiosInstance from '@/utils/axiosInstance';
 import {
   CancelOrder,
   CheckMutateOtomaticOrder,
-  CobaResponse,
+  UserResponse,
   DetailOrder,
   OrderDataBody,
-  OrderDetailResponse,
   OrderDetailResponseWrapper,
   QueryPagination,
   ReceiveOrder,
@@ -116,7 +115,7 @@ export const getUnpaidOrder = async ({
   token: string;
   params: QueryPagination;
 }) => {
-  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+  const res = await axiosInstance.get<ResponseDataPagination<UserResponse[]>>(
     '/orders//to-pay',
     {
       params,
@@ -136,7 +135,7 @@ export const getToShipOrder = async ({
   token: string;
   params: QueryPagination;
 }) => {
-  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+  const res = await axiosInstance.get<ResponseDataPagination<UserResponse[]>>(
     '/orders/to-ship',
     {
       params,
@@ -156,7 +155,7 @@ export const getToReceiveOrder = async ({
   token: string;
   params: QueryPagination;
 }) => {
-  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+  const res = await axiosInstance.get<ResponseDataPagination<UserResponse[]>>(
     '/orders/to-receive',
     {
       params,
@@ -176,7 +175,7 @@ export const getToCancelOrder = async ({
   token: string;
   params: QueryPagination;
 }) => {
-  const res = await axiosInstance.get<ResponseDataPagination<CobaResponse[]>>(
+  const res = await axiosInstance.get<ResponseDataPagination<UserResponse[]>>(
     '/orders/cancelled',
     {
       params,

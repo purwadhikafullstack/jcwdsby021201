@@ -18,7 +18,7 @@ import {
 import axios from 'axios';
 import iconUrl from 'leaflet/dist/images/marker-icon.png';
 import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
-import StyledButton from '../button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 /**
  *  - Marker Image
@@ -83,7 +83,8 @@ const SearchBox = ({
         right: '2%',
         zIndex: 1000,
         display: 'flex',
-        width: { xs: '50vw', sm: '30vw', md: '10vw', lg: '10vw' },
+        justifyContent: 'end',
+        width: '70%',
       }}
     >
       <TextField
@@ -93,9 +94,13 @@ const SearchBox = ({
         onChange={(e) => setSearchQuery(e.target.value)}
         sx={{ backgroundColor: 'white' }}
       />
-      <StyledButton onClick={handleSearch} variant="contained" sx={{ ml: 2 }}>
+      <Button
+        onClick={handleSearch}
+        variant="contained"
+        sx={{ ml: 2, ...buttonPrimaryStyles }}
+      >
         Search
-      </StyledButton>
+      </Button>
     </Box>
   );
 };

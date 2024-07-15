@@ -27,17 +27,18 @@ import {
   FormControlLabel,
   Switch,
 } from '@mui/material';
+
+//AUTH
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
+
+//QUERY
 import { useGetAddressByAddressId } from '@/features/user/address/addressQueries';
 import {
   useFetchCities,
   useFetchProvince,
-  useGetCityName,
-  useGetProvinceName,
 } from '@/features/user/location/locationQueries';
 import { AddressBody } from '@/features/user/address/type';
-import { deleteAddress } from '@/features/user/address/addressFetchers';
 import {
   useDeleteAddress,
   useUpdateAddress,
@@ -45,6 +46,7 @@ import {
 import Map from '@/components/map/Map';
 import { errorNotification } from '@/utils/notifications';
 import { ConfirmationDeleteAddress } from '@/components/dialog/ConfirmationDeleteAddress';
+import { buttonPrimaryStyles, buttonBackStyles } from '@/styles/buttonStyles';
 
 // Penampung
 const defaultValues: AddressSchema = {
@@ -65,12 +67,16 @@ const UpdateAddress: React.FunctionComponent = () => {
     defaultValues,
   });
 
-  // PENGATURAN UNTUK NGAMBIL DATA
+  //AUTH
   const session = useSession();
   const user = session.data?.user as UserSession;
   const token = user?.token;
+
+  //PARAMS
   const id = useParams();
   const addressId = id.addressId;
+
+  //QUERIS
   const {
     data,
   }: {
@@ -80,17 +86,14 @@ const UpdateAddress: React.FunctionComponent = () => {
   } = useGetAddressByAddressId(token || '', String(addressId));
 
   //PENGATURAN NGAMBIL PROVINCE DAN CITY
-  const { data: provinces, isLoading: isLoadingProvinces } = useFetchProvince();
+  const { data: provinces } = useFetchProvince();
   const [selectedProvince, setSelectedProvince] = React.useState<number>(0);
-  const { data: cities, isLoading: isLoadingCities } =
-    useFetchCities(selectedProvince);
-  const [selectedCity, setSelectedCity] = React.useState<number>(0);
+  const { data: cities } = useFetchCities(selectedProvince);
 
   //Penggunaan Mutation
   const { mutateAsync: deleteAddressMutateAsync, isPending: isDeletePending } =
     useDeleteAddress();
-  const { mutateAsync: updateAddressMutateAsync, isPending: isUpdatePending } =
-    useUpdateAddress();
+  const { mutateAsync: updateAddressMutateAsync } = useUpdateAddress();
 
   //State untuk titik koordinat:
   const [coordinates, setCoordinates] = React.useState<{
@@ -103,11 +106,11 @@ const UpdateAddress: React.FunctionComponent = () => {
   const handleDelete = () => {
     setOpenDialog(true);
   };
-
   const handleDialogClose = () => {
     setOpenDialog(false);
   };
 
+  //FETCH DATA AWAL
   React.useEffect(() => {
     if (data && data.provinceId) {
       setValue('name', data.name);
@@ -139,7 +142,6 @@ const UpdateAddress: React.FunctionComponent = () => {
 
   const handleCityChange = (event: SelectChangeEvent<number>) => {
     const cityId = event.target.value as number;
-    setSelectedCity(cityId);
     setValue('cityId', cityId);
   };
 
@@ -183,6 +185,7 @@ const UpdateAddress: React.FunctionComponent = () => {
   const handleCoordinatesChange = (lat: number, lon: number) => {
     setCoordinates({ lat: lat, lon: lon });
   };
+
   React.useEffect(() => {
     if (coordinates) {
       setValue('latitude', coordinates.lat);
@@ -265,6 +268,13 @@ const UpdateAddress: React.FunctionComponent = () => {
               labelId="province-label"
               onChange={handleProvinceChange}
               sx={{ backgroundColor: 'white' }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 200,
+                  },
+                },
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -299,6 +309,13 @@ const UpdateAddress: React.FunctionComponent = () => {
               labelId="city-label"
               onChange={handleCityChange}
               sx={{ backgroundColor: 'white' }}
+              MenuProps={{
+                PaperProps: {
+                  style: {
+                    maxHeight: 200,
+                  },
+                },
+              }}
             >
               <MenuItem value="">
                 <em>None</em>
@@ -386,11 +403,11 @@ const UpdateAddress: React.FunctionComponent = () => {
           variant="outlined"
           endIcon={<DeleteIcon />}
           sx={{
-            borderColor: 'black',
-            color: 'black',
-            borderRadius: '0px',
+            ...buttonBackStyles,
+            borderColor: 'white',
             '&:hover': {
-              backgroundColor: '#fff',
+              borderColor: 'white',
+              backgroundColor: 'black',
             },
           }}
         >
@@ -401,12 +418,7 @@ const UpdateAddress: React.FunctionComponent = () => {
           variant="contained"
           startIcon={<AddIcon />}
           sx={{
-            color: 'white',
-            backgroundColor: 'black',
-            borderRadius: '0px',
-            '&:hover': {
-              backgroundColor: '#333333',
-            },
+            ...buttonPrimaryStyles,
           }}
         >
           Update

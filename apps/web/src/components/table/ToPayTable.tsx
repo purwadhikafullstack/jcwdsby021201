@@ -1,7 +1,8 @@
 'use client';
-
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Button } from '@mui/material';
+import { toThousandFlag } from '@/utils/formatter';
+
 import { useMemo, useState } from 'react';
 
 // MRT
@@ -17,14 +18,13 @@ import {
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 
 // MUI Icons
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 // React Query
 import { useGetUnpaidOrder } from '@/features/user/order/orderQueries';
-import { CobaResponse } from '@/features/user/order/type';
+import { UserResponse } from '@/features/user/order/type';
 import { useCancelOrder } from '@/features/user/order/orderMutation';
 
 // Custom Components
@@ -33,13 +33,10 @@ import ConfirmationCancel from '../dialog/ConfirmationCancel';
 // NextAuth
 import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
-
-// Utils
-import { toThousandFlag } from '@/utils/formatter';
-
-// Modal
-import PaymentProofModal from '@/components/modal/PaymentProofModal';
-import DetailOrderModal from '@/components/modal/DetailOrderModal';
+import PaymentProofModal from '../modal/PaymentProofModal';
+import DetailOrderModal from '../modal/DetailOrderModal';
+import { useRouter } from 'next/navigation';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 
 export default function ToPayTable() {
   const [globalFilter, setGlobalFilter] = useState('');
@@ -123,7 +120,7 @@ export default function ToPayTable() {
   const formatDate = (date: string) => {
     return date.split('T')[0];
   };
-  const columns = useMemo<MRT_ColumnDef<CobaResponse>[]>(
+  const columns = useMemo<MRT_ColumnDef<UserResponse>[]>(
     () => [
       {
         accessorKey: 'image',
@@ -241,18 +238,13 @@ export default function ToPayTable() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: 'black',
-                  borderRadius: '0px',
-                  '&:hover': {
-                    backgroundColor: '#333333',
-                  },
+                  ...buttonPrimaryStyles,
                 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   router.push(
                     `/transfer/${row.original.name}${row.original.id}`,
                   );
-                  // handleOpenPaymentProofModal(row.original.id.toString());
                 }}
               >
                 Payment
@@ -262,11 +254,7 @@ export default function ToPayTable() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: 'black',
-                  borderRadius: '0px',
-                  '&:hover': {
-                    backgroundColor: '#333333',
-                  },
+                  ...buttonPrimaryStyles,
                 }}
                 onClick={(e) => {
                   e.stopPropagation();

@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { ProductBody } from '@/features/user/cart/type';
 import Image from 'next/image';
-import StyledButton from '../button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import { useRouter } from 'next/navigation';
 import { toThousandFlag } from '@/utils/formatter';
 interface ITableCartProps {
@@ -64,13 +64,8 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
           variant="contained"
           onClick={() => router.push('/products')}
           sx={{
-            backgroundColor: 'black',
-            borderRadius: 0,
             p: 2,
-            color: 'white',
-            '&:hover': {
-              backgroundColor: '#333333',
-            },
+            ...buttonPrimaryStyles,
           }}
         >
           Let's Explore Product
@@ -132,13 +127,12 @@ const TableCart: React.FunctionComponent<ITableCartProps> = ({
                 Rp.{toThousandFlag(item.price * item.quantity)}
               </TableCell>
               <TableCell>
-                <StyledButton
-                  variant="contained"
-                  color="error"
+                <Button
                   onClick={() => deleteProduct(item.productId)}
+                  sx={{ p: 2, ...buttonPrimaryStyles }}
                 >
                   Remove
-                </StyledButton>
+                </Button>
               </TableCell>
             </TableRow>
           ))}

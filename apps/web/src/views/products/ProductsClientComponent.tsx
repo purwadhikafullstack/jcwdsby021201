@@ -9,6 +9,7 @@ import {
   CardActions,
   Box,
   IconButton,
+  Button,
 } from '@mui/material';
 import * as React from 'react';
 import axios from 'axios';
@@ -21,7 +22,7 @@ import {
   errorNotification,
 } from '@/utils/notifications';
 import { useRouter } from 'next/navigation';
-import StyledButton from '@/components/button/StyledButton';
+import { buttonPrimaryStyles } from '@/styles/buttonStyles';
 import {
   useAddWishlist,
   useRemoveWishlist,
@@ -232,14 +233,22 @@ const Product: React.FunctionComponent<IProductProps> = (props) => {
                 </Typography>
               </CardContent>
               <CardActions>
-                <StyledButton
+                <Button
+                  sx={{
+                    fontWeight: 'bold',
+                    padding: '12px 16px',
+                    fontSize: '14px',
+                    textTransform: 'uppercase',
+                    width: '100%',
+                    ...buttonPrimaryStyles,
+                  }}
                   onClick={() => handleAddToCart(product.id)}
                   disabled={
                     isAuthenticated === 'unauthenticated' || verif === false
                   }
                 >
                   Add to Cart
-                </StyledButton>
+                </Button>
               </CardActions>
             </Card>
           </Grid>

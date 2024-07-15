@@ -1,44 +1,68 @@
 'use client';
+
 import * as React from 'react';
-import Link from 'next/link';
-import {
-  Button,
-  Box,
-  Typography,
-  Container,
-  Grid,
-  Divider,
-  Skeleton,
-} from '@mui/material';
+
+import { Box, Typography, Container, Grid, Divider } from '@mui/material';
+
+import { useSession } from 'next-auth/react';
+import { UserSession } from '@/features/types';
+import { useGetProfileById } from '@/features/user/profile/profileQueries';
+import { useGetAddressById } from '@/features/user/address/addressQueries';
+
+//MODAL
 import UsernameModalUpdate from '@/components/modal/UsernameModalUpdate';
 import PasswordModalUpdate from '@/components/modal/PasswordModalUpdate';
 import EmailModalUpdate from '@/components/modal/EmailModalUpdate';
 import ProfileModalUpdate from '@/components/modal/ProfileModalUpdate';
-import Image from 'next/image';
-import StyledButton from '@/components/button/StyledButton';
-import { useProfileLogic } from './useProfileLogic';
+
+//SECTION
+import UsernameSection from './UsernameSection';
+import EmailSection from './EmailSection';
+import AddressSection from './AddressSection';
+import PhotoProfileSection from './PhotoProfileSection';
+import PasswordSection from './PasswordSection';
 
 interface IProfileProps {}
 
 const Profile: React.FunctionComponent<IProfileProps> = (props) => {
-  const {
-    data,
-    isLoading,
-    primaryAddress,
-    open,
-    profilePictureModal,
-    passwordModal,
-    emailModal,
-    handleOpen,
-    handleClose,
-    handleOpenPasswordModal,
-    handleClosePasswordModal,
-    handleOpenEmailModal,
-    handleCloseEmailModal,
-    handleOpenProfilePictureModal,
-    handleCloseProfilePictureModal,
-  } = useProfileLogic();
+  const session = useSession();
+  const user = session.data?.user as UserSession;
+  const token = user?.token;
 
+  const { data: dataAddress, error: errorAddress } = useGetAddressById(
+    token || '',
+  );
+  const { data, error, isLoading } = useGetProfileById(token || '');
+
+  const [open, setOpen] = React.useState(false);
+  const [profilePictureModal, setProfilePictureModal] = React.useState(false);
+  const [passwordModal, setPasswordModal] = React.useState(false);
+  const [primaryAddress, setPrimaryAddress] = React.useState<string>('');
+  const [emailModal, setEmailModal] = React.useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleOpenPasswordModal = () => setPasswordModal(true);
+  const handleClosePasswordModal = () => setPasswordModal(false);
+
+  const handleOpenEmailModal = () => setEmailModal(true);
+  const handleCloseEmailModal = () => setEmailModal(false);
+
+  const handleOpenProfilePictureModal = () => setProfilePictureModal(true);
+  const handleCloseProfilePictureModal = () => setProfilePictureModal(false);
+
+  React.useEffect(() => {
+    if (dataAddress) {
+      const primaryAddr = dataAddress?.find((addr: any) => addr.isPrimary);
+      if (primaryAddr) {
+        setPrimaryAddress(primaryAddr.address);
+      } else {
+        setPrimaryAddress('Anda Belum Memasukan alamat utama');
+      }
+    }
+  }, [dataAddress]);
+  
   return (
     <Box
       sx={{
@@ -52,122 +76,45 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
         border: '1px solid #ccc',
       }}
     >
-      <Typography fontWeight={500} sx={{ fontSize: '20px' }}>
+      <Typography
+        sx={{
+          fontSize: '20px',
+          textTransform: 'uppercase',
+          fontWeight: 'bold',
+        }}
+      >
         Account Information
       </Typography>
       <Divider />
       <Container maxWidth="md" sx={{ position: 'relative', zIndex: '1000' }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" justifyContent="center">
-            <Box>
-              {isLoading ? (
-                <Skeleton variant="circular" width={150} height={150} />
-              ) : data ? (
-                <Image
-                  src={
-                    data.image && data.image.startsWith('https')
-                      ? data.image
-                      : `${process.env.NEXT_PUBLIC_BASE_API_URL || ''}${data.image || '/profile.jpg'}`
-                  }
-                  alt="Profile"
-                  width={150}
-                  height={150}
-                  style={{ borderRadius: '50%', cursor: 'pointer' }}
-                  onClick={handleOpenProfilePictureModal}
-                />
-              ) : (
-                <Skeleton variant="circular" width={150} height={150} />
-              )}
-            </Box>
-          </Grid>
+          <PhotoProfileSection
+            data={data}
+            isLoading={isLoading}
+            handleOpenProfilePictureModal={handleOpenProfilePictureModal}
+          />
         </Grid>
 
         <Grid container spacing={2}>
-          <Grid item xs={12} display="flex" justifyContent="left"></Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="inherit"
-              component="h1"
-              color="common.black"
-              textAlign="left"
-              fontSize={16}
-            >
-              Username
-            </Typography>
-            {isLoading ? (
-              <Skeleton variant="rectangular" width="100%" />
-            ) : data ? (
-              <StyledButton variant="outlined" onClick={handleOpen} fullWidth>
-                {' '}
-                {data?.username ? data?.username : 'Choose username'}
-              </StyledButton>
-            ) : (
-              <Skeleton variant="rectangular" width="100%" />
-            )}
-          </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="inherit"
-              component="h1"
-              color="common.black"
-              textAlign="left"
-              fontSize={16}
-            >
-              Email
-            </Typography>
-            {isLoading ? (
-              <Skeleton variant="rectangular" width="100%" />
-            ) : data?.email ? (
-              <StyledButton onClick={handleOpenEmailModal} fullWidth>
-                {' '}
-                {data?.email}
-              </StyledButton>
-            ) : (
-              <Skeleton variant="rectangular" width="100%" />
-            )}
-          </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="inherit"
-              component="h1"
-              color="common.black"
-              textAlign="left"
-              fontSize={16}
-            >
-              Address
-            </Typography>
-            <Link href={'/dashboard/user/profile/address'}>
-              {isLoading ? (
-                <Skeleton variant="rectangular" width="100%" />
-              ) : primaryAddress ? (
-                <StyledButton variant="outlined" fullWidth>
-                  {primaryAddress ? primaryAddress : 'Location'}
-                </StyledButton>
-              ) : (
-                <Skeleton variant="rectangular" width="100%" />
-              )}
-            </Link>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="inherit"
-              component="h1"
-              color="common.black"
-              textAlign="left"
-              fontSize={16}
-            >
-              Password
-            </Typography>
-            {isLoading ? (
-              <Skeleton variant="rectangular" width="100%" />
-            ) : data ? (
-              <StyledButton fullWidth onClick={handleOpenPasswordModal}>
-                {data?.password ? 'SECRET' : 'SECRET'}
-              </StyledButton>
-            ) : (
-              <Skeleton variant="rectangular" width="100%" />
-            )}
-          </Grid>
+          <UsernameSection
+            isLoading={isLoading}
+            data={data}
+            handleOpen={handleOpen}
+          />
+          <EmailSection
+            isLoading={isLoading}
+            data={data}
+            handleOpenEmailModal={handleOpenEmailModal}
+          />
+          <AddressSection
+            isLoading={isLoading}
+            primaryAddress={primaryAddress}
+          />
+          <PasswordSection
+            data={data}
+            handleOpenPasswordModal={handleOpenPasswordModal}
+            isLoading={isLoading}
+          />
         </Grid>
       </Container>
 
