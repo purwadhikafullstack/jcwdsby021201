@@ -1,7 +1,7 @@
 import * as React from 'react';
-import CheckoutClientComponent from '@/views/checkout/CheckoutClientComponent';
 import { checkoutMetadata } from '@/app/meta-tag';
-
+import dynamic from 'next/dynamic'
+const CheckoutClientComponent = dynamic(() => import('../../../views/checkout/CheckoutClientComponent'), { ssr: false })
 
 interface ICheckoutProps {}
 

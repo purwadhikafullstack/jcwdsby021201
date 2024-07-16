@@ -58,7 +58,7 @@ const WishlistTable: React.FunctionComponent<ITableCartProps> = ({
             ...buttonPrimaryStyles,
           }}
         >
-          Let's Explore Product
+          Let&#39;s Explore Product
         </Button>
       </Box>
     );

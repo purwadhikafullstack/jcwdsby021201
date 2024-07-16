@@ -108,7 +108,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
         )}
       />
       <Typography variant="overline" gutterBottom sx={{ lineHeight: '16px' }}>
-        If you change your email address, you'll need to verify it again.
+        If you change your email address, you&#39;ll need to verify it again.
       </Typography>
 
       <Button
