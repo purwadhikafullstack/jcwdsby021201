@@ -1,0 +1,35 @@
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>Verification Email</title>
+    <style>
+      .card { border: 1px solid #007bff; background-color: #e9f4ff;
+      border-radius: 5px; padding: 16px; max-width: 512px; margin-left: auto;
+      margin-right: auto; } .button-link { background-color: white; color:
+      #007bff; border: 1px solid #007bff; text-decoration: none; padding: 8px
+      16px; border-radius: 5px; width: max-content; } .center { margin: 0 auto;
+      text-align: center; display: block; }
+    </style>
+  </head>
+  <body>
+    <div class='card'>
+      <h1>Activate Your Account</h1>
+      <br /><br />
+      <p>Hi, <strong>{{email}}</strong></p>
+      <p>
+        Thank you for updating your email address. To complete the process,
+        please click the link below to activate your account:
+      </p>
+      <br /><br />
+      <p>If you did not request this change, please ignore this email or contact
+        support if you have any questions.</p>
+      <div>
+        <br /><br />
+        <a class='button-link center' target='_blank' href='{{url}}'>
+          Activation Email
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
