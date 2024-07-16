@@ -55,25 +55,25 @@ export default class App {
     const adminRouter = new AdminRouter();
     const wishlistRouter = new WishlistRouter();
 
-    this.app.get('/', (req: Request, res: Response) => {
+    this.app.get('/api', (req: Request, res: Response) => {
       res.send(`Hello, Purwadhika Student !`);
     });
 
-    this.app.use('/', express.static(join(__dirname, '../public')));
-    this.app.use('/auth', authRouter.getRouter());
-    this.app.use('/categories', categoryRouter.getRouter());
-    this.app.use('/users', userRouter.getRouter());
-    this.app.use('/addresses', addressRouter.getRouter());
-    this.app.use('/locations', locationRouter.getRouter());
-    this.app.use('/products', productRouter.getRouter());
-    this.app.use('/warehouses', warehouseRouter.getRouter());
-    this.app.use('/carts', cartRouter.getRouter());
-    this.app.use('/checkouts', checkoutRouter.getRouter());
-    this.app.use('/orders', orderRouter.getRouter());
-    this.app.use('/inventories', inventoryRouter.getRouter());
-    this.app.use('/mutations', mutationRouter.getRouter());
-    this.app.use('/admin', adminRouter.getRouter());
-    this.app.use('/wishlists', wishlistRouter.getRouter());
+    this.app.use('/api', express.static(join(__dirname, '../public')));
+    this.app.use('/api/auth', authRouter.getRouter());
+    this.app.use('/api/categories', categoryRouter.getRouter());
+    this.app.use('/api/users', userRouter.getRouter());
+    this.app.use('/api/addresses', addressRouter.getRouter());
+    this.app.use('/api/locations', locationRouter.getRouter());
+    this.app.use('/api/products', productRouter.getRouter());
+    this.app.use('/api/warehouses', warehouseRouter.getRouter());
+    this.app.use('/api/carts', cartRouter.getRouter());
+    this.app.use('/api/checkouts', checkoutRouter.getRouter());
+    this.app.use('/api/orders', orderRouter.getRouter());
+    this.app.use('/api/inventories', inventoryRouter.getRouter());
+    this.app.use('/api/mutations', mutationRouter.getRouter());
+    this.app.use('/api/admin', adminRouter.getRouter());
+    this.app.use('/api/wishlists', wishlistRouter.getRouter());
   }
 
   private startCronJobs(): void {
