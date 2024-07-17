@@ -5,19 +5,11 @@ import { useEffect, useState } from 'react';
 
 // MUI Components
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
-
-// MUI Icons
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { UserFormData, userSchema } from '@/components/form/schemas/userSchema';
 
 // Styles
@@ -47,6 +39,8 @@ import { dashboardAdminPages } from '@/utils/routes';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
+import GeneralTextField from '@/components/input/GeneralTextField';
+import GeneralInputPassword from '@/components/input/GeneralInputPassword';
 
 const defaultValues: UserFormData = {
   username: '',
@@ -74,7 +68,6 @@ export default function UserForm({
   isQueryPending,
   id,
 }: UserFormProps) {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { handleSubmit, control, reset } = useForm<UserFormData>({
     resolver: zodResolver(userSchema),
     defaultValues,
@@ -121,91 +114,43 @@ export default function UserForm({
         onSubmit={handleSubmit(onSubmit)}
         sx={adminFormStyles}
       >
-        <Controller
+        <GeneralTextField
           control={control}
           name="username"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Username"
-              variant="outlined"
-              placeholder="Enter Username"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Username"
+          placeholder="Enter Username"
+          disabled={disabledOnPending}
+          shrink
         />
-        <Controller
+        <GeneralTextField
           control={control}
           name="email"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              type="email"
-              size="small"
-              label="Email"
-              variant="outlined"
-              placeholder="Enter Email"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          type="email"
+          label="Email"
+          placeholder="Enter Email"
+          disabled={disabledOnPending}
+          shrink
         />
-        <Controller
+        <GeneralInputPassword
           control={control}
           name="password"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              type={showPassword ? 'text' : 'password'}
-              label="Password"
-              variant="outlined"
-              placeholder="Enter Password"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  </IconButton>
-                ),
-              }}
-            />
-          )}
+          required
+          label="Password"
+          placeholder="Enter Password"
+          disabled={disabledOnPending}
+          shrink
         />
-        <Controller
+        <GeneralTextField
           control={control}
           name="confirmPassword"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              type="password"
-              size="small"
-              label="Confirm Password"
-              variant="outlined"
-              placeholder="Re-enter Password"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          type="password"
+          label="Confirm Password"
+          placeholder="Re-enter Password"
+          disabled={disabledOnPending}
+          shrink
         />
         <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
           <Button

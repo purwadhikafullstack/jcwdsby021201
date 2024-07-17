@@ -16,6 +16,7 @@ import bniLogo from '@/public/icons/bni.png';
 import gopayLogo from '@/public/icons/GOPAY.png';
 import ovoLogo from '@/public/icons/OVO.png';
 import { buttonPrimaryStyles } from '@/styles/buttonStyles';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 interface IAddressAndPaymentSelectionProps {
   selectedAddressId: number;
@@ -59,9 +60,17 @@ const AddressAndPaymentSelection: React.FunctionComponent<
           ))}
           <MenuItem
             value={'add_address'}
-            sx={{ textAlign: 'center', width: '100%' }}
+            sx={{
+              textAlign: 'center',
+              width: '100%',
+              justifyContent: 'center',
+              textTransform: 'uppercase',
+              fontWeight: 'bold',
+            }}
           >
+            <AddCircleOutlineIcon sx={{ marginRight: '8px' }} />
             Add New Address
+            <AddCircleOutlineIcon sx={{ marginLeft: '8px' }} />
           </MenuItem>
         </Select>
       </Grid>

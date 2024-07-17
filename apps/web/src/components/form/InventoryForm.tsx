@@ -54,6 +54,8 @@ import { useDebounce } from 'use-debounce';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
+import GeneralTextField from '@/components/input/GeneralTextField';
+import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
@@ -99,10 +101,12 @@ export default function InventoryForm({
     ProductResponse[] | OptionLabel[]
   >([]);
 
-  const { handleSubmit, control, reset } = useForm<InventoryFormData>({
-    resolver: zodResolver(inventorySchema),
-    defaultValues,
-  });
+  const { handleSubmit, control, reset, setValue } = useForm<InventoryFormData>(
+    {
+      resolver: zodResolver(inventorySchema),
+      defaultValues,
+    },
+  );
 
   const router = useRouter();
   const session = useSession();
@@ -167,6 +171,12 @@ export default function InventoryForm({
   }, [selectedWarehouse, optionsWarehouse]);
 
   useEffect(() => {
+    if (optionsWarehouse.length === 1) {
+      setValue('warehouseId', optionsWarehouse[0].id);
+    }
+  }, [optionsWarehouse, setValue]);
+
+  useEffect(() => {
     if (queryData?.success === false && id) {
       errorNotification(queryData?.message || 'Page not found');
       router.push(dashboardAdminPages.inventory.path);
@@ -213,7 +223,19 @@ export default function InventoryForm({
         onSubmit={handleSubmit(onSubmit)}
         sx={adminFormStyles}
       >
-        <Controller
+        <GeneralAutocomplete
+          control={control}
+          name="warehouseId"
+          options={optionsWarehouse}
+          shrink
+          required
+          label="Warehouse"
+          placeholder="Choose Warehouse"
+          disabled={disabledOnPending || id !== undefined}
+          isRefetching={isWarehouseRefetching || isWarehousesRefetching}
+          onInputChange={setInputWarehouse}
+        />
+        {/* <Controller
           control={control}
           name="warehouseId"
           render={({ field: { value, onChange }, fieldState: { error } }) => (
@@ -258,8 +280,20 @@ export default function InventoryForm({
               )}
             />
           )}
+        /> */}
+        <GeneralAutocomplete
+          control={control}
+          name="productId"
+          options={optionsProduct}
+          shrink
+          required
+          label="Product"
+          placeholder="Choose Product"
+          disabled={disabledOnPending || id !== undefined}
+          isRefetching={isProductRefetching}
+          onInputChange={setInputProduct}
         />
-        <Controller
+        {/* <Controller
           control={control}
           name="productId"
           render={({ field: { value, onChange }, fieldState: { error } }) => (
@@ -304,29 +338,18 @@ export default function InventoryForm({
               )}
             />
           )}
-        />
-        <Controller
+        /> */}
+        <GeneralTextField
           control={control}
           name="stock"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Stock"
-              variant="outlined"
-              placeholder="Product Stock"
-              disabled={disabledOnPending}
-              {...field}
-              onChange={(e) => {
-                const formattedValue = toThousandFlag(e.target.value);
-                field.onChange(formattedValue);
-              }}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Stock"
+          placeholder="Product Stock"
+          disabled={disabledOnPending}
+          additionalOnChange={(e) => {
+            e.target.value = toThousandFlag(e.target.value);
+          }}
+          shrink
         />
         <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
           <Button

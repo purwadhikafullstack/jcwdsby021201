@@ -10,10 +10,14 @@ import {
   WarehouseResponse,
   WarehouseUpdate,
 } from './types';
+import { apiRoutes } from '@/utils/routes';
 
 export const createWarehouse = async (data: WarehouseBody) => {
   const instance = await createAxiosInstance();
-  const res = await instance.post<ResponseWithoutData>('/warehouses', data);
+  const res = await instance.post<ResponseWithoutData>(
+    apiRoutes.warehouses.path,
+    data,
+  );
 
   return res.data;
 };
@@ -21,7 +25,7 @@ export const createWarehouse = async (data: WarehouseBody) => {
 export const getWarehouses = async (params: WarehouseQueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<WarehouseResponse[]>>(
-    '/warehouses',
+    apiRoutes.warehouses.path,
     { params },
   );
 
@@ -30,7 +34,9 @@ export const getWarehouses = async (params: WarehouseQueryPagination) => {
 
 export const deleteWarehouse = async (id: string) => {
   const instance = await createAxiosInstance();
-  const res = await instance.delete<ResponseWithoutData>(`/warehouses/${id}`);
+  const res = await instance.delete<ResponseWithoutData>(
+    `${apiRoutes.warehouses.path}/${id}`,
+  );
 
   return res.data;
 };
@@ -38,7 +44,7 @@ export const deleteWarehouse = async (id: string) => {
 export const getWarehouse = async (id: string) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseWithData<WarehouseResponse>>(
-    `/warehouses/${id}`,
+    `${apiRoutes.warehouses.path}/${id}`,
   );
 
   return res.data;
@@ -47,7 +53,7 @@ export const getWarehouse = async (id: string) => {
 export const updateWarehouse = async ({ id, ...data }: WarehouseUpdate) => {
   const instance = await createAxiosInstance();
   const res = await instance.patch<ResponseWithoutData>(
-    `/warehouses/${id}`,
+    `${apiRoutes.warehouses.path}/${id}`,
     data,
   );
 
@@ -56,8 +62,9 @@ export const updateWarehouse = async ({ id, ...data }: WarehouseUpdate) => {
 
 export const getUserWarehouse = async () => {
   const instance = await createAxiosInstance();
-  const res =
-    await instance.get<ResponseWithData<WarehouseResponse>>(`/warehouses/user`);
+  const res = await instance.get<ResponseWithData<WarehouseResponse>>(
+    `${apiRoutes.warehouses.path}/user`,
+  );
 
   return res.data;
 };

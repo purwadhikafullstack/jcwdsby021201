@@ -10,6 +10,7 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Autocomplete from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormHelperText from '@mui/material/FormHelperText';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -54,6 +55,8 @@ import { useDebounce } from 'use-debounce';
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
+import GeneralTextField from '@/components/input/GeneralTextField';
+import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
 
 // Map
 import { LatLngExpression } from 'leaflet';
@@ -102,7 +105,6 @@ export default function WarehouseForm({
   const [location, setLocation] = useState<LatLngExpression | null>(null);
   const [province, setProvince] = useState<OptionLabel | null>(null);
   const [city, setCity] = useState<OptionLabel | null>(null);
-  const [admin, setAdmin] = useState<AdminOption | null>(null);
   const [optionsProvince, setOptionsProvince] = useState<
     ProvinceResponse[] | OptionLabel[]
   >([]);
@@ -191,14 +193,6 @@ export default function WarehouseForm({
   }, [admins?.result]);
 
   useEffect(() => {
-    if (admin && !optionsAdmin.find((opt) => opt.id === admin.id)) {
-      setOptionsAdmin([...optionsAdmin, admin]);
-    } else if (optionsAdmin.length) {
-      setOptionsAdmin(optionsAdmin);
-    }
-  }, [admin, optionsAdmin]);
-
-  useEffect(() => {
     if (queryData?.success === false && id) {
       errorNotification(queryData?.message || 'Page not found');
       router.push(dashboardAdminPages.warehouse.path);
@@ -235,12 +229,6 @@ export default function WarehouseForm({
       reset(defaultValues);
     }
   };
-
-  if (errors.latitude || errors.longitude) {
-    errorNotification(
-      'Please click on the map and select the exact location of the warehouse',
-    );
-  }
 
   return (
     <Box component="main" sx={adminFormContainerStyles}>
@@ -297,165 +285,75 @@ export default function WarehouseForm({
             />
           )}
         />
-
-        <Controller
+        <GeneralTextField
           control={control}
           name="name"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Name"
-              variant="outlined"
-              placeholder="Warehouse Name"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Name"
+          placeholder="Warehouse Name"
+          disabled={disabledOnPending}
+          shrink
         />
-
-        <Controller
+        <GeneralTextField
           control={control}
           name="address"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              multiline
-              minRows={3}
-              size="small"
-              label="Address"
-              variant="outlined"
-              placeholder="Warehouse Address"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          multiline
+          minRows={3}
+          label="Address"
+          placeholder="Warehouse Address"
+          disabled={disabledOnPending}
+          shrink
         />
-
-        <Controller
+        <GeneralAutocomplete
           control={control}
           name="provinceId"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
-              openOnFocus
-              disabled={disabledOnPending}
-              options={optionsProvince}
-              getOptionLabel={(option) => option.name}
-              onChange={(_, value) => {
-                onChange(value?.id ?? null);
-              }}
-              value={
-                value ? optionsProvince.find((opt) => opt.id === value) : null
-              }
-              onInputChange={(_, newInputValue) => {
-                setInputProvince(newInputValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size="small"
-                  label="Province"
-                  variant="outlined"
-                  placeholder="Choose Province"
-                  disabled={disabledOnPending}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true, required: true }}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isProvinceRefetching ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          )}
+          options={optionsProvince}
+          shrink
+          required
+          label="Province"
+          placeholder="Choose Province"
+          disabled={disabledOnPending}
+          isRefetching={isProvinceRefetching}
+          additionalOnChange={() => {
+            setValue('latitude', null);
+            setValue('longitude', null);
+            setValue('cityId', null);
+          }}
+          onInputChange={setInputProvince}
         />
-
-        <Controller
+        <GeneralAutocomplete
           control={control}
           name="cityId"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
-              openOnFocus
-              disabled={!selectedProvince || disabledOnPending}
-              options={optionsCity}
-              getOptionLabel={(option) => option.name}
-              onChange={(_, value) => {
-                onChange(value?.id ?? null);
-              }}
-              value={value ? optionsCity.find((opt) => opt.id === value) : null}
-              onInputChange={(_, newInputValue) => {
-                setInputCity(newInputValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size="small"
-                  label="City"
-                  variant="outlined"
-                  placeholder="Choose City"
-                  disabled={!selectedProvince || disabledOnPending}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true, required: true }}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isCityRefetching ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          )}
+          options={optionsCity}
+          shrink
+          required
+          label="City"
+          placeholder="Choose City"
+          disabled={disabledOnPending}
+          isRefetching={isCityRefetching}
+          onInputChange={setInputCity}
         />
-
-        <Controller
+        <GeneralTextField
           control={control}
           name="postalCode"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Postal Code"
-              variant="outlined"
-              placeholder="Warehouse Postal Code"
-              disabled={disabledOnPending}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Postal Code"
+          placeholder="Warehouse Postal Code"
+          disabled={disabledOnPending}
+          shrink
         />
-
-        <Box sx={{ width: '100%', height: '400px' }}>
-          <WarehouseMap setValue={setValue} location={location} />
+        <Box sx={{ width: '100%' }}>
+          {errors.latitude || errors.longitude ? (
+            <FormHelperText sx={{ color: 'error.main' }}>
+              Please click on the map and select the exact location of the
+              warehouse
+            </FormHelperText>
+          ) : null}
+          <Box sx={{ height: '400px' }}>
+            <WarehouseMap setValue={setValue} location={location} />
+          </Box>
         </Box>
-
         <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
           <Button
             type="submit"

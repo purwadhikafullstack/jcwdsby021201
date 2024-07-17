@@ -211,6 +211,17 @@ export class MutationRepository {
         },
       });
 
+      // create journal out for inventory
+      await tx.journalMutation.create({
+        data: {
+          transactionType: 'OUT',
+          productWarehouse: { connect: { id: inventoryDestinationId } },
+          quantity: stockProcess,
+          description: `Stock OUT ${product.name} from ${destinationWarehouse.name} to ${sourceWarehouse.name} by ${user.username ? user.username : 'Unknown'} qty: ${stockProcess}`,
+          refMutation: { connect: { id: mutationId } },
+        },
+      });
+
       // create journal in for inventory
       await tx.journalMutation.create({
         data: {

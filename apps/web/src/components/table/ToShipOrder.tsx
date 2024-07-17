@@ -89,14 +89,16 @@ export default function ToShipTable() {
   };
 
   //gambar
-  const image = (img: string) => {
+  const image = (img: string | null) => {
     return (
-      <Image
-        src={process.env.NEXT_PUBLIC_BASE_API_URL + `${img}` || `${img}`}
-        alt={img}
-        width={50}
-        height={50}
-      />
+      img && (
+        <Image
+          src={process.env.NEXT_PUBLIC_BASE_API_URL + `${img}` || `${img}`}
+          alt={img}
+          width={50}
+          height={50}
+        />
+      )
     );
   };
 
@@ -107,7 +109,7 @@ export default function ToShipTable() {
         header: '',
         enableColumnActions: false,
         Cell: ({ cell }) => {
-          const pic = cell.getValue() as string;
+          const pic = (cell.getValue() as string) || null;
           return image(pic);
         },
         size: 50,

@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { createAddressMetadata } from '@/app/meta-tag';
-import dynamic from 'next/dynamic'
-const AddressForm = dynamic(() => import('../../../../../components/form/AddAddressForm'), { ssr: false });
-
+import AddressForm from '@/components/form/AddAddressForm';
+import * as React from 'react';
 interface IAppProps {}
 
 export const metadata = createAddressMetadata;
+
+export const dynamic = 'force-dynamic';
 
 const App: React.FunctionComponent<IAppProps> = (props) => {
   return <AddressForm shouldRedirect={true} />;

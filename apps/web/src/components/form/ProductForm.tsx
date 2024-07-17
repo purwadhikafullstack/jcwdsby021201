@@ -5,14 +5,11 @@ import { useEffect, useState } from 'react';
 
 // MUI Components
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   productSchema,
   ProductFormData,
@@ -51,9 +48,11 @@ import { useDebounce } from 'use-debounce';
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
 import ProductFormDropzone from '@/views/admin/products/ProductFormDropzone';
+import GeneralTextField from '@/components/input/GeneralTextField';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
+import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
 
 const defaultValues: ProductFormData = {
   name: '',
@@ -206,112 +205,47 @@ export default function ProductForm({
           handleDeleteFile={handleDeleteFile}
           user={user}
         />
-
-        <Controller
+        <GeneralTextField
           control={control}
           name="name"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Name"
-              variant="outlined"
-              placeholder="Product Name"
-              disabled={onlySuperAdmin}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Name"
+          placeholder="Product Name"
+          disabled={onlySuperAdmin}
+          shrink
         />
-        <Controller
+        <GeneralTextField
           control={control}
           name="price"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Price"
-              variant="outlined"
-              placeholder="Product Price"
-              disabled={onlySuperAdmin}
-              {...field}
-              onChange={(e) => {
-                const formattedValue = toThousandFlag(e.target.value);
-                field.onChange(formattedValue);
-              }}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Price"
+          placeholder="Product Price"
+          disabled={onlySuperAdmin}
+          additionalOnChange={(e) =>
+            (e.target.value = toThousandFlag(e.target.value))
+          }
+          shrink
         />
-        <Controller
+        <GeneralTextField
           control={control}
           name="description"
-          render={({ field }) => (
-            <TextField
-              fullWidth
-              size="small"
-              label="Description"
-              variant="outlined"
-              placeholder="Product Description"
-              disabled={onlySuperAdmin}
-              {...field}
-              multiline
-              minRows={3}
-              InputLabelProps={{ shrink: true }}
-            />
-          )}
+          label="Description"
+          placeholder="Product Description"
+          disabled={onlySuperAdmin}
+          multiline
+          minRows={3}
         />
-        <Controller
+        <GeneralAutocomplete
           control={control}
           name="categoryId"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
-              openOnFocus
-              disabled={onlySuperAdmin}
-              options={options}
-              getOptionLabel={(option) => option.name || ''}
-              onChange={(_, value) => {
-                onChange(value?.id ?? null);
-              }}
-              value={
-                value ? options.find((category) => category.id === value) : null
-              }
-              onInputChange={(_, newInputValue) => {
-                setInputValue(newInputValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size="small"
-                  label="Category"
-                  variant="outlined"
-                  placeholder="Choose Category"
-                  disabled={onlySuperAdmin}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true, required: true }}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isRefetching ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          )}
+          options={options}
+          shrink
+          required
+          label="Category"
+          placeholder="Choose Category"
+          disabled={onlySuperAdmin}
+          isRefetching={isRefetching}
+          onInputChange={setInputValue}
         />
         <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
           {user?.role === 'SUPER_ADMIN' && (

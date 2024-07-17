@@ -24,7 +24,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import Logo from '@/components/core/Logo';
 import Link from 'next/link';
-import axios from 'axios';
 import { signOut, useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useGetCountProductCart } from '@/features/user/cart/cartQueries';

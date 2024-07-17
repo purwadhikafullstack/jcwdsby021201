@@ -20,8 +20,6 @@ import { UserSession } from '@/features/types';
 import {
   useFetchCities,
   useFetchProvince,
-  useGetCityName,
-  useGetProvinceName,
 } from '@/features/user/location/locationQueries';
 import { useAddAddress } from '@/features/user/address/addressMutations';
 import Map from '../map/Map';

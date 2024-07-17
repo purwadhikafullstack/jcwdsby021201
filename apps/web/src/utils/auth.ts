@@ -7,25 +7,27 @@ import { login, oauth } from '@/features/auth/login/loginFetchers';
 import { authPages } from '@/utils/routes';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
+      clientId: process.env.AUTH_GOOGLE_ID as string,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
     }),
     GitHub({
-      clientId: process.env.AUTH_GITHUB_ID,
-      clientSecret: process.env.AUTH_GITHUB_SECRET,
+      clientId: process.env.AUTH_GITHUB_ID as string,
+      clientSecret: process.env.AUTH_GITHUB_SECRET as string,
     }),
     Discord({
-      clientId: process.env.AUTH_DISCORD_ID,
-      clientSecret: process.env.AUTH_DISCORD_SECRET,
+      clientId: process.env.AUTH_DISCORD_ID as string,
+      clientSecret: process.env.AUTH_DISCORD_SECRET as string,
     }),
     Credentials({
       credentials: {
         email: {},
         password: {},
       },
-      authorize: async (credentials) => {
+      // @ts-ignore
+      authorize: async (credentials: any) => {
         const res = await login({
           email: credentials.email as string,
           password: credentials.password as string,

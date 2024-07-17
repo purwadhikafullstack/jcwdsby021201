@@ -53,14 +53,8 @@ const SearchBox = ({
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `https://nominatim.openstreetmap.org/search`,
-        {
-          params: {
-            q: searchQuery,
-            format: 'json',
-            limit: 1,
-          },
-        },
+        `${process.env.NEXT_PUBLIC_NOMINATIM_URL}/search`,
+        { params: { q: searchQuery, format: 'json', limit: 1 } },
       );
       const data = response.data;
       if (data.length > 0) {

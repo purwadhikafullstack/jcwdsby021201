@@ -2,6 +2,7 @@ import { adminCategoryMetadata } from '@/app/meta-tag';
 import DashboardBreadcrumbs from '@/components/core/DashboardBreadcrumbs';
 import CategoryTable from '@/components/table/CategoryTable';
 import { dashboardAdminPages } from '@/utils/routes';
+import Box from '@mui/material/Box';
 
 export const metadata = adminCategoryMetadata;
 
@@ -9,7 +10,9 @@ export default function CategoryPage() {
   return (
     <>
       <DashboardBreadcrumbs route={dashboardAdminPages.category} />
-      <CategoryTable />
+      <Box sx={{ maxWidth: '100%', py: 2 }}>
+        <CategoryTable />
+      </Box>
     </>
   );
 }

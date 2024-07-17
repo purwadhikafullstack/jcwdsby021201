@@ -10,6 +10,11 @@ export const buttonPrimaryStyles: SxProps<Theme> = {
   },
 };
 
+export const disabledStyles: SxProps<Theme> = {
+  backgroundColor: '#EEE',
+  color: 'black',
+};
+
 export const buttonBackStyles: SxProps<Theme> = {
   backgroundColor: (theme) => theme.palette.grey[500],
   color: 'white',

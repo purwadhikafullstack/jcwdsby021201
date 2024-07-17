@@ -32,6 +32,7 @@ import {
   authPages,
   dashboardAdminPages,
   dashboardUserPages,
+  mainPages,
 } from '@/utils/routes';
 import SimpleBar from 'simplebar-react';
 
@@ -49,7 +50,7 @@ const stickyBox: SxProps = {
   bgcolor: 'white',
 };
 
-const settings = ['Profile', 'Account', 'Dashboard'];
+const settings = [mainPages.home];
 
 const menuSuperAdmin = [
   dashboardAdminPages.user,
@@ -121,7 +122,7 @@ export default function DashboardLayout({ children }: Props) {
             >
               <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
-                  {/* {<menu.Icon sx={{ fontSize: '18px' }} />} */}
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.label} />
               </ListItemButton>
@@ -140,7 +141,7 @@ export default function DashboardLayout({ children }: Props) {
             >
               <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
-                  {/* {<menu.Icon sx={{ fontSize: '18px' }} />} */}
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.label} />
               </ListItemButton>
@@ -159,7 +160,7 @@ export default function DashboardLayout({ children }: Props) {
             >
               <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
-                  {/* {<menu.Icon sx={{ fontSize: '18px' }} />} */}
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.label} />
               </ListItemButton>
@@ -177,7 +178,7 @@ export default function DashboardLayout({ children }: Props) {
           boxShadow: 'none',
           borderBottom: '1px solid',
           borderColor: '#e0e0e0',
-          zIndex: 1,
+          zIndex: 99,
         }}
       >
         <Container maxWidth="xl">
@@ -214,9 +215,18 @@ export default function DashboardLayout({ children }: Props) {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
+                  <Link
+                    key={setting.label}
+                    href={setting.path}
+                    passHref
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <MenuItem key={setting.label} onClick={handleCloseUserMenu}>
+                      <Typography textAlign="center" sx={{ color: 'black' }}>
+                        {setting.label}
+                      </Typography>
+                    </MenuItem>
+                  </Link>
                 ))}
                 <MenuItem>
                   <Typography
