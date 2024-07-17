@@ -43,7 +43,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
     try {
       if (token) {
         const response = await axios.post(
-          `${process.env.NEXT_PUBLIC_BASE_API_URL}/${apiRoutes.users.path}/email-availability`,
+          `${process.env.NEXT_PUBLIC_BASE_API_URL}${apiRoutes.users.path}/email-availability`,
           { email: data.email },
           {
             headers: {
