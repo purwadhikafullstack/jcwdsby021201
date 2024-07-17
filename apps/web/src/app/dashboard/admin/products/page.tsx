@@ -10,7 +10,7 @@ export default function ProductPage() {
   return (
     <>
       <DashboardBreadcrumbs route={dashboardAdminPages.product} />
-      <Box sx={{ maxWidth: '100%', py: 2 }}>
+      <Box sx={{ maxWidth: '100%', pt: 2 }}>
         <ProductTable />
       </Box>
     </>

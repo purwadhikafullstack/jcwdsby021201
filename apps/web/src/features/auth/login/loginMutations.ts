@@ -12,8 +12,8 @@ export const useLoginTransport = () => {
     mutationFn: loginTransport,
     onSuccess: (data) => {
       if (data.success) {
-        successNotification(data.message);
         window.location.reload();
+        successNotification(data.message);
       } else {
         errorNotification(data.message);
       }
