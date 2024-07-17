@@ -10,7 +10,7 @@ export default function WarehousePage() {
   return (
     <>
       <DashboardBreadcrumbs route={dashboardAdminPages.warehouse} />
-      <Box sx={{ maxWidth: '100%', pt: 2 }}>
+      <Box sx={{ maxWidth: '100%', pb: 2 }}>
         <WarehouseTable />
       </Box>
     </>
