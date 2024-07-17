@@ -95,7 +95,7 @@ export class OrderRepository {
             data: {
               quantity: product.quantity,
               transactionType: 'OUT',
-              description: `Stock OUT ${productInfo?.name} from ${warehouseName?.name} by ${usernameForDesc?.username ? usernameForDesc.username : 'Unknown'}, qty : ${product.quantity}`,
+              description: `Stock OUT ${productInfo?.name} from ${warehouseName?.name} for ORDER, qty : ${product.quantity}`,
               productWarehouseId: productWarehouse.id,
             },
           });
@@ -344,7 +344,6 @@ export class OrderRepository {
               },
             });
 
-
             // terus update ke warehouse terdekat
             await tx.productWarehouse.update({
               where: { id: warehouseWithStock.id },
@@ -391,6 +390,18 @@ export class OrderRepository {
                 refMutationId: mutation.id,
               },
             });
+            
+            // OUT inventory
+            await tx.journalMutation.create({
+              data: {
+                quantity: transferQuantity,
+                transactionType: 'OUT',
+                description: `Stock OUT ${stockInWarehouse.product.name} from ${warehouseWithStock.warehouse.name}, qty : ${transferQuantity} `, // UPDATED
+                productWarehouseId: warehouseWithStock.id,
+                refMutationId: mutation.id,
+              },
+            });
+
 
             //setelah setiap proses pencatatan jurnal, kurangin --
             currentDeficit -= transferQuantity;
