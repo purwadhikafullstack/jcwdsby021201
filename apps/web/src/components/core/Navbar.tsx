@@ -110,11 +110,8 @@ export default function Navbar() {
         <ListItem button component={Link} href="/">
           <ListItemText primary="Home" />
         </ListItem>
-        <ListItem button component={Link} href="/contact">
-          <ListItemText primary="Contact" />
-        </ListItem>
-        <ListItem button component={Link} href="/about">
-          <ListItemText primary="About" />
+        <ListItem button component={Link} href="/products">
+          <ListItemText primary="Explore" />
         </ListItem>
         {token ? (
           <>
@@ -200,14 +197,9 @@ export default function Navbar() {
                 Home
               </Button>
             </Link>
-            <Link href="/contact" passHref>
+            <Link href="/products" passHref>
               <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
-                Contact
-              </Button>
-            </Link>
-            <Link href="/about" passHref>
-              <Button sx={{ textTransform: 'capitalize', color: 'black' }}>
-                About
+                Explore
               </Button>
             </Link>
             {token ? (
