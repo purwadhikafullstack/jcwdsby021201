@@ -1,17 +1,13 @@
 import { ResponseWithData, ResponseWithoutData } from '@/features/types';
 import axiosInstance from '@/utils/axiosInstance';
 import { AddressBody, CreateAddress, UpdateAddress } from './type';
-import { Token } from '@mui/icons-material';
 import { AddressRequest } from './type';
+import { apiRoutes } from '@/utils/routes';
 
 export const getAddressById = async (token: string) => {
   const res = await axiosInstance.get<ResponseWithData<AddressBody[]>>(
-    '/addresses',
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    apiRoutes.addresses.path,
+    { headers: { Authorization: `Bearer ${token}` } },
   );
 
   return res.data.result;
@@ -22,25 +18,17 @@ export const getAddressByAddressId = async (
   addressId: string,
 ) => {
   const res = await axiosInstance.get<ResponseWithData<AddressBody>>(
-    `/addresses/${addressId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    `${apiRoutes.addresses.path}/${addressId}`,
+    { headers: { Authorization: `Bearer ${token}` } },
   );
   return res.data.result;
 };
 
 export const deleteAddress = async ({ token, addressId }: AddressRequest) => {
   const res = await axiosInstance.patch<ResponseWithoutData>(
-    `/addresses/deactivate/${addressId}`,
+    `${apiRoutes.addresses.path}/deactivate/${addressId}`,
     {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    { headers: { Authorization: `Bearer ${token}` } },
   );
 
   return res.data;
@@ -52,13 +40,9 @@ export const updateAddress = async ({
   data,
 }: UpdateAddress) => {
   const res = await axiosInstance.patch<ResponseWithoutData>(
-    `/addresses/edit/${addressId}`,
+    `${apiRoutes.addresses.path}/edit/${addressId}`,
     data,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    { headers: { Authorization: `Bearer ${token}` } },
   );
 
   return res.data;
@@ -66,13 +50,9 @@ export const updateAddress = async ({
 
 export const addAddress = async ({ token, addressData }: CreateAddress) => {
   const res = await axiosInstance.post<ResponseWithoutData>(
-    `/addresses`,
+    apiRoutes.addresses.path,
     addressData,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    },
+    { headers: { Authorization: `Bearer ${token}` } },
   );
 
   return res.data;

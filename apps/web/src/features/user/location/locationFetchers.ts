@@ -10,31 +10,32 @@ import {
   LocationName,
   ProvinceResponse,
 } from './type';
+import { apiRoutes } from '@/utils/routes';
 
 export const getProvince = async () => {
   const res = await axiosInstance.get<ResponseWithData<LocationBody[]>>(
-    '/locations/province',
+    `${apiRoutes.locations.path}/province`,
   );
   return res.data.result;
 };
 
 export const getCities = async (provinceId: number) => {
   const res = await axiosInstance.get<ResponseWithData<LocationBody[]>>(
-    `/locations/${provinceId}`,
+    `${apiRoutes.locations.path}/${provinceId}`,
   );
   return res.data.result;
 };
 
 export const getProvinceName = async (provinceId: number) => {
   const res = await axiosInstance.get<ResponseWithData<LocationName[]>>(
-    `/locations/province/${provinceId}`,
+    `${apiRoutes.locations.path}/province/${provinceId}`,
   );
   return res.data.result[0];
 };
 
 export const getCityName = async (cityId: number) => {
   const res = await axiosInstance.get<ResponseWithData<LocationName[]>>(
-    `/locations/city/${cityId}`,
+    `${apiRoutes.locations.path}/city/${cityId}`,
   );
   return res.data.result;
 };
@@ -42,7 +43,7 @@ export const getCityName = async (cityId: number) => {
 export const getProvincesPagination = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<ProvinceResponse[]>>(
-    '/locations/province',
+    `${apiRoutes.locations.path}/province`,
     { params },
   );
 
@@ -55,7 +56,7 @@ export const getCitiesPagination = async (
 ) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<CityResponse[]>>(
-    '/locations/cities/' + provinceId,
+    `${apiRoutes.locations.path}/cities/${provinceId}`,
     { params },
   );
 

@@ -7,10 +7,14 @@ import {
 } from '@/features/types';
 import { createAxiosInstance } from '@/utils/axiosInstance';
 import { InventoryBody, InventoryResponse, InventoryUpdate } from './types';
+import { apiRoutes } from '@/utils/routes';
 
 export const createInventory = async (data: InventoryBody) => {
   const instance = await createAxiosInstance();
-  const res = await instance.post<ResponseWithoutData>('/inventories', data);
+  const res = await instance.post<ResponseWithoutData>(
+    apiRoutes.inventories.path,
+    data,
+  );
 
   return res.data;
 };
@@ -18,7 +22,7 @@ export const createInventory = async (data: InventoryBody) => {
 export const getInventories = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<InventoryResponse[]>>(
-    '/inventories',
+    apiRoutes.inventories.path,
     { params },
   );
 
@@ -27,7 +31,9 @@ export const getInventories = async (params: QueryPagination) => {
 
 export const deleteInventory = async (id: string) => {
   const instance = await createAxiosInstance();
-  const res = await instance.delete<ResponseWithoutData>(`/inventories/${id}`);
+  const res = await instance.delete<ResponseWithoutData>(
+    `${apiRoutes.inventories.path}/${id}`,
+  );
 
   return res.data;
 };
@@ -35,7 +41,7 @@ export const deleteInventory = async (id: string) => {
 export const getInventory = async (id: string) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseWithData<InventoryResponse>>(
-    `/inventories/${id}`,
+    `${apiRoutes.inventories.path}/${id}`,
   );
 
   return res.data;
@@ -44,7 +50,7 @@ export const getInventory = async (id: string) => {
 export const updateInventory = async ({ id, ...data }: InventoryUpdate) => {
   const instance = await createAxiosInstance();
   const res = await instance.patch<ResponseWithoutData>(
-    `/inventories/${id}`,
+    `${apiRoutes.inventories.path}/${id}`,
     data,
   );
 
@@ -54,7 +60,7 @@ export const updateInventory = async ({ id, ...data }: InventoryUpdate) => {
 export const getInventoryHistory = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
-    '/inventories/history',
+    `${apiRoutes.inventories.path}/history`,
     { params },
   );
 
@@ -67,7 +73,7 @@ export const getInventoryHistoryById = async (
 ) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
-    `/inventories/history/${id}`,
+    `${apiRoutes.inventories.path}/history/${id}`,
     { params },
   );
 

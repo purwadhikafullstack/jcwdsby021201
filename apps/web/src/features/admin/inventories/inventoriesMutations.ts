@@ -21,6 +21,7 @@ export const useCreateInventory = () => {
     onSuccess: (data) => {
       if (data.success) {
         queryClient.invalidateQueries({ queryKey: ['inventories'] });
+        queryClient.invalidateQueries({ queryKey: ['inventory-history'] });
         successNotification(data.message);
         router.push(dashboardAdminPages.inventory.path);
       } else {

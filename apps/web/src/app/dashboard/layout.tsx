@@ -121,7 +121,7 @@ export default function DashboardLayout({ children }: Props) {
             >
               <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
-                  {/* {<menu.Icon sx={{ fontSize: '18px' }} />} */}
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.label} />
               </ListItemButton>
@@ -140,7 +140,7 @@ export default function DashboardLayout({ children }: Props) {
             >
               <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
-                  {/* {<menu.Icon sx={{ fontSize: '18px' }} />} */}
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.label} />
               </ListItemButton>
@@ -159,7 +159,7 @@ export default function DashboardLayout({ children }: Props) {
             >
               <ListItemButton LinkComponent={Link} href={menu.path}>
                 <ListItemIcon sx={{ minWidth: '30px' }}>
-                  {/* {<menu.Icon sx={{ fontSize: '18px' }} />} */}
+                  {<menu.Icon sx={{ fontSize: '18px' }} />}
                 </ListItemIcon>
                 <ListItemText primary={menu.label} />
               </ListItemButton>
