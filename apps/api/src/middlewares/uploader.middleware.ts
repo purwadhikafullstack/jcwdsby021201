@@ -3,7 +3,7 @@ import multer from 'multer';
 import { join } from 'path';
 
 export const uploader = (dirName?: string, filePrefix?: string) => {
-  const defaultDir = join(__dirname, '../../../public/assets');
+  const defaultDir = join(__dirname, '../../public/assets');
 
   const configStore = multer.diskStorage({
     destination: (
