@@ -3,11 +3,11 @@ import Google from 'next-auth/providers/google';
 import GitHub from 'next-auth/providers/github';
 import Discord from 'next-auth/providers/discord';
 import Credentials from 'next-auth/providers/credentials';
-import { login, oauth } from '@/features/auth/login/loginFetchers';
+import { oauth } from '@/features/auth/login/loginFetchers';
 import { authPages } from '@/utils/routes';
+import { LoginResponse } from '@/features/auth/login/types';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID as string,
@@ -22,18 +22,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       clientSecret: process.env.AUTH_DISCORD_SECRET as string,
     }),
     Credentials({
-      credentials: {
-        email: {},
-        password: {},
-      },
       // @ts-ignore
-      authorize: async (credentials: any) => {
-        const res = await login({
-          email: credentials.email as string,
-          password: credentials.password as string,
-        });
-
-        return res.result;
+      authorize: async (data: LoginResponse) => {
+        return data;
       },
     }),
   ],
