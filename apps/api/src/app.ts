@@ -59,7 +59,7 @@ export default class App {
       res.send(`Hello, Purwadhika Student !`);
     });
 
-    this.app.use('/api/v1', express.static(join(__dirname, '../../public')));
+    this.app.use('/api/v1', express.static(join(__dirname, '../../../public')));
     this.app.use('/api/v1/auth', authRouter.getRouter());
     this.app.use('/api/v1/categories', categoryRouter.getRouter());
     this.app.use('/api/v1/users', userRouter.getRouter());
