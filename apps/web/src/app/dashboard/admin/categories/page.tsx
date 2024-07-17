@@ -10,7 +10,7 @@ export default function CategoryPage() {
   return (
     <>
       <DashboardBreadcrumbs route={dashboardAdminPages.category} />
-      <Box sx={{ maxWidth: '100%', py: 2 }}>
+      <Box sx={{ maxWidth: '100%', pt: 2 }}>
         <CategoryTable />
       </Box>
     </>
