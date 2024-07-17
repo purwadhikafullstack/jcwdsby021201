@@ -103,6 +103,7 @@ export default function WarehouseForm({
   const [location, setLocation] = useState<LatLngExpression | null>(null);
   const [province, setProvince] = useState<OptionLabel | null>(null);
   const [city, setCity] = useState<OptionLabel | null>(null);
+  const [admin, setAdmin] = useState<AdminOption | null>(null);
   const [optionsProvince, setOptionsProvince] = useState<
     ProvinceResponse[] | OptionLabel[]
   >([]);
@@ -191,6 +192,14 @@ export default function WarehouseForm({
   }, [admins?.result]);
 
   useEffect(() => {
+    if (admin && !optionsAdmin.find((opt) => opt.id === admin.id)) {
+      setOptionsAdmin([...optionsAdmin, admin]);
+    } else if (optionsAdmin.length) {
+      setOptionsAdmin(optionsAdmin);
+    }
+  }, [admin, optionsAdmin]);
+
+  useEffect(() => {
     if (queryData?.success === false && id) {
       errorNotification(queryData?.message || 'Page not found');
       router.push(dashboardAdminPages.warehouse.path);
@@ -211,6 +220,10 @@ export default function WarehouseForm({
       setLocation({
         lat: queryData?.result?.latitude,
         lng: queryData?.result?.longitude,
+      });
+      setAdmin({
+        id: queryData?.result?.user?.id,
+        username: queryData?.result?.user?.username || '',
       });
     }
   }, [queryData?.result, reset, id]);
