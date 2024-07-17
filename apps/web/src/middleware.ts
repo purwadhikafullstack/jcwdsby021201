@@ -4,6 +4,11 @@ import type { NextRequest } from 'next/server';
 import { authPages, dashboardAdminPages, mainPages } from '@/utils/routes';
 import { UserSession } from '@/features/types';
 
+export const config = {
+  // runtime: 'experimental-edge',
+  unstable_allowDynamic: ['./**'],
+};
+
 export const middleware = async (req: NextRequest) => {
   const session = await auth();
   const user = session?.user as UserSession;

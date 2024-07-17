@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react';
 import { UserSession } from '@/features/types';
 import { useChangeProfileEmail } from '@/features/user/profile/profileMutation';
 import { buttonPrimaryStyles } from '@/styles/buttonStyles';
+import { apiRoutes } from '@/utils/routes';
 
 interface ChangeEmailFormProps {
   initialEmail: string;
@@ -42,7 +43,7 @@ const ChangeEmailForm: React.FC<ChangeEmailFormProps> = ({
     try {
       if (token) {
         const response = await axios.post(
-          'http://localhost:8000/users/email-availability',
+          `${process.env.NEXT_PUBLIC_BASE_API_URL}/${apiRoutes.users.path}/email-availability`,
           { email: data.email },
           {
             headers: {

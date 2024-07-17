@@ -12,11 +12,12 @@ import {
   UserResponse,
   UserUpdate,
 } from './types';
+import { apiRoutes } from '@/utils/routes';
 
 export const getWarehouseAdmins = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<AdminResponse[]>>(
-    '/admin/admins',
+    `${apiRoutes.admin.path}/admins`,
     { params },
   );
 
@@ -25,7 +26,10 @@ export const getWarehouseAdmins = async (params: QueryPagination) => {
 
 export const createUser = async (data: UserBody) => {
   const instance = await createAxiosInstance();
-  const res = await instance.post<ResponseWithoutData>('/admin/users', data);
+  const res = await instance.post<ResponseWithoutData>(
+    `${apiRoutes.admin.path}/users`,
+    data,
+  );
 
   return res.data;
 };
@@ -33,7 +37,7 @@ export const createUser = async (data: UserBody) => {
 export const getUsers = async (params: UserQueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<UserResponse[]>>(
-    `/admin/users`,
+    `${apiRoutes.admin.path}/users`,
     { params },
   );
 
@@ -42,7 +46,9 @@ export const getUsers = async (params: UserQueryPagination) => {
 
 export const deleteUser = async (id: string) => {
   const instance = await createAxiosInstance();
-  const res = await instance.delete<ResponseWithoutData>(`/admin/users/${id}`);
+  const res = await instance.delete<ResponseWithoutData>(
+    `${apiRoutes.admin.path}/users/${id}`,
+  );
 
   return res.data;
 };
@@ -50,7 +56,7 @@ export const deleteUser = async (id: string) => {
 export const getUser = async (id: string) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseWithData<UserResponse>>(
-    `/admin/users/${id}`,
+    `${apiRoutes.admin.path}/users/${id}`,
   );
 
   return res.data;
@@ -59,7 +65,7 @@ export const getUser = async (id: string) => {
 export const updateUser = async ({ id, ...data }: UserUpdate) => {
   const instance = await createAxiosInstance();
   const res = await instance.patch<ResponseWithoutData>(
-    `/admin/users/${id}`,
+    `${apiRoutes.admin.path}/users/${id}`,
     data,
   );
 

@@ -7,10 +7,14 @@ import {
 } from '@/features/types';
 import { createAxiosInstance } from '@/utils/axiosInstance';
 import { MutationApprove, MutationBody, MutationResponse } from './types';
+import { apiRoutes } from '@/utils/routes';
 
 export const createMutation = async (data: MutationBody) => {
   const instance = await createAxiosInstance();
-  const res = await instance.post<ResponseWithoutData>('/mutations', data);
+  const res = await instance.post<ResponseWithoutData>(
+    apiRoutes.mutations.path,
+    data,
+  );
 
   return res.data;
 };
@@ -18,7 +22,7 @@ export const createMutation = async (data: MutationBody) => {
 export const getMutations = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<MutationResponse[]>>(
-    '/mutations',
+    apiRoutes.mutations.path,
     { params },
   );
 
@@ -28,7 +32,7 @@ export const getMutations = async (params: QueryPagination) => {
 export const getMutation = async (id: string) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseWithData<MutationResponse>>(
-    `/mutations/${id}`,
+    `${apiRoutes.mutations.path}/${id}`,
   );
 
   return res.data;
@@ -37,7 +41,7 @@ export const getMutation = async (id: string) => {
 export const updateMutationToCancel = async (id: string) => {
   const instance = await createAxiosInstance();
   const res = await instance.patch<ResponseWithoutData>(
-    `/mutations/to-cancel/${id}`,
+    `${apiRoutes.mutations.path}/to-cancel/${id}`,
   );
 
   return res.data;
@@ -49,7 +53,7 @@ export const updateMutationToApprove = async ({
 }: MutationApprove) => {
   const instance = await createAxiosInstance();
   const res = await instance.patch<ResponseWithoutData>(
-    `/mutations/to-approve/${id}`,
+    `${apiRoutes.mutations.path}/to-approve/${id}`,
     data,
   );
 
@@ -59,7 +63,7 @@ export const updateMutationToApprove = async ({
 export const getMutationHistory = async (params: QueryPagination) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
-    '/mutations/history',
+    `${apiRoutes.mutations.path}/history`,
     { params },
   );
 
@@ -72,7 +76,7 @@ export const getMutationHistoryById = async (
 ) => {
   const instance = await createAxiosInstance();
   const res = await instance.get<ResponseDataPagination<HistoryResponse[]>>(
-    `/mutations/history/${id}`,
+    `${apiRoutes.mutations.path}/history/${id}`,
     { params },
   );
 
