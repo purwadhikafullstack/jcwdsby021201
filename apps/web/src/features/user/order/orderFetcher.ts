@@ -116,7 +116,7 @@ export const getUnpaidOrder = async ({
   params: QueryPagination;
 }) => {
   const res = await axiosInstance.get<ResponseDataPagination<UserResponse[]>>(
-    '/orders//to-pay',
+    '/orders/to-pay',
     {
       params,
       headers: {

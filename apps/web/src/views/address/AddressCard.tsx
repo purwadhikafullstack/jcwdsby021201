@@ -21,6 +21,7 @@ import {
 //OTHER
 import { useRouter } from 'next/navigation';
 import { buttonPrimaryStyles } from '@/styles/buttonStyles';
+import Link from 'next/link';
 
 interface IAddressCardProps {
   address: any;
@@ -38,9 +39,9 @@ const AddressCard: React.FunctionComponent<IAddressCardProps> = ({
   return (
     <Grid item>
       <Card
-        onClick={() =>
-          router.push(`/dashboard/user/profile/update-address/${address.id}`)
-        }
+        style={{ textDecoration: 'none' }}
+        component={Link}
+        href={`/dashboard/user/profile/update-address/${address.id}`}
         sx={{
           backgroundColor: '#EEE',
           width: 345,

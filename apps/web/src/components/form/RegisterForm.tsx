@@ -9,7 +9,6 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
@@ -23,7 +22,7 @@ import { errorNotification } from '@/utils/notifications';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   RegisterFormData,
   registerFormSchema,
@@ -36,6 +35,7 @@ import { useRegister } from '@/features/auth/register/registerMutations';
 import GoogleButton from '@/components/button/GoogleButton';
 import GithubButton from '@/components/button/GithubButton';
 import DiscordButton from '@/components/button/DiscordButton';
+import GeneralTextField from '@/components/input/GeneralTextField';
 
 // Next Auth
 import { signIn } from 'next-auth/react';
@@ -100,24 +100,14 @@ export default function RegisterForm() {
             Already have an account?
           </Link>
         </Stack>
-        <Controller
+        <GeneralTextField
           control={control}
           name="email"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              type="email"
-              size="small"
-              label="Email Address"
-              variant="outlined"
-              disabled={disabled}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          type="email"
+          label="Email Address"
+          disabled={disabled}
+          shrink
         />
         <Button
           fullWidth

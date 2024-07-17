@@ -1,7 +1,4 @@
 import { z } from 'zod';
-import axios from 'axios';
-import { useSession } from 'next-auth/react';
-import { UserSession } from '@/features/types';
 
 export const emailSchema = z.object({
   email: z

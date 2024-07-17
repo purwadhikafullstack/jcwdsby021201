@@ -9,6 +9,9 @@ import axios from 'axios';
 import { errorNotification } from '@/utils/notifications';
 import { useAddToCart } from '@/features/user/cart/cartMutation';
 import { useRemoveWishlist } from '@/features/user/wishlist/wishlistMutation';
+import AddToCartConfirmation from '@/components/dialog/AddToCartOption';
+import { useRouter } from 'next/navigation';
+import { getStock } from '@/features/user/products/productFetcher';
 
 interface IWishListProps {}
 
@@ -16,6 +19,7 @@ const WishList: React.FunctionComponent<IWishListProps> = (props) => {
   const session = useSession();
   const user = session.data?.user as UserSession;
   const token = user?.token;
+  const router = useRouter();
 
   const { data } = useGetWishlistData(token || '');
 
@@ -25,9 +29,13 @@ const WishList: React.FunctionComponent<IWishListProps> = (props) => {
   const { mutateAsync } = useAddToCart();
   const { mutateAsync: removeMutateAsync } = useRemoveWishlist();
 
+  const goToCart = () => {
+    router.push('/cart');
+  };
+
   const handleAddToCart = async (productId: number) => {
     try {
-      const stock = await checkStock(productId);
+      const stock = await getStock(productId);
       if (stock < quantity) {
         errorNotification('Not enough stock available.');
         return;
@@ -46,20 +54,6 @@ const WishList: React.FunctionComponent<IWishListProps> = (props) => {
       }
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  //CHECK STOCK
-  const checkStock = async (productId: number) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/products/stock/${productId}`,
-      );
-
-      return response.data.result.stock;
-    } catch (error) {
-      console.error('Error checking stock:', error);
-      return 0;
     }
   };
 
@@ -97,6 +91,11 @@ const WishList: React.FunctionComponent<IWishListProps> = (props) => {
           />
         </Grid>
       </Grid>
+      <AddToCartConfirmation
+        goToCart={goToCart}
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+      />
     </Container>
   );
 };
