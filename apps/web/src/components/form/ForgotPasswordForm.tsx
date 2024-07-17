@@ -6,7 +6,6 @@ import NextLink from 'next/link';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
@@ -19,7 +18,7 @@ import { authPages } from '@/utils/routes';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   forgotPasswordSchema,
   ForgotPasswordFormData,
@@ -27,6 +26,9 @@ import {
 
 // Mutations
 import { useForgotPassword } from '@/features/auth/forgotPassword/forgotPasswordMutations';
+
+// Custom Components
+import GeneralTextField from '@/components/input/GeneralTextField';
 
 const defaultValues: ForgotPasswordFormData = {
   email: '',
@@ -72,24 +74,14 @@ export default function ForgotPasswordForm() {
           Back to Sign In
         </Link>
       </Stack>
-      <Controller
+      <GeneralTextField
         control={control}
         name="email"
-        render={({ field, fieldState: { error } }) => (
-          <TextField
-            fullWidth
-            required
-            type="email"
-            size="small"
-            label="Email Address"
-            variant="outlined"
-            disabled={isPending}
-            {...field}
-            helperText={error?.message}
-            error={Boolean(error)}
-            InputLabelProps={{ shrink: true, required: true }}
-          />
-        )}
+        required
+        type="email"
+        label="Email Address"
+        disabled={isPending}
+        shrink
       />
       <Box>
         <Typography variant="caption">

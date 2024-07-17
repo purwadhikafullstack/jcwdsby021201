@@ -9,14 +9,8 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import IconButton from '@mui/material/IconButton';
-
-// MUI Icons
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 // Styles
 import { formWrapperStyles } from '@/styles/authFormStyles';
@@ -28,7 +22,7 @@ import { errorNotification } from '@/utils/notifications';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   LoginFormData,
   loginFormSchema,
@@ -41,6 +35,8 @@ import { useLoginTransport } from '@/features/auth/login/loginMutations';
 import GoogleButton from '@/components/button/GoogleButton';
 import GithubButton from '@/components/button/GithubButton';
 import DiscordButton from '@/components/button/DiscordButton';
+import GeneralTextField from '@/components/input/GeneralTextField';
+import GeneralInputPassword from '@/components/input/GeneralInputPassword';
 
 // Next Auth
 import { signIn } from 'next-auth/react';
@@ -54,7 +50,6 @@ export type Provider = 'google' | 'github' | 'discord';
 
 export default function LoginForm() {
   const [isSignIn, setIsSignIn] = useState(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { handleSubmit, control, reset } = useForm<LoginFormData>({
     resolver: zodResolver(loginFormSchema),
     defaultValues,
@@ -106,50 +101,22 @@ export default function LoginForm() {
             Don&apos;t have an account?
           </Link>
         </Stack>
-        <Controller
+        <GeneralTextField
           control={control}
           name="email"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              type="email"
-              size="small"
-              label="Email Address"
-              variant="outlined"
-              disabled={disabled}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          type="email"
+          label="Email Address"
+          disabled={disabled}
+          shrink
         />
-        <Controller
+        <GeneralInputPassword
           control={control}
           name="password"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              type={showPassword ? 'text' : 'password'}
-              size="small"
-              label="Password"
-              variant="outlined"
-              disabled={disabled}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-              InputProps={{
-                endAdornment: (
-                  <IconButton onClick={() => setShowPassword(!showPassword)}>
-                    {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                  </IconButton>
-                ),
-              }}
-            />
-          )}
+          required
+          label="Password"
+          disabled={disabled}
+          shrink
         />
         <Stack direction="row" justifyContent="end">
           <Link
@@ -167,7 +134,7 @@ export default function LoginForm() {
           size="large"
           variant="contained"
           type="submit"
-          disabled={isPending}
+          disabled={disabled}
           sx={buttonPrimaryStyles}
         >
           Sign In

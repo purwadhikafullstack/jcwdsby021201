@@ -6,7 +6,6 @@ import * as React from 'react';
 import { Add as AddIcon } from '@mui/icons-material';
 // Zod
 import { zodResolver } from '@hookform/resolvers/zod';
-import axios from 'axios';
 
 import { usernameSchema, UsernameSchema } from './schemas/updateUsernameSchema';
 // Schema untuk validasi

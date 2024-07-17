@@ -41,7 +41,12 @@ export const useDeleteInventory = () => {
     mutationFn: deleteInventory,
     onSuccess: (data) => {
       if (data.success) {
-        queryClient.invalidateQueries({ queryKey: ['inventories'] });
+        queryClient.invalidateQueries({
+          queryKey: ['inventories'],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ['inventory-history'],
+        });
         successNotification(data.message);
       } else {
         errorNotification(data.message);

@@ -24,7 +24,11 @@ import {
   fetchShippingCost,
   fetchWarehouseNearest,
 } from '@/features/user/order/orderFetcher';
-import { calculateTotal, generateRandomAlphabet } from './CheckoutHelper';
+import {
+  calculateTotal,
+  formatOrderDate,
+  generateRandomAlphabet,
+} from './CheckoutHelper';
 
 interface ICheckoutProps {}
 
@@ -49,7 +53,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
   const [showAddressForm, setShowAddressForm] = React.useState(false);
 
   //Queries
-  const { data: product, error, isLoading } = useGetProductCart(token || '');
+  const { data: product } = useGetProductCart(token || '');
   const { data: dataAddress, refetch: refetchAddresses } = useGetAddressById(
     token || '',
   );
@@ -58,6 +62,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
   const refreshAddresses = () => {
     refetchAddresses();
     setShowAddressForm(false);
+    setErrorMessage(null);
   };
 
   //Shipping cost
@@ -69,7 +74,6 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
         origin: origin,
         weight: 1000,
       });
-
       setShippingCost(shippingCost);
     } catch (error) {
       console.error('Error calculating shipping cost:', error);
@@ -106,7 +110,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
     const initializeCheckout = async () => {
       if (dataAddress && dataAddress.length === 0) {
         setErrorMessage(
-          'You don`t have any addresses yet. Please add an address to continue.',
+          'You don`t have any addresses yet. Please add an address in select to continue.',
         );
       } else if (
         dataAddress &&
@@ -142,7 +146,6 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
         setIsLoadingAll(false);
       }
     };
-
     updateShippingCost();
   }, [courier, selectedAddressId, warehouseCity, dataAddress]);
 
@@ -181,9 +184,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
         return;
       }
       if (!product || product.length === 0) {
-        setErrorMessage(
-          'Your cart is empty. Please add products before checkout.',
-        );
+        setErrorMessage('Your cart is empty');
         return;
       }
 
@@ -201,11 +202,7 @@ const Checkout: React.FunctionComponent<ICheckoutProps> = (props) => {
       const total = (calculateTotal(product) || 0) + shippingCost;
       //buat tanggal di order :
       const order = new Date().toISOString();
-      const formattedDate = new Date(order)
-        .toLocaleDateString('en-GB')
-        .split('/')
-        .reverse()
-        .join('-');
+      const formattedDate = formatOrderDate(new Date(order));
 
       const orderData = {
         name: 'ORDER-' + formattedDate + '-' + generateRandomAlphabet(7),

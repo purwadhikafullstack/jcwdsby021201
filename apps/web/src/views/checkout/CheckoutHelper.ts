@@ -12,3 +12,8 @@ export function generateRandomAlphabet(length: number) {
   }
   return result;
 }
+
+// format order date
+export function formatOrderDate(date: Date) {
+  return date.toLocaleDateString('en-GB').split('/').reverse().join('-');
+}

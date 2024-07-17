@@ -5,12 +5,11 @@ import { useParams, useRouter } from 'next/navigation';
 
 // MUI Components
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   categorySchema,
   CategoryFormData,
@@ -43,6 +42,7 @@ import {
 
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
+import GeneralTextField from '@/components/input/GeneralTextField';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
@@ -114,24 +114,14 @@ export default function CategoryForm({
         onSubmit={handleSubmit(onSubmit)}
         sx={adminFormStyles}
       >
-        <Controller
+        <GeneralTextField
           control={control}
           name="name"
-          render={({ field, fieldState: { error } }) => (
-            <TextField
-              fullWidth
-              required
-              size="small"
-              label="Name"
-              variant="outlined"
-              placeholder="Category Name"
-              disabled={onlySuperAdmin}
-              {...field}
-              helperText={error?.message}
-              error={Boolean(error)}
-              InputLabelProps={{ shrink: true, required: true }}
-            />
-          )}
+          required
+          label="Name"
+          placeholder="Category Name"
+          disabled={onlySuperAdmin}
+          shrink
         />
         <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
           {user?.role === 'SUPER_ADMIN' && (

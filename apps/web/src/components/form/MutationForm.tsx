@@ -57,6 +57,7 @@ import { useDebounce } from 'use-debounce';
 // Custom Components
 import LinkButton from '@/components/button/LinkButton';
 import ReasonDialog from '@/components/dialog/ReasonDialog';
+import GeneralTextField from '@/components/input/GeneralTextField';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
@@ -120,10 +121,11 @@ export default function MutationForm({
   );
 
   const schema = id ? mutationUpdateSchema : mutationSchema;
-  const { handleSubmit, control, reset, watch } = useForm<MutationFormData>({
-    resolver: zodResolver(schema),
-    defaultValues,
-  });
+  const { handleSubmit, control, reset, watch, setValue } =
+    useForm<MutationFormData>({
+      resolver: zodResolver(schema),
+      defaultValues,
+    });
 
   const watchWarehouseSource = watch('sourceWarehouseId');
 
@@ -226,6 +228,12 @@ export default function MutationForm({
       setOptionsWarehouseDestination(optionsWarehouseDestination);
     }
   }, [selectedWarehouseDestination, optionsWarehouseDestination]);
+
+  useEffect(() => {
+    if (optionsWarehouseSource.length === 1) {
+      setValue('sourceWarehouseId', optionsWarehouseSource[0].id);
+    }
+  }, [optionsWarehouseSource, setValue]);
 
   useEffect(() => {
     if (queryData?.success === false && id) {
@@ -447,74 +455,41 @@ export default function MutationForm({
               />
             )}
           />
-          <Controller
+          <GeneralTextField
             control={control}
             name="stockRequest"
-            render={({ field, fieldState: { error } }) => (
-              <TextField
-                fullWidth
-                required
-                size="small"
-                label="Request"
-                variant="outlined"
-                placeholder="Stock Request"
-                disabled={disabledOnPending || id !== undefined}
-                {...field}
-                onChange={(e) => {
-                  const formattedValue = toThousandFlag(e.target.value);
-                  field.onChange(formattedValue);
-                }}
-                helperText={error?.message}
-                error={Boolean(error)}
-                InputLabelProps={{ shrink: true, required: true }}
-              />
-            )}
+            required
+            label="Request"
+            placeholder="Stock Request"
+            disabled={disabledOnPending || id !== undefined}
+            shrink
           />
           {id && (
-            <Controller
+            <GeneralTextField
               control={control}
               name="stockProcess"
-              render={({ field, fieldState: { error } }) => (
-                <TextField
-                  fullWidth
-                  required
-                  size="small"
-                  label="Process"
-                  variant="outlined"
-                  placeholder="Stock Process"
-                  disabled={
-                    (id && queryData?.result?.status !== 'PENDING') ||
-                    disabledOnPending
-                  }
-                  {...field}
-                  onChange={(e) => {
-                    const formattedValue = toThousandFlag(e.target.value);
-                    field.onChange(formattedValue);
-                  }}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true, required: true }}
-                />
-              )}
+              required
+              label="Process"
+              placeholder="Stock Process"
+              shrink
+              disabled={
+                (id && queryData?.result?.status !== 'PENDING') ||
+                disabledOnPending
+              }
+              additionalOnChange={(e) =>
+                (e.target.value = toThousandFlag(e.target.value))
+              }
             />
           )}
-          <Controller
+          <GeneralTextField
             control={control}
             name="note"
-            render={({ field }) => (
-              <TextField
-                fullWidth
-                size="small"
-                label="Note"
-                variant="outlined"
-                placeholder="Mutation Note"
-                disabled={disabledOnPending || id !== undefined}
-                {...field}
-                multiline
-                minRows={3}
-                InputLabelProps={{ shrink: true }}
-              />
-            )}
+            label="Note"
+            placeholder="Mutation Note"
+            disabled={disabledOnPending || id !== undefined}
+            multiline
+            minRows={3}
+            shrink
           />
           <Box sx={{ display: 'flex', gap: 1, mt: 1, justifyContent: 'end' }}>
             <Button

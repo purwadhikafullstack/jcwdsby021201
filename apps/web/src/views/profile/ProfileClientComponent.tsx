@@ -29,10 +29,8 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
   const user = session.data?.user as UserSession;
   const token = user?.token;
 
-  const { data: dataAddress, error: errorAddress } = useGetAddressById(
-    token || '',
-  );
-  const { data, error, isLoading } = useGetProfileById(token || '');
+  const { data: dataAddress } = useGetAddressById(token || '');
+  const { data, isLoading } = useGetProfileById(token || '');
 
   const [open, setOpen] = React.useState(false);
   const [profilePictureModal, setProfilePictureModal] = React.useState(false);
@@ -62,7 +60,7 @@ const Profile: React.FunctionComponent<IProfileProps> = (props) => {
       }
     }
   }, [dataAddress]);
-  
+
   return (
     <Box
       sx={{
