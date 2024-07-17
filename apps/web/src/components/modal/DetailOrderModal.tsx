@@ -111,14 +111,16 @@ const DetailOrderModal: React.FunctionComponent<IDetailOrderModalProps> = ({
                     sx={{ mb: 2 }}
                   >
                     <Grid item>
-                      <Image
-                        src={
-                          process.env.NEXT_PUBLIC_BASE_API_URL + item.imageUrl
-                        }
-                        alt={item.name}
-                        width={50}
-                        height={50}
-                      />
+                      {item.imageUrl && (
+                        <Image
+                          src={
+                            process.env.NEXT_PUBLIC_BASE_API_URL + item.imageUrl
+                          }
+                          alt={item.name}
+                          width={50}
+                          height={50}
+                        />
+                      )}
                     </Grid>
                     <Grid item xs>
                       <Typography variant="subtitle1">{item.name}</Typography>
