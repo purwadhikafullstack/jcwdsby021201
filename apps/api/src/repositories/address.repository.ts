@@ -66,49 +66,32 @@ export class AddressRepository {
       longitude,
     } = body;
 
-    // cari alamat lain dengan isPrimary true
-    const existingPrimaryAddress = await prisma.address.findFirst({
-      where: {
-        userId: id,
-        isPrimary: true,
-        NOT: {
-          id: addressId, // tidak termasuk alamat yang sedang diupdate
-        },
-      },
-    });
-
-    // jika ada alamat lain dengan isPrimary: true, atur menjadi false
-    if (existingPrimaryAddress) {
-      await prisma.address.update({
-        where: {
-          id: existingPrimaryAddress.id,
-        },
-        data: {
-          isPrimary: false,
-        },
-      });
-    }
-
-    // Perbarui data alamat
-    const updatedAddress = await prisma.address.update({
+    // ini alamat sekarang
+    const currentAddress = await prisma.address.findUnique({
       where: {
         id: addressId,
         userId: id,
       },
-      data: {
-        name: name,
-        address: address,
-        cityId: cityId,
-        provinceId: provinceId,
-        postalCode: postalCode,
-        isPrimary: isPrimary,
-        latitude: latitude,
-        longitude: longitude,
-      },
     });
 
-    // Setelah memperbarui data, pastikan hanya ada satu alamat dengan isPrimary: true
-    if (isPrimary) {
+    if (!currentAddress) {
+      throw new Error('Address not found');
+    }
+
+    let updateData = {
+      name,
+      address,
+      cityId,
+      provinceId,
+      postalCode,
+      latitude,
+      longitude,
+      isPrimary,
+    };
+
+    // kalo yang di update menjadi primary address :
+    if (isPrimary && !currentAddress.isPrimary) {
+      // disini yang lain jadi flase
       await prisma.address.updateMany({
         where: {
           userId: id,
@@ -122,6 +105,44 @@ export class AddressRepository {
         },
       });
     }
+    // kalo kondisinya si user ga update tapi ga masukin primary sama sekali
+    else if (!isPrimary && currentAddress.isPrimary) {
+      // bikinin alamat lain jadi primary
+      const otherAddress = await prisma.address.findFirst({
+        where: {
+          userId: id,
+          NOT: {
+            id: addressId,
+          },
+        },
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
+
+      if (otherAddress) {
+        await prisma.address.update({
+          where: {
+            id: otherAddress.id,
+          },
+          data: {
+            isPrimary: true,
+          },
+        });
+      } else {
+        // jika engga ada alamat lain, biarin alamat ini tetap utama
+        updateData.isPrimary = true;
+      }
+    }
+
+    // update alamat
+    const updatedAddress = await prisma.address.update({
+      where: {
+        id: addressId,
+        userId: id,
+      },
+      data: updateData,
+    });
 
     return updatedAddress;
   }

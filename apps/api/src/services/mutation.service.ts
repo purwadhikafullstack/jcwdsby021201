@@ -206,12 +206,20 @@ export class MutationService {
         mutation.sourceWarehouseId,
       );
 
+    if (!inventorySource) {
+      return responseWithoutData(
+        400,
+        false,
+        'Product Not Found in Warehouse Source',
+      );
+    }
+
     await MutationRepository.updateMutationToApprove(
       stockProcess,
       mutation,
       {
-        inventorySourceId: inventorySource!.id,
-        inventoryDestinationId: inventoryDestination!.id,
+        inventorySourceId: inventorySource.id,
+        inventoryDestinationId: inventoryDestination.id,
       },
       user,
     );
