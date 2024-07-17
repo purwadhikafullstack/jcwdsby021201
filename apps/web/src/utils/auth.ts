@@ -8,6 +8,7 @@ import { authPages } from '@/utils/routes';
 import { LoginResponse } from '@/features/auth/login/types';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID as string,
