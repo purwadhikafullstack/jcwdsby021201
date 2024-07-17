@@ -12,24 +12,24 @@ import {
   FieldValues,
   useController,
 } from 'react-hook-form';
-import { OptionLabel } from '@/features/types';
+import { AdminOption } from '@/features/types';
 
-interface GeneralAutocompleteProps<T extends FieldValues> {
+interface AdminAutocompleteProps<T extends FieldValues> {
   name: FieldPath<T>;
   control: Control<T>;
-  options: OptionLabel[];
+  options: AdminOption[];
   required?: boolean;
   type?: HTMLInputTypeAttribute;
   label?: string;
   placeholder?: string;
   disabled?: boolean;
   shrink?: boolean;
-  additionalOnChange?: (e: SyntheticEvent, value: OptionLabel | null) => void;
+  additionalOnChange?: (e: SyntheticEvent, value: AdminOption | null) => void;
   onInputChange?: (val: string) => void;
   isRefetching?: boolean;
 }
 
-export default function GeneralAutocomplete<T extends FieldValues>({
+export default function AdminAutocomplete<T extends FieldValues>({
   control,
   name,
   options,
@@ -42,7 +42,7 @@ export default function GeneralAutocomplete<T extends FieldValues>({
   additionalOnChange,
   onInputChange,
   isRefetching,
-}: GeneralAutocompleteProps<T>) {
+}: AdminAutocompleteProps<T>) {
   const {
     field,
     fieldState: { error },
@@ -53,7 +53,7 @@ export default function GeneralAutocomplete<T extends FieldValues>({
       openOnFocus
       disabled={disabled}
       options={options}
-      getOptionLabel={(option) => option.name}
+      getOptionLabel={(option) => option.username}
       onChange={(_, value) => {
         if (additionalOnChange) {
           additionalOnChange(_, value);

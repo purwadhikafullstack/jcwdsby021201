@@ -6,15 +6,12 @@ import { useEffect, useState } from 'react';
 
 // MUI Components
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 import FormHelperText from '@mui/material/FormHelperText';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   warehouseSchema,
   WarehouseFormData,
@@ -57,6 +54,7 @@ import { useDebounce } from 'use-debounce';
 import LinkButton from '@/components/button/LinkButton';
 import GeneralTextField from '@/components/input/GeneralTextField';
 import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
+import AdminAutocomplete from '@/components/input/AdminAutocomplete';
 
 // Map
 import { LatLngExpression } from 'leaflet';
@@ -239,51 +237,17 @@ export default function WarehouseForm({
         onSubmit={handleSubmit(onSubmit)}
         sx={adminFormStyles}
       >
-        <Controller
+        <AdminAutocomplete
           control={control}
           name="userId"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
-              openOnFocus
-              disabled={disabledOnPending}
-              options={optionsAdmin}
-              getOptionLabel={(option) => option.username}
-              onChange={(_, value) => {
-                onChange(value?.id ?? null);
-              }}
-              value={
-                value ? optionsAdmin.find((opt) => opt.id === value) : null
-              }
-              onInputChange={(_, newInputValue) => {
-                setInputAdmin(newInputValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size="small"
-                  label="Admin Warehouse"
-                  variant="outlined"
-                  placeholder="Choose Admin Warehouse"
-                  disabled={disabledOnPending}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true }}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isAdminRefetching ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          )}
+          options={optionsAdmin}
+          shrink
+          required
+          label="Admin Warehouse"
+          placeholder="Choose Admin Warehouse"
+          disabled={disabledOnPending}
+          isRefetching={isAdminRefetching}
+          onInputChange={setInputAdmin}
         />
         <GeneralTextField
           control={control}
@@ -330,7 +294,7 @@ export default function WarehouseForm({
           required
           label="City"
           placeholder="Choose City"
-          disabled={disabledOnPending}
+          disabled={!selectedProvince || disabledOnPending}
           isRefetching={isCityRefetching}
           onInputChange={setInputCity}
         />
@@ -394,7 +358,6 @@ export function WarehouseFormUpdate() {
     error: errorQuery,
     isPending: isQueryPending,
     isError: isErrorQuery,
-    refetch: refetchQuery,
   } = useGetWarehouse(id);
 
   return (
