@@ -8,8 +8,6 @@ import {
 } from '@/utils/notifications';
 
 export const useLoginTransport = () => {
-  const router = useRouter();
-
   return useMutation({
     mutationFn: loginTransport,
     onSuccess: (data) => {
