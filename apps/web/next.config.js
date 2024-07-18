@@ -8,7 +8,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'jcwdsby021201.purwadhikabootcamp.com',
+        hostname: 'jcwdsby021201.purwadhikabootcamp.com/api/v1',
       },
       {
         protocol: 'https',
