@@ -49,10 +49,10 @@ import { useDebounce } from 'use-debounce';
 import LinkButton from '@/components/button/LinkButton';
 import ProductFormDropzone from '@/views/admin/products/ProductFormDropzone';
 import GeneralTextField from '@/components/input/GeneralTextField';
+import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
-import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
 
 const defaultValues: ProductFormData = {
   name: '',

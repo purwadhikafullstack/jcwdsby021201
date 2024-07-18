@@ -5,14 +5,11 @@ import { useEffect, useState } from 'react';
 
 // MUI Components
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   mutationSchema,
   MutationFormData,
@@ -58,6 +55,7 @@ import { useDebounce } from 'use-debounce';
 import LinkButton from '@/components/button/LinkButton';
 import ReasonDialog from '@/components/dialog/ReasonDialog';
 import GeneralTextField from '@/components/input/GeneralTextField';
+import GeneralAutocomplete from '@/components/input/GeneralAutocomplete';
 
 // NextAuth
 import { useSession } from 'next-auth/react';
@@ -305,155 +303,43 @@ export default function MutationForm({
           onSubmit={handleSubmit(onSubmit)}
           sx={adminFormStyles}
         >
-          <Controller
+          <GeneralAutocomplete
             control={control}
             name="sourceWarehouseId"
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <Autocomplete
-                openOnFocus
-                disabled={disabledOnPending || id !== undefined}
-                options={optionsWarehouseSource}
-                getOptionLabel={(option) => option.name || ''}
-                onChange={(_, value) => {
-                  onChange(value?.id ?? null);
-                }}
-                value={
-                  value
-                    ? optionsWarehouseSource.find((opt) => opt.id === value)
-                    : null
-                }
-                onInputChange={(_, newInputValue) => {
-                  setInputWarehouseSource(newInputValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    size="small"
-                    label="Source"
-                    variant="outlined"
-                    placeholder="Choose Warehouse Source"
-                    disabled={disabledOnPending || id !== undefined}
-                    helperText={error?.message}
-                    error={Boolean(error)}
-                    InputLabelProps={{ shrink: true, required: true }}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {isWarehousesRefetching || isWarehouseRefetching ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            )}
+            options={optionsWarehouseSource}
+            shrink
+            required
+            label="Source"
+            placeholder="Choose Warehouse Source"
+            disabled={disabledOnPending || id !== undefined}
+            isRefetching={isWarehouseRefetching || isWarehousesRefetching}
+            onInputChange={setInputWarehouseSource}
           />
-          <Controller
+          <GeneralAutocomplete
             control={control}
             name="destinationWarehouseId"
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <Autocomplete
-                openOnFocus
-                disabled={
-                  !watchWarehouseSource || disabledOnPending || id !== undefined
-                }
-                options={optionsWarehouseDestination}
-                getOptionLabel={(option) => option.name || ''}
-                onChange={(_, value) => {
-                  onChange(value?.id ?? null);
-                }}
-                value={
-                  value
-                    ? optionsWarehouseDestination.find(
-                        (opt) => opt.id === value,
-                      )
-                    : null
-                }
-                onInputChange={(_, newInputValue) => {
-                  setInputWarehouseDestination(newInputValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    size="small"
-                    label="Destination"
-                    variant="outlined"
-                    placeholder="Choose Warehouse Destination"
-                    disabled={
-                      !watchWarehouseSource ||
-                      disabledOnPending ||
-                      id !== undefined
-                    }
-                    helperText={error?.message}
-                    error={Boolean(error)}
-                    InputLabelProps={{ shrink: true, required: true }}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {isWarehousesDestinationRefetching ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            )}
+            options={optionsWarehouseDestination}
+            shrink
+            required
+            label="Destination"
+            placeholder="Choose Warehouse Destination"
+            disabled={
+              !watchWarehouseSource || disabledOnPending || id !== undefined
+            }
+            isRefetching={isWarehousesDestinationRefetching}
+            onInputChange={setInputWarehouseDestination}
           />
-          <Controller
+          <GeneralAutocomplete
             control={control}
             name="productId"
-            render={({ field: { value, onChange }, fieldState: { error } }) => (
-              <Autocomplete
-                openOnFocus
-                disabled={disabledOnPending || id !== undefined}
-                options={optionsProduct}
-                getOptionLabel={(option) => option.name || ''}
-                onChange={(_, value) => {
-                  onChange(value?.id ?? null);
-                }}
-                value={
-                  value ? optionsProduct.find((opt) => opt.id === value) : null
-                }
-                onInputChange={(_, newInputValue) => {
-                  setInputProduct(newInputValue);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    fullWidth
-                    size="small"
-                    label="Product"
-                    variant="outlined"
-                    placeholder="Choose Product"
-                    disabled={disabledOnPending || id !== undefined}
-                    helperText={error?.message}
-                    error={Boolean(error)}
-                    InputLabelProps={{ shrink: true, required: true }}
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {isProductRefetching ? (
-                            <CircularProgress color="inherit" size={20} />
-                          ) : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            )}
+            options={optionsProduct}
+            shrink
+            required
+            label="Product"
+            placeholder="Choose Product"
+            disabled={disabledOnPending || id !== undefined}
+            isRefetching={isProductRefetching}
+            onInputChange={setInputProduct}
           />
           <GeneralTextField
             control={control}

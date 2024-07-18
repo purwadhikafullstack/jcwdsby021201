@@ -28,7 +28,7 @@ export class AuthService {
       await UserRepository.deleteUserByEmail(email);
     }
 
-    const token = generateJWTTokenWithExpiry({ email }, '1h');
+    const token = generateJWTTokenWithExpiry({ email }, '2m');
     await UserRepository.createUser({ email, jwtToken: token });
     await sendEmail(email, 'Account Verification', 'register', {
       email,
@@ -163,7 +163,7 @@ export class AuthService {
       );
     }
 
-    const token = generateJWTTokenWithExpiry({ email }, '1h');
+    const token = generateJWTTokenWithExpiry({ email }, '2m');
     await UserRepository.updateUserByEmail(email, { jwtToken: token });
     await sendEmail(email, 'Forgot Password', 'forgot-password', {
       email,

@@ -5,14 +5,11 @@ import { useEffect, useState } from 'react';
 
 // MUI Components
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 
 // Schemas
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import {
   inventorySchema,
   InventoryFormData,
@@ -235,52 +232,6 @@ export default function InventoryForm({
           isRefetching={isWarehouseRefetching || isWarehousesRefetching}
           onInputChange={setInputWarehouse}
         />
-        {/* <Controller
-          control={control}
-          name="warehouseId"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
-              openOnFocus
-              disabled={disabledOnPending || id !== undefined}
-              options={optionsWarehouse}
-              getOptionLabel={(option) => option.name || ''}
-              onChange={(_, value) => {
-                onChange(value?.id ?? null);
-              }}
-              value={
-                value ? optionsWarehouse.find((opt) => opt.id === value) : null
-              }
-              onInputChange={(_, newInputValue) => {
-                setInputWarehouse(newInputValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size="small"
-                  label="Warehouse"
-                  variant="outlined"
-                  placeholder="Choose Warehouse"
-                  disabled={disabledOnPending || id !== undefined}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true, required: true }}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isWarehousesRefetching || isWarehouseRefetching ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          )}
-        /> */}
         <GeneralAutocomplete
           control={control}
           name="productId"
@@ -293,52 +244,6 @@ export default function InventoryForm({
           isRefetching={isProductRefetching}
           onInputChange={setInputProduct}
         />
-        {/* <Controller
-          control={control}
-          name="productId"
-          render={({ field: { value, onChange }, fieldState: { error } }) => (
-            <Autocomplete
-              openOnFocus
-              disabled={disabledOnPending || id !== undefined}
-              options={optionsProduct}
-              getOptionLabel={(option) => option.name || ''}
-              onChange={(_, value) => {
-                onChange(value?.id ?? null);
-              }}
-              value={
-                value ? optionsProduct.find((opt) => opt.id === value) : null
-              }
-              onInputChange={(_, newInputValue) => {
-                setInputProduct(newInputValue);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  fullWidth
-                  size="small"
-                  label="Product"
-                  variant="outlined"
-                  placeholder="Choose Product"
-                  disabled={disabledOnPending || id !== undefined}
-                  helperText={error?.message}
-                  error={Boolean(error)}
-                  InputLabelProps={{ shrink: true, required: true }}
-                  InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                      <>
-                        {isProductRefetching ? (
-                          <CircularProgress color="inherit" size={20} />
-                        ) : null}
-                        {params.InputProps.endAdornment}
-                      </>
-                    ),
-                  }}
-                />
-              )}
-            />
-          )}
-        /> */}
         <GeneralTextField
           control={control}
           name="stock"
