@@ -21,7 +21,7 @@ export const middleware = async (req: NextRequest) => {
     dashboardAdminPages.user.path,
     dashboardAdminPages.warehouse.path,
   ];
-  const onlyUserIsVerified = ['/cart', '/checkout'];
+  const onlyUserIsVerified = ['/cart', '/checkout', '/wishlist'];
 
   if (!session && currentPath.startsWith(dashboardPath)) {
     return NextResponse.rewrite(new URL(authPages.login.path, req.url));

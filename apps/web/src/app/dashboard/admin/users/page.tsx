@@ -10,7 +10,7 @@ export default function UserPage() {
   return (
     <>
       <DashboardBreadcrumbs route={dashboardAdminPages.user} />
-      <Box sx={{ maxWidth: '100%', pt: 2 }}>
+      <Box sx={{ maxWidth: '100%', pb: 2 }}>
         <UserTable />
       </Box>
     </>
