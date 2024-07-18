@@ -85,7 +85,6 @@ export default function DashboardLayout({ children }: Props) {
   const [open, setOpen] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
-  const router = useRouter();
   const session = useSession();
   const user = session.data?.user as UserSession;
   const userImage =

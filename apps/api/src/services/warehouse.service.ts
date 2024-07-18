@@ -10,6 +10,7 @@ import {
 } from '@/utils/response';
 import { Validation } from '@/validators/validation';
 import { WarehouseValidation } from '@/validators/warehouse.validation';
+import { Prisma } from '@prisma/client';
 
 export class WarehouseService {
   static async createWarehouse(body: WarehouseBody) {
@@ -126,7 +127,15 @@ export class WarehouseService {
     try {
       await WarehouseRepository.deleteWarehouseById(Number(newId));
     } catch (error) {
-      return responseWithoutData(500, false, 'Internal Server Error');
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2003') {
+          return responseWithoutData(
+            400,
+            false,
+            'Cannot delete warehouse. This warehouse has associated product history records',
+          );
+        }
+      }
     }
 
     return responseWithoutData(200, true, 'Success Delete Warehouse');
